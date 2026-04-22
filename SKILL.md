@@ -77,7 +77,17 @@ cat "$USERPROFILE/.config/openclaw/switchbot/policy.yaml" 2>/dev/null
 
 If the file doesn't exist, proceed with defaults from the safety section
 below — but tell the user once that they don't have a policy yet and
-point them at `examples/policy.example.yaml` in this skill's directory.
+point them at `switchbot policy new` (requires CLI ≥ 2.8.0).
+
+If the user asks whether their policy file is correct, run:
+
+```bash
+switchbot policy validate
+```
+
+Exit 0 means the file is valid; any other code means the CLI printed
+line-accurate errors — relay those errors to the user rather than
+trying to read the YAML yourself.
 
 ---
 

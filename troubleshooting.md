@@ -222,20 +222,30 @@ Not `~/openclaw/...`, not `~/.switchbot/policy.yaml`. If in doubt:
 ls ~/.config/openclaw/switchbot/policy.yaml   # should exist
 ```
 
-### Valid YAML?
+### Valid YAML and valid schema?
 
-If the file has a syntax error, the skill treats it as missing. Validate:
+With CLI ≥ 2.8.0 (recommended):
+
+```bash
+switchbot policy validate
+```
+
+Exit 0 means the file parses AND conforms to the v0.1 schema. Any other
+exit code prints a compiler-style error with the offending line and a
+fix hint (e.g. lowercase deviceId, destructive action in `never_confirm`,
+quiet-hours missing an `end:`).
+
+Fallback for older CLIs (pre-2.8.0), check YAML syntax only:
 
 ```bash
 python -c "import yaml, os; p=os.path.expanduser('~/.config/openclaw/switchbot/policy.yaml'); yaml.safe_load(open(p, encoding='utf-8')); print('policy.yaml parses OK')"
 ```
 
-(The explicit `encoding='utf-8'` matters on Windows, where Python defaults
-to the system codepage and can fail on policy files that contain non-ASCII
-aliases like device names in Chinese or Japanese.)
-
-(Once Phase 2 ships, `switchbot policy validate policy.yaml` will give
-you line-number errors.)
+(The explicit `encoding='utf-8'` matters on Windows, where Python
+defaults to the system codepage and can fail on policy files that
+contain non-ASCII aliases like device names in Chinese or Japanese.
+This checks only that the YAML parses — it does NOT catch schema
+violations like a lowercase deviceId or an out-of-range `quiet_hours`.)
 
 ### Session needs to restart
 

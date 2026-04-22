@@ -37,13 +37,14 @@ After the Quickstart below:
 
 | Phase | Status | What it delivers |
 |---|---|---|
-| **1. Manual orchestration** (this release) | ✅ Ready | Skill + policy schema + manual CLI install. 15-minute setup. |
-| 2. Policy tooling in CLI | Planned | `switchbot policy validate / new / migrate` so policy errors are reported with line numbers and IDE autocomplete works. |
+| 1. Manual orchestration | ✅ Shipped (v0.1) | Skill + policy schema + manual CLI install. 15-minute setup. |
+| **2. Policy tooling in CLI** (this release) | ✅ Ready (v0.2) | `switchbot policy validate / new / migrate` — policy errors reported with line numbers, snippets, and fix hints. |
 | 3. One-command install | Planned | `openclaw plugins install clawhub:switchbot` — system keychain credentials, platform-native MQTT daemon, rollback on failure. |
 | 4. Rule engine | Planned | `when: motion.detected at night → then: turn on hallway light` with dry-run + audit replay. |
 
-You are currently in Phase 1. Every command in the Quickstart is explicit
-and reversible. Phase 3 will automate the install steps, but the skill
+You are currently in Phase 2. Policy setup now uses dedicated CLI commands
+instead of copy-and-edit — see Step 7 of the Quickstart. Phase 3 will
+further automate credential setup and plugin packaging, but the skill
 itself will remain the same — this isn't throwaway work.
 
 ---
@@ -199,13 +200,15 @@ into the destination works — you'll just have to re-copy on updates.
 
 ### 7. Create your `policy.yaml`
 
+Requires `@switchbot/openapi-cli` ≥ 2.8.0 (Phase 2):
+
 ```bash
-mkdir -p ~/.config/openclaw/switchbot
-cp examples/policy.example.yaml ~/.config/openclaw/switchbot/policy.yaml
+switchbot policy new
+# → writes ~/.config/openclaw/switchbot/policy.yaml
 ```
 
-Open `~/.config/openclaw/switchbot/policy.yaml` and edit the `aliases:`
-block to use the friendly names you want the agent to understand:
+Edit the `aliases:` block to use the friendly names you want the agent
+to understand:
 
 ```yaml
 aliases:
@@ -214,6 +217,17 @@ aliases:
 ```
 
 You can get the `deviceId` column from `switchbot devices list --format=tsv`.
+
+Then verify the file is well-formed:
+
+```bash
+switchbot policy validate
+# → ✓ ~/.config/openclaw/switchbot/policy.yaml is valid (schema v0.1)
+```
+
+If validation fails, the CLI points at the exact line and suggests a fix
+(e.g. lowercase deviceId, quiet-hours missing an `end:`, a destructive
+action like `lock` inside `never_confirm`).
 
 For this Quickstart you can leave every other section of the policy at its
 defaults. The skill explains the remaining sections on demand.
@@ -266,13 +280,11 @@ this for you).
 
 ## What the skill does NOT do (yet)
 
-These are **deliberate Phase 1 omissions**. If you need any of them today,
+These are **deliberate Phase 2 omissions**. If you need any of them today,
 you'll have to handle it yourself or wait for the phase that ships them:
 
 | Not yet | Ships in | Workaround today |
 |---|---|---|
-| Automatic policy generation | Phase 2 | Copy and edit `examples/policy.example.yaml` |
-| IDE autocomplete for `policy.yaml` | Phase 2 | Use the schema at `examples/policy.schema.json` manually in VS Code `yaml.schemas` |
 | One-command install with rollback | Phase 3 | Follow the Quickstart above |
 | System keychain credentials | Phase 3 | CLI stores `~/.switchbot/credentials` at `0600` |
 | `when/then` rule engine | Phase 4 | Write a shell script that pipes `events mqtt-tail --json` into `jq` + `switchbot ...` |
