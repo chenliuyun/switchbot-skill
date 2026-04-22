@@ -11,6 +11,11 @@ Phase 2 release — policy tooling lands in the CLI.
 
 `@switchbot/openapi-cli` 2.8.0 ships a dedicated `switchbot policy` command group (`validate`, `new`, `migrate`) that replaces the manual "copy this template and hope the YAML parses" step in the Quickstart. What was a silent failure mode (bad YAML ⇒ skill falls back to defaults, user wonders why aliases don't work) is now a compiler-style error with a line number, caret, and fix hint.
 
+### Added
+
+- **`docs/agents/`** — install recipes for non-Claude-Code agents: `claude-code.md` (native), `cursor.md` (`.cursor/rules/*.mdc` or legacy `.cursorrules`), `copilot.md` (`.github/copilot-instructions.md`), and `other.md` (Gemini CLI `GEMINI.md`, Codex `AGENTS.md`, generic LLM system-prompt pattern, MCP clients). The skill body itself is unchanged — it's plain Markdown that any LLM-backed agent can consume; the new docs just explain where to paste it.
+- **README "Using this skill with other agents" section** — links to the four recipe files and notes the shared prerequisite (the `switchbot` CLI on `PATH`).
+
 ### Changed
 
 - **Quickstart (`README.md`, `SKILL.md`)** — Step 2 "create your policy" is now `switchbot policy new` (writes the starter template) + edit + `switchbot policy validate` (exit 0 or named errors). The "edit the YAML by hand" instruction is gone.

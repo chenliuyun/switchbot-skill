@@ -312,6 +312,21 @@ Full details and the list of actions per tier live in [SKILL.md](./SKILL.md).
 
 ---
 
+## Using this skill with other agents
+
+`SKILL.md` was born in the Claude Code skill format (YAML front-matter + Markdown body), but the body itself is plain prose — any LLM-backed agent that accepts a system prompt or an instruction file can use it. Drop `SKILL.md` into the agent's instruction slot, strip the `---` front-matter if the agent doesn't speak it, and you're done.
+
+Recipe per agent:
+
+- **Claude Code** — [docs/agents/claude-code.md](./docs/agents/claude-code.md) *(native; no adaptation needed)*
+- **Cursor** — [docs/agents/cursor.md](./docs/agents/cursor.md) *(`.cursor/rules/*.mdc` or `.cursorrules`)*
+- **GitHub Copilot** — [docs/agents/copilot.md](./docs/agents/copilot.md) *(`.github/copilot-instructions.md`)*
+- **Everything else** (Gemini CLI, Codex, custom LLM apps, MCP clients) — [docs/agents/other.md](./docs/agents/other.md)
+
+All recipes assume the same prerequisite: `@switchbot/openapi-cli` is on `PATH` and `switchbot config set-token` has been run. The skill teaches the agent *how* to use the CLI; it doesn't teach it how to use SwitchBot's REST API directly, and agents should never try.
+
+---
+
 ## Layout
 
 ```
@@ -322,6 +337,8 @@ Full details and the list of actions per tier live in [SKILL.md](./SKILL.md).
 ├── examples/
 │   ├── policy.example.yaml       # Copy-and-edit starting point
 │   └── policy.schema.json        # JSON Schema v0.1 for editor autocomplete
+├── docs/
+│   └── agents/                   # Per-agent install recipes (Claude Code, Cursor, Copilot, ...)
 ├── troubleshooting.md            # 6 common failure modes + exact fixes
 ├── LICENSE                       # MIT
 └── CHANGELOG.md                  # Keep a Changelog format
