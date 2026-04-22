@@ -129,9 +129,9 @@ Verify your credentials landed correctly:
 switchbot config show
 ```
 
-Expected: your token is displayed **masked** (secret shown as `****`),
-never in full. If you see the full secret, stop and file an issue — this
-is a bug.
+Expected: both token and secret are displayed **masked** (first few
+characters, then `****`, then last few). Neither should appear in full.
+If you see the full secret, stop and file an issue — this is a bug.
 
 ### 4. Run the doctor
 
@@ -139,24 +139,27 @@ is a bug.
 switchbot doctor
 ```
 
-Expected output — most checks should be `✓` (ok), a few may be `!` (warn)
-on a fresh install:
+Expected output — most checks should be `✓` (ok). Several rows expand to
+inline JSON with diagnostic detail; that's normal, not noise:
 
 ```
 ✓ node            Node 22.21.1
 ✓ credentials     file: ~/.switchbot/config.json
 ✓ profiles        no profile dir (default profile only)
 ✓ catalog         42 types loaded
-✓ catalog-schema  catalog and agent-bootstrap schemaVersion aligned
+✓ catalog-schema  {"catalogSchemaVersion":"1.0","bootstrapExpectsVersion":"1.0","match":true, ...}
 ✓ cache           list: ~/.switchbot/devices.json | status: (none)
-✓ quota           headroom available (0% used, 9999 remaining)
-✓ clock           system clock within tolerance
-✓ mqtt            auto-provisioned from credentials
-✓ mcp             11 tools registered
-✓ audit           0 errors in last 24h
+✓ quota           {"percentUsed":0,"remaining":9999,"dailyCap":10000, ...}
+✓ clock           {"skewMs":-387,"localIso":"...","serverIso":"..."}
+✓ mqtt            auto-provisioned from credentials — run 'switchbot events mqtt-tail' to test live connectivity
+✓ mcp             {"serverInstantiated":true,"toolCount":11, ...}
+✓ audit           {"path":"~/.switchbot/audit.log","enabled":true,"errorsLast24h":0, ...}
 
-10 ok, 1 warn, 0 fail
+11 ok, 0 warn, 0 fail
 ```
+
+Your numbers will differ — that's fine. What matters is the summary line
+shows `0 fail`.
 
 If any check is `✗` (fail), see
 [`troubleshooting.md`](./troubleshooting.md#switchbot-doctor-fails). A

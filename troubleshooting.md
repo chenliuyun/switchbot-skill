@@ -227,8 +227,12 @@ ls ~/.config/openclaw/switchbot/policy.yaml   # should exist
 If the file has a syntax error, the skill treats it as missing. Validate:
 
 ```bash
-python -c "import yaml; yaml.safe_load(open('$HOME/.config/openclaw/switchbot/policy.yaml'))"
+python -c "import yaml, os; p=os.path.expanduser('~/.config/openclaw/switchbot/policy.yaml'); yaml.safe_load(open(p, encoding='utf-8')); print('policy.yaml parses OK')"
 ```
+
+(The explicit `encoding='utf-8'` matters on Windows, where Python defaults
+to the system codepage and can fail on policy files that contain non-ASCII
+aliases like device names in Chinese or Japanese.)
 
 (Once Phase 2 ships, `switchbot policy validate policy.yaml` will give
 you line-number errors.)
