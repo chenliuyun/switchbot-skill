@@ -30,6 +30,12 @@ supported actions — run the CLI rather than guessing.
 | What's in the user's `policy.yaml`? | `cat ~/.config/openclaw/switchbot/policy.yaml` (or the Windows equivalent) |
 | Is my quota OK? | `switchbot --json quota status` |
 | Is the setup healthy? | `switchbot doctor --json` |
+| What automation rules does the user have? | `switchbot rules list --json` |
+| Are the rules valid? | `switchbot rules lint` |
+| Is the rules engine running? | `switchbot rules tail --follow` (or `rules list --json` for static state) |
+| What past events match a rule? | `switchbot rules replay --since <duration> --dry-run` |
+| Where do credentials live? | `switchbot auth keychain describe --json` |
+| Move credentials into the OS keychain | `switchbot auth keychain migrate` (the user runs this; you don't) |
 
 Never invent a deviceId, a command name, or a parameter value. If the
 CLI doesn't know about it, refuse and explain — don't paper over it.
@@ -194,6 +200,109 @@ assuming.
 
 ---
 
+## Declarative automations (CLI ≥ 2.9.0, policy v0.2)
+
+When the user wants "when X happens, do Y" rather than one-shot commands,
+author a rule in the `automation:` block of `policy.yaml` instead of
+spawning a shell loop. The rules engine ships in `@switchbot/openapi-cli`
+2.9.0 and executes rules in the same process that reads the policy.
+
+Before you touch `policy.yaml`, check the schema version:
+
+```bash
+cat ~/.config/openclaw/switchbot/policy.yaml | head -1   # version: "0.2" ?
+switchbot policy validate                                # exit 0 means good
+```
+
+If the user is on `version: "0.1"`, they need `switchbot policy migrate`
+first — do **not** hand-edit the version line.
+
+### Authoring a rule
+
+Keep the first rule tiny and start with `dry_run: true`. The engine
+will log firings to the audit log without touching the device, so the
+user can verify before arming:
+
+```yaml
+automation:
+  enabled: true
+  rules:
+    - name: "hallway motion at night"
+      when: { source: mqtt, event: motion.detected, device: "hallway sensor" }
+      conditions:
+        - time_between: ["22:00", "07:00"]
+      then:
+        - { command: "devices command <id> turnOn", device: "hallway lamp" }
+      throttle: { max_per: "10m" }
+      dry_run: true
+```
+
+Show the user the diff before writing. After they approve, validate +
+reload:
+
+```bash
+switchbot policy validate
+switchbot rules lint               # catches cron typos, unknown aliases
+switchbot rules reload             # SIGHUP on Unix / pid-file on Windows
+switchbot rules tail --follow      # watch fires arrive (dry-run fires too)
+```
+
+### Trigger kinds
+
+- `source: mqtt` — reacts to shadow events. `event` is
+  `motion.detected`, `contact.open`, etc. (check the device's
+  `describe --json` for the exact event names it emits.)
+- `source: cron` — `cron: "0 8 * * *"` style expressions in local time.
+- `source: webhook` — bearer-token HTTP ingest on a configurable port.
+  The token lives in the OS keychain (`switchbot auth keychain set`),
+  **never** in `policy.yaml`.
+
+### Conditions
+
+- `time_between: ["22:00", "07:00"]` — local time; midnight-crossing
+  is supported.
+- `device_state: { "<alias>": { on: false } }` — per-tick cached
+  device status lookup.
+
+### Rules the engine will refuse to accept
+
+The validator rejects any rule whose `then.command` would fire a
+destructive action (`unlock`, `garage-door open`, `keypad createKey`,
+etc.). The rejection is a schema error at `policy validate` time — not
+a runtime surprise. If the user asks for "auto-unlock when I arrive
+home", push back and explain: destructive actions must be driven by a
+human, not a rule.
+
+### When to recommend a rule vs. a shell loop
+
+Recommend a rule when:
+- The logic is declarative (one trigger + one-or-two conditions + one
+  command).
+- The user wants it to survive a reboot (pair with the systemd unit in
+  the CLI repo's `examples/quickstart/mqtt-tail.service.example` and
+  a similar `switchbot rules run --audit-log` unit).
+
+Recommend a shell loop when:
+- The logic needs multi-step branching you'd build with `jq` + `if`.
+- The user wants a one-off transient thing that doesn't live in policy.
+
+---
+
+## Credentials in the keychain (CLI ≥ 2.9.0)
+
+If the user asks "can I move my token out of the `0600` file?", point
+them at `switchbot auth keychain migrate` — it moves the token + secret
+to the OS keychain (macOS `security`, Windows `cmdkey`, Linux
+`secret-tool` via libsecret) and deletes the file on success.
+
+The skill does **not** run `auth keychain set` or `migrate` on the
+user's behalf — the user always runs the credential handling command.
+You can run `switchbot auth keychain describe --json` to report which
+backend is active, so downstream troubleshooting steps (e.g. "re-run
+`cmdkey`" vs "re-run `secret-tool store`") are backend-accurate.
+
+---
+
 ## Common pitfalls (from CLI audit)
 
 Read these once and avoid them:
@@ -278,14 +387,21 @@ a door twice.
 
 ## Version pinning
 
-This skill expects `@switchbot/openapi-cli` **≥ 2.7.0** and targets
-`2.7.x`. If `switchbot --version` prints something older, stop and tell
-the user to upgrade — several commands referenced here (`agent-bootstrap`,
-`capabilities --compact`, `events mqtt-tail --sink`) only exist from
-2.7.0 onward.
+This skill expects `@switchbot/openapi-cli` **≥ 2.9.0** and targets
+`2.9.x`. If `switchbot --version` prints something older, stop and tell
+the user to upgrade — the commands this skill references
+(`rules *`, `auth keychain *`, policy v0.2 schema, the `device_state`
+condition, webhook triggers) only exist from 2.9.0 onward.
 
 If the CLI reports `3.0.0` or later, check
 `switchbot capabilities --json` for schema changes — the v3.0 release
 removes `destructive:boolean` and `statusFields` (this skill already
 uses the replacements, but double-check the examples you see in the
 wild).
+
+This skill declares `autonomyLevel: "L1"` in its `manifest.json` —
+every mutation is confirmed with the user, and rules authored by the
+skill default to `dry_run: true` until the user flips them on. L2
+(semi-autonomous propose-then-approve) and L3 (fully autonomous inside
+policy envelope) are reserved for future skill releases and are **not**
+available in 0.3.0. Do not behave as if they were.

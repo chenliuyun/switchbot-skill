@@ -5,7 +5,71 @@ All notable changes to the OpenClaw SwitchBot skill are documented here.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 This project follows [Semantic Versioning](https://semver.org/).
 
-## [0.2.0] - 2026-04-22
+## [0.3.0] - 2026-04-23
+
+Alignment release — matches `@switchbot/openapi-cli` 2.9.0 (Phase 4
+shipped: policy v0.2 schema, rules engine, keychain support) and
+introduces the skill-side `autonomyLevel` dimension.
+
+### Added — `autonomyLevel` dimension
+
+- **`manifest.json` `roadmap` block** is now a reference that points
+  to the CLI's authoritative phase table
+  (`docs/design/roadmap.md`) and declares the skill's own autonomy
+  level. This release is `autonomyLevel: "L1"` (manual orchestration,
+  every mutation confirmed). L2 (semi-autonomous propose-then-approve)
+  and L3 (fully autonomous inside the policy envelope) are reserved
+  for future skill releases.
+- **README "Roadmap" section** is rewritten around L1/L2/L3 instead of
+  the previous Phase 1-4 mirror — the CLI owns phase numbering; the
+  skill owns autonomy level.
+
+### Added — `SKILL.md` coverage for CLI 2.9.0 capabilities
+
+- **Rules-engine section** — how to author a rule in `automation:`
+  (always starting with `dry_run: true`), what the three triggers
+  (`mqtt` / `cron` / `webhook`) and two conditions (`time_between` /
+  `device_state`) do, which kinds of rules the validator refuses, and
+  when to recommend a rule vs. a shell loop. The engine shipped in
+  CLI 2.9.0; the skill now knows how to drive it.
+- **Keychain section** — how to talk about
+  `switchbot auth keychain migrate` / `describe` without running
+  credential operations on the user's behalf.
+- **Authoritative command table** gains six rows:
+  `rules list --json`, `rules lint`, `rules tail --follow`,
+  `rules replay --since <dur> --dry-run`,
+  `auth keychain describe --json`, and `auth keychain migrate`
+  (flagged as user-runs-this, not agent-runs-this).
+
+### Changed
+
+- **`authority.cli`** bumped to `@switchbot/openapi-cli@>=2.9.0 <3.0.0`.
+  The previous window (`>=2.8.0 <3.0.0`) is no longer valid — the
+  skill's rules-engine guidance and policy-v0.2 assumptions require
+  CLI 2.9.0+.
+- **`policy.version`** in `manifest.json` bumped to `"0.2"`. The
+  Quickstart now uses `switchbot policy new --version 0.2` and the
+  expected `policy validate` output reads `schema v0.2`.
+- **`examples/policy.schema.json`** updated to mirror the CLI's
+  embedded `src/policy/schema/v0.2.json`. The CLI's CI diff job keeps
+  this file in sync on every push.
+- **Version-pinning block in `SKILL.md`** — target CLI is now 2.9.x;
+  the reason-to-upgrade list is rewritten around `rules *` and
+  `auth keychain *` instead of the 2.7.x command set.
+- **README "What the skill does NOT do (yet)"** — drops the
+  rules-engine row (shipped) and the keychain-credentials row
+  (shipped); adds rows for L2 and L3 with the workaround being "run
+  steps manually" / "user edits policy + `rules reload`".
+- **README Quickstart step 1** — expected `switchbot --version`
+  output is `2.9.0`.
+
+### Removed
+
+- Roadmap row for "Phase 3 / Phase 4 planned". The CLI roadmap owns
+  the phase table now; this repo references it by URL rather than
+  mirroring.
+
+
 
 Phase 2 release — policy tooling lands in the CLI.
 

@@ -35,17 +35,23 @@ After the Quickstart below:
 
 ## Roadmap (so you know where you stand)
 
-| Phase | Status | What it delivers |
-|---|---|---|
-| 1. Manual orchestration | ✅ Shipped (v0.1) | Skill + policy schema + manual CLI install. 15-minute setup. |
-| **2. Policy tooling in CLI** (this release) | ✅ Ready (v0.2) | `switchbot policy validate / new / migrate` — policy errors reported with line numbers, snippets, and fix hints. |
-| 3. One-command install | Planned | `openclaw plugins install clawhub:switchbot` — system keychain credentials, platform-native MQTT daemon, rollback on failure. |
-| 4. Rule engine | Planned | `when: motion.detected at night → then: turn on hallway light` with dry-run + audit replay. |
+This skill uses **autonomy level** as its delivery dimension —
+independent of the CLI's Phase 1-4 numbering. The CLI phase table is
+the authoritative source for what the underlying binary can do; see
+[`docs/design/roadmap.md`][cli-roadmap] in the CLI repo.
 
-You are currently in Phase 2. Policy setup now uses dedicated CLI commands
-instead of copy-and-edit — see Step 7 of the Quickstart. Phase 3 will
-further automate credential setup and plugin packaging, but the skill
-itself will remain the same — this isn't throwaway work.
+| Level | Status | Meaning | CLI phase it needs |
+|---|---|---|---|
+| **L1 · Manual orchestration** (this release, v0.3) | ✅ Shipped | Skill turns NL into CLI calls; user confirms each mutation; rules the skill authors default to `dry_run: true` until the user arms them. | Phase 1 or later. This release assumes Phase 4. |
+| **L2 · Semi-autonomous (propose-then-approve)** | Planned | Skill composes multi-step plans; `--require-approval` gates each step; one Y/N approves or rejects the whole batch. | Track δ on the CLI roadmap. |
+| **L3 · Fully autonomous inside the policy envelope** | Planned | Skill writes a rule, the rules engine executes it without further prompts. The skill moves from "driver" to "author". | Phase 4 (shipped); requires skill-side UX for policy diffs + audit review. |
+
+[cli-roadmap]: https://github.com/OpenWonderLabs/switchbot-openapi-cli/blob/main/docs/design/roadmap.md
+
+You are currently at L1. The skill handles the conversational surface;
+every mutation is a single confirmed command. L2 and L3 are explicit
+future releases, not hidden features — this doc will grow L2/L3 rows as
+they ship.
 
 ---
 
@@ -79,7 +85,7 @@ switchbot --version
 Expected output:
 
 ```
-2.7.2
+2.9.0
 ```
 
 If `switchbot --version` says "command not found", your global npm bin is
@@ -200,11 +206,11 @@ into the destination works — you'll just have to re-copy on updates.
 
 ### 7. Create your `policy.yaml`
 
-Requires `@switchbot/openapi-cli` ≥ 2.8.0 (Phase 2):
+Requires `@switchbot/openapi-cli` ≥ 2.9.0:
 
 ```bash
-switchbot policy new
-# → writes ~/.config/openclaw/switchbot/policy.yaml
+switchbot policy new --version 0.2
+# → writes ~/.config/openclaw/switchbot/policy.yaml (schema v0.2)
 ```
 
 Edit the `aliases:` block to use the friendly names you want the agent
@@ -222,7 +228,7 @@ Then verify the file is well-formed:
 
 ```bash
 switchbot policy validate
-# → ✓ ~/.config/openclaw/switchbot/policy.yaml is valid (schema v0.1)
+# → ✓ ~/.config/openclaw/switchbot/policy.yaml is valid (schema v0.2)
 ```
 
 If validation fails, the CLI points at the exact line and suggests a fix
@@ -280,15 +286,14 @@ this for you).
 
 ## What the skill does NOT do (yet)
 
-These are **deliberate Phase 2 omissions**. If you need any of them today,
-you'll have to handle it yourself or wait for the phase that ships them:
+These are **deliberate L1 omissions**. If you need any of them today,
+you'll have to handle it yourself or wait for the level that ships them:
 
 | Not yet | Ships in | Workaround today |
 |---|---|---|
-| One-command install with rollback | Phase 3 | Follow the Quickstart above |
-| System keychain credentials | Phase 3 | CLI stores `~/.switchbot/credentials` at `0600` |
-| `when/then` rule engine | Phase 4 | Write a shell script that pipes `events mqtt-tail --json` into `jq` + `switchbot ...` |
-| Audit log viewer | Phase 4 | `tail -f audit.log` (every action the agent takes is appended when you pass `--audit-log` to CLI commands or configure it via `switchbot config set`) |
+| One-command install with rollback | Track β (CLI roadmap) | Follow the Quickstart above |
+| Skill-authored multi-step plans with a single confirmation | L2 (this skill) | Run the steps manually and confirm each |
+| Skill that writes and arms its own rules without further prompts | L3 (this skill) | The user edits `policy.yaml` and runs `switchbot rules reload` themselves; the skill can author the rule with `dry_run: true` and show the diff |
 
 ---
 
@@ -336,7 +341,7 @@ All recipes assume the same prerequisite: `@switchbot/openapi-cli` is on `PATH` 
 ├── manifest.json                 # Claude Code skill + ClawHub plugin metadata
 ├── examples/
 │   ├── policy.example.yaml       # Copy-and-edit starting point
-│   └── policy.schema.json        # JSON Schema v0.1 for editor autocomplete
+│   └── policy.schema.json        # JSON Schema v0.2 for editor autocomplete
 ├── docs/
 │   └── agents/                   # Per-agent install recipes (Claude Code, Cursor, Copilot, ...)
 ├── troubleshooting.md            # 6 common failure modes + exact fixes
