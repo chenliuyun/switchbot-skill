@@ -1,20 +1,37 @@
-# OpenClaw SwitchBot Skill
+# SwitchBot Skill
 
 Control your SwitchBot smart home (lights, locks, curtains, sensors, plugs, IR
-appliances) from an AI agent. This repository ships two things:
+appliances) from an AI agent. This repository ships the agent-facing skill and
+the supporting files that make it usable in practice:
 
 1. A **skill** (`SKILL.md`) that teaches an AI agent how to use the
-   `switchbot` CLI safely — command surface, safety tiers, bootstrap
-   sequence, common pitfalls.
-2. A **policy schema** (`examples/policy.example.yaml`) that lets you declare
-   your preferences (device aliases, quiet hours, which actions always need
-   confirmation) so the agent doesn't have to guess.
+  `switchbot` CLI safely — command surface, safety tiers, bootstrap
+  sequence, common pitfalls.
+2. A **starter policy** (`examples/policy.example.yaml`) that lets you declare
+  your preferences (device aliases, quiet hours, which actions always need
+  confirmation) so the agent doesn't have to guess.
+3. A **policy schema** (`examples/policy.schema.json`) for validation and
+  editor autocomplete.
 
 The skill drives the [`@switchbot/openapi-cli`][cli] — the authoritative
 source for what commands exist and how they behave. This repo never duplicates
 CLI docs; it tells the agent how to read them.
 
 [cli]: https://www.npmjs.com/package/@switchbot/openapi-cli
+
+Paste this into your agent for install:
+
+```text
+Retrieve and follow the instructions at:
+https://raw.githubusercontent.com/chenliuyun/switchbot-skill/main/INSTALL_FOR_AGENTS.md
+```
+
+Paste this into your agent for upgrade:
+
+```text
+Retrieve and follow the instructions at:
+https://raw.githubusercontent.com/chenliuyun/switchbot-skill/main/UPGRADE_FOR_AGENTS.md
+```
 
 ---
 
@@ -188,8 +205,8 @@ Clone this repo somewhere stable, then install the skill:
 
 ```bash
 # pick any directory you'll keep
-git clone https://github.com/<your-account>/openclaw-switchbot-skill.git
-cd openclaw-switchbot-skill
+git clone https://github.com/chenliuyun/switchbot-skill.git
+cd switchbot-skill
 
 # macOS / Linux
 mkdir -p ~/.claude/skills
@@ -318,6 +335,202 @@ Full details and the list of actions per tier live in [SKILL.md](./SKILL.md).
 
 `SKILL.md` was born in the Claude Code skill format (YAML front-matter + Markdown body), but the body itself is plain prose — any LLM-backed agent that accepts a system prompt or an instruction file can use it. Drop `SKILL.md` into the agent's instruction slot, strip the `---` front-matter if the agent doesn't speak it, and you're done.
 
+## One-Command Install (Until The Plugin Ships)
+
+This repo now includes installer scripts in `scripts/` that automate the
+current file-based setup. They do **not** publish the future OpenClaw /
+ClawHub plugin; they are the bridge until that plugin exists.
+
+PowerShell:
+
+```powershell
+pwsh ./scripts/install.ps1 -Agent claude-global -InstallCli -InitPolicy
+pwsh ./scripts/install.ps1 -Agent copilot -WorkspacePath C:\path\to\workspace
+```
+
+Bash:
+
+```bash
+./scripts/install.sh --agent claude-global --install-cli --init-policy
+./scripts/install.sh --agent copilot --workspace-path /path/to/workspace
+```
+
+Supported targets:
+
+- `claude-global`
+- `claude-project`
+- `copilot`
+- `cursor`
+- `cursor-legacy`
+- `gemini-global`
+- `gemini-project`
+- `codex-global`
+- `codex-project`
+- `openclaw-staging`
+
+What the scripts do:
+
+- install or link the full skill tree for Claude Code
+- generate front-matter-free instruction files for Copilot, Gemini, and Codex
+- generate a ready-to-load `.mdc` rule for Cursor
+- stage a future plugin preview under `<workspace>/.openclaw/staging/plugins/switchbot`
+- optionally install `@switchbot/openapi-cli`
+- optionally create and validate `~/.config/openclaw/switchbot/policy.yaml`
+
+What still stays manual today:
+
+- `switchbot config set-token` remains interactive because it handles secrets
+- the OpenClaw / ClawHub plugin itself is still unpublished
+
+## Upgrade
+
+If you already installed this skill and want a real one-command upgrade, use
+the upgrade wrapper in `scripts/`. It updates the repo, refreshes the target
+agent install, updates the CLI, and runs basic health checks.
+
+### PowerShell Upgrade
+
+Upgrade the repo + CLI, then refresh a global Claude Code install:
+
+```powershell
+Set-Location C:\path\to\switchbot-skill
+pwsh ./scripts/upgrade.ps1 -Agent claude-global
+```
+
+Upgrade the repo + CLI, then refresh a workspace-scoped Copilot install:
+
+```powershell
+Set-Location C:\path\to\switchbot-skill
+pwsh ./scripts/upgrade.ps1 -Agent copilot -WorkspacePath C:\path\to\workspace
+```
+
+Upgrade a Cursor workspace rule:
+
+```powershell
+Set-Location C:\path\to\switchbot-skill
+pwsh ./scripts/upgrade.ps1 -Agent cursor -WorkspacePath C:\path\to\workspace
+```
+
+### Bash Upgrade
+
+Upgrade the repo + CLI, then refresh a global Claude Code install:
+
+```bash
+cd /path/to/switchbot-skill
+./scripts/upgrade.sh --agent claude-global
+```
+
+Upgrade the repo + CLI, then refresh a workspace-scoped Copilot install:
+
+```bash
+cd /path/to/switchbot-skill
+./scripts/upgrade.sh --agent copilot --workspace-path /path/to/workspace
+```
+
+Upgrade a Gemini or Codex global install:
+
+```bash
+cd /path/to/switchbot-skill
+./scripts/upgrade.sh --agent gemini-global
+# or
+./scripts/upgrade.sh --agent codex-global
+```
+
+Upgrade the staged OpenClaw preview layout:
+
+```bash
+cd /path/to/switchbot-skill
+./scripts/upgrade.sh --agent openclaw-staging --workspace-path /path/to/workspace
+```
+
+### CLI only
+
+If you only need to update the CLI and do not need to rewrite the agent files:
+
+```bash
+npm update -g @switchbot/openapi-cli
+switchbot --version
+```
+
+### Agent-driven upgrade
+
+For OpenClaw-like AI agents that can follow repo instructions, paste this and
+tell the agent which target to refresh:
+
+```text
+Retrieve and follow the instructions at:
+https://raw.githubusercontent.com/chenliuyun/switchbot-skill/main/INSTALL_FOR_AGENTS.md
+
+Upgrade my existing SwitchBot skill install for <agent-target> and update the CLI too.
+```
+
+Examples for `<agent-target>`: `copilot`, `cursor`, `gemini-global`,
+`codex-project`, `claude-global`, `openclaw-staging`.
+
+## Uninstall
+
+If you want a one-command uninstall, use the uninstall wrapper in `scripts/`.
+
+### PowerShell Uninstall
+
+Remove a global Claude Code install:
+
+```powershell
+Set-Location C:\path\to\switchbot-skill
+pwsh ./scripts/uninstall.ps1 -Agent claude-global
+```
+
+Remove a workspace-scoped Copilot install:
+
+```powershell
+Set-Location C:\path\to\switchbot-skill
+pwsh ./scripts/uninstall.ps1 -Agent copilot -WorkspacePath C:\path\to\workspace
+```
+
+Remove the staged OpenClaw preview layout:
+
+```powershell
+Set-Location C:\path\to\switchbot-skill
+pwsh ./scripts/uninstall.ps1 -Agent openclaw-staging -WorkspacePath C:\path\to\workspace
+```
+
+### Bash Uninstall
+
+Remove a global Claude Code install:
+
+```bash
+cd /path/to/switchbot-skill
+./scripts/uninstall.sh --agent claude-global
+```
+
+Remove a workspace-scoped Cursor rule:
+
+```bash
+cd /path/to/switchbot-skill
+./scripts/uninstall.sh --agent cursor --workspace-path /path/to/workspace
+```
+
+Remove the staged OpenClaw preview layout:
+
+```bash
+cd /path/to/switchbot-skill
+./scripts/uninstall.sh --agent openclaw-staging --workspace-path /path/to/workspace
+```
+
+### Optional cleanup
+
+Also remove the CLI, policy, audit log, or credentials:
+
+```bash
+./scripts/uninstall.sh --agent claude-global --remove-cli --remove-policy --remove-credentials
+```
+
+### After upgrading
+
+- restart the target agent or reopen the workspace
+- run `switchbot devices list` once to confirm the CLI still talks to your account
+- if your policy changed, run `switchbot policy validate`
+
 Recipe per agent:
 
 - **Claude Code** — [docs/agents/claude-code.md](./docs/agents/claude-code.md) *(native; no adaptation needed)*
@@ -335,7 +548,7 @@ All recipes assume the same prerequisite: `@switchbot/openapi-cli` is on `PATH` 
 .
 ├── README.md                     # You are here
 ├── SKILL.md                      # Agent-facing: authority, safety, bootstrap
-├── manifest.json                 # Claude Code skill + ClawHub plugin metadata
+├── manifest.json                 # Skill manifest + compatibility metadata
 ├── examples/
 │   ├── policy.example.yaml       # Copy-and-edit starting point
 │   └── policy.schema.json        # JSON Schema v0.2 for editor autocomplete
@@ -363,8 +576,7 @@ the patch version) and ship with a migration note in `CHANGELOG.md`.
 
 ## Contributing & support
 
-- File issues at <https://github.com/OpenWonderLabs/openclaw-switchbot-skill/issues>
-  (once the public repo is live).
+- File issues at <https://github.com/chenliuyun/switchbot-skill/issues>.
 - Do **not** open PRs against the CLI's documentation to fix skill-specific
   quirks — the CLI is the authoritative source; the skill adapts.
 

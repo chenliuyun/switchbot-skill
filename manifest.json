@@ -5,8 +5,8 @@
   "displayName": "SwitchBot",
   "description": "Control SwitchBot smart-home devices (lights, locks, curtains, sensors, plugs, IR appliances) from an AI agent. Drives the authoritative @switchbot/openapi-cli.",
   "license": "MIT",
-  "homepage": "https://github.com/OpenWonderLabs/openclaw-switchbot-skill",
-  "repository": "https://github.com/OpenWonderLabs/openclaw-switchbot-skill",
+  "homepage": "https://github.com/chenliuyun/switchbot-skill",
+  "repository": "https://github.com/chenliuyun/switchbot-skill",
   "keywords": [
     "switchbot",
     "smart-home",

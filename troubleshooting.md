@@ -123,7 +123,7 @@ head -5 ~/.claude/skills/switchbot/SKILL.md
 
 Expected:
 
-```
+```yaml
 ---
 name: switchbot
 description: Use when the user mentions SwitchBot devices...
@@ -326,7 +326,7 @@ does this cleanly.
 ## Reporting an issue
 
 When the sections above don't help, open an issue at
-<https://github.com/OpenWonderLabs/openclaw-switchbot-skill/issues>
+<https://github.com/chenliuyun/switchbot-skill/issues>
 and include:
 
 - OS + shell (e.g. "macOS 14.4 zsh", "Windows 11 PowerShell 7")

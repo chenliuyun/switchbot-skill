@@ -89,7 +89,7 @@ If any of those fails, the instruction file probably didn't load. Check the agen
 
 ## Something missing?
 
-If you use an agent that isn't covered here and the pattern wasn't obvious, file an issue at <https://github.com/OpenWonderLabs/openclaw-switchbot-skill/issues> with:
+If you use an agent that isn't covered here and the pattern wasn't obvious, file an issue at <https://github.com/chenliuyun/switchbot-skill/issues> with:
 
 - Agent name + version
 - Where its system-prompt / instruction file lives
