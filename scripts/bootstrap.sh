@@ -359,20 +359,20 @@ run_wizard() {
   echo ""
 
   # Patch policy.yaml using Node (already a verified prerequisite)
-  node - <<NODEJS_PATCH
+  QUIET_HOURS="$quiet_hours" LOCK_CONFIRM="$lock_confirm" node - <<'NODEJS_PATCH'
 const fs = require('fs');
 const path = process.env.SWITCHBOT_POLICY_PATH;
 let c = fs.readFileSync(path, 'utf8');
 
 // Quiet hours: uncomment and set start/end
-if ('$quiet_hours' === 'true') {
+if (process.env.QUIET_HOURS === 'true') {
   c = c.replace(/^\s*#\s*start:.*$/m, '  start: "22:00"');
   c = c.replace(/^\s*#\s*end:.*$/m, '  end: "07:00"');
 }
 
 // Lock/unlock confirmation
-if ('$lock_confirm' === 'true') {
-  c = c.replace(/^(\s*always_confirm:\s*\[)\]/m, '\$1"lock", "unlock"]');
+if (process.env.LOCK_CONFIRM === 'true') {
+  c = c.replace(/^(\s*always_confirm:\s*\[)\]/m, '$1"lock", "unlock"]');
 }
 
 fs.writeFileSync(path, c);
@@ -386,10 +386,10 @@ NODEJS_PATCH
     devices_json=$(switchbot devices list --json 2>/dev/null || echo '{"data":[]}')
 
     # Extract deviceId and name pairs with Node
-    node - <<ALIAS_PATCH
+    DEVICES_JSON="$devices_json" node - <<'ALIAS_PATCH'
 const fs = require('fs');
 const policyPath = process.env.SWITCHBOT_POLICY_PATH;
-const data = JSON.parse('$devices_json'.replace(/'/g, '"') || '{"data":[]}');
+const data = JSON.parse(process.env.DEVICES_JSON || '{"data":[]}');
 const devices = (data.data || []).slice(0, 12);
 if (!devices.length) { console.log('  No devices found.'); process.exit(0); }
 
@@ -443,8 +443,6 @@ fi
 # ─────────────────────────────────────────────
 # Done
 # ─────────────────────────────────────────────
-trap - EXIT  # disarm rollback — install succeeded
-
 trap - EXIT  # disarm rollback — install succeeded
 
 # ── Optional: register rules engine as a system service ──────────────────────

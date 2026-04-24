@@ -91,7 +91,7 @@ if (-not (Get-Command npm -ErrorAction SilentlyContinue)) {
 Write-Ok "Node $(node --version), npm $(npm --version)"
 
 # ─────────────────────────────────────────────
-# [2/6] Install SwitchBot CLI
+# [2/7] Install SwitchBot CLI
 # ─────────────────────────────────────────────
 Write-Step "[2/7] Installing SwitchBot CLI..."
 
@@ -109,7 +109,7 @@ if ($NoCli) {
 }
 
 # ─────────────────────────────────────────────
-# [3/6] Download skill files
+# [3/7] Download skill files
 # ─────────────────────────────────────────────
 Write-Step "[3/7] Downloading skill files..."
 
@@ -164,7 +164,7 @@ if ($ScriptDir -and (Test-Path (Join-Path $ScriptDir "..\SKILL.md"))) {
 }
 
 # ─────────────────────────────────────────────
-# [4/6] Detect agents and install skill
+# [4/7] Detect agents and install skill
 # ─────────────────────────────────────────────
 Write-Step "[4/7] Installing skill into detected agents..."
 
@@ -283,7 +283,7 @@ if ($SkipToken) {
 }
 
 # ─────────────────────────────────────────────
-# [6/6] Verify setup
+# [6/7] Verify setup
 # ─────────────────────────────────────────────
 Write-Step "[6/7] Verifying setup..."
 
@@ -314,25 +314,6 @@ if ($SkipVerify) {
     Write-Warn "Could not list devices — run 'switchbot devices list' manually."
   }
 }
-
-# ─────────────────────────────────────────────
-# Done
-# ─────────────────────────────────────────────
-Write-Host ""
-Write-Host "SwitchBot skill installed." -ForegroundColor Green
-Write-Host ""
-if ($DetectedAgents.Count -gt 0) {
-  Write-Host "  Installed for: $($DetectedAgents -join ', ')"
-}
-Write-Host ""
-Write-Host "  Next: Restart your agent, then try:"
-Write-Host "        `"List my SwitchBot devices`""
-Write-Host ""
-Write-Host "  Upgrade later:  pwsh scripts/upgrade.ps1"
-Write-Host "  Uninstall:      pwsh scripts/uninstall.ps1"
-
-if (-not $NonInteractive -and -not $DryRun) { Invoke-TelemetryOptIn }
-Send-Telemetry -Status "success" -AgentStr ($DetectedAgents -join ',')
 
 # ─────────────────────────────────────────────
 # [7/7] First-use wizard
@@ -414,6 +395,25 @@ if (-not $DryRun -and -not $NonInteractive) {
     Write-Host "  Run 'pwsh scripts/setup-daemon.ps1' later to set this up." -ForegroundColor DarkGray
   }
 }
+
+# ─────────────────────────────────────────────
+# Done
+# ─────────────────────────────────────────────
+Write-Host ""
+Write-Host "SwitchBot skill installed." -ForegroundColor Green
+Write-Host ""
+if ($DetectedAgents.Count -gt 0) {
+  Write-Host "  Installed for: $($DetectedAgents -join ', ')"
+}
+Write-Host ""
+Write-Host "  Next: Restart your agent, then try:"
+Write-Host "        `"List my SwitchBot devices`""
+Write-Host ""
+Write-Host "  Upgrade later:  pwsh scripts/upgrade.ps1"
+Write-Host "  Uninstall:      pwsh scripts/uninstall.ps1"
+
+if (-not $NonInteractive -and -not $DryRun) { Invoke-TelemetryOptIn }
+Send-Telemetry -Status "success" -AgentStr ($DetectedAgents -join ',')
 
 } catch {
   Send-Telemetry -Status "failed" -AgentStr "unknown"

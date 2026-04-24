@@ -7,9 +7,13 @@ on:
       - 'scripts/**'
       - 'SKILL.md'
       - 'examples/**'
+      - 'plugin/openclaw/**'
+      - 'policy-editor/**'
   pull_request:
     paths:
       - 'scripts/**'
+      - 'plugin/openclaw/**'
+      - 'policy-editor/**'
 
 jobs:
   install-unix:
@@ -138,3 +142,16 @@ jobs:
           $size = (Get-Item $path).Length
           if ($size -lt 100) { Write-Error "Skill file too small ($size bytes)"; exit 1 }
           Write-Host "Skill file content verified ($size bytes) ✓"
+      - name: Run uninstall
+        shell: pwsh
+        run: pwsh scripts/uninstall.ps1 --agent ${{ matrix.agent }} --force
+      - name: Verify skill files removed
+        shell: pwsh
+        run: |
+          $ok = switch ("${{ matrix.agent }}") {
+            "claude-global" { -not (Test-Path "$env:USERPROFILE\.claude\skills\switchbot") }
+            "gemini-global" { -not (Test-Path "$env:USERPROFILE\.gemini\GEMINI.md") }
+            "codex-global"  { -not (Test-Path "$env:USERPROFILE\.codex\AGENTS.md") }
+          }
+          if (-not $ok) { exit 1 }
+          Write-Host "Skill file removed ✓"

@@ -22,8 +22,17 @@ export function startEditorServer({ port = 18799, dryRun = false } = {}) {
       res.end(content);
     } else if (req.method === 'POST' && req.url === '/policy') {
       let body = '';
-      req.on('data', c => { body += c; });
+      const MAX_BYTES = 512 * 1024; // 512 KB — policy.yaml should never exceed this
+      req.on('data', c => {
+        if (body.length + c.length > MAX_BYTES) {
+          res.writeHead(413); res.end('payload too large');
+          req.destroy();
+          return;
+        }
+        body += c;
+      });
       req.on('end', () => {
+        if (res.headersSent) return;
         if (!dryRun) {
           fs.mkdirSync(path.dirname(POLICY_PATH), { recursive: true });
           fs.writeFileSync(POLICY_PATH, body, 'utf8');
