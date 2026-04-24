@@ -53,6 +53,25 @@ jobs:
             codex-global)  test -f "$HOME/.codex/AGENTS.md" ;;
           esac
           echo "Skill file present ✓"
+      - name: Verify skill file content
+        run: |
+          case "${{ matrix.agent }}" in
+            claude-global)
+              skill_file="$HOME/.claude/skills/switchbot/SKILL.md"
+              size=$(wc -c < "$skill_file")
+              [ "$size" -gt 100 ] || { echo "SKILL.md too small ($size bytes)"; exit 1; }
+              grep -q "switchbot" "$skill_file" || { echo "SKILL.md missing expected content"; exit 1; }
+              ;;
+            gemini-global)
+              size=$(wc -c < "$HOME/.gemini/GEMINI.md")
+              [ "$size" -gt 100 ] || { echo "GEMINI.md too small ($size bytes)"; exit 1; }
+              ;;
+            codex-global)
+              size=$(wc -c < "$HOME/.codex/AGENTS.md")
+              [ "$size" -gt 100 ] || { echo "AGENTS.md too small ($size bytes)"; exit 1; }
+              ;;
+          esac
+          echo "Skill file content verified ✓"
       - name: Run uninstall
         run: bash scripts/uninstall.sh --agent ${{ matrix.agent }} --force
       - name: Verify skill files removed
@@ -108,3 +127,14 @@ jobs:
           }
           if (-not $ok) { exit 1 }
           Write-Host "Skill file present ✓"
+      - name: Verify skill file content
+        shell: pwsh
+        run: |
+          $path = switch ("${{ matrix.agent }}") {
+            "claude-global" { "$env:USERPROFILE\.claude\skills\switchbot\SKILL.md" }
+            "gemini-global" { "$env:USERPROFILE\.gemini\GEMINI.md" }
+            "codex-global"  { "$env:USERPROFILE\.codex\AGENTS.md" }
+          }
+          $size = (Get-Item $path).Length
+          if ($size -lt 100) { Write-Error "Skill file too small ($size bytes)"; exit 1 }
+          Write-Host "Skill file content verified ($size bytes) ✓"
