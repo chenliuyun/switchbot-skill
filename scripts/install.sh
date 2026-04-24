@@ -27,7 +27,6 @@ Agents:
   gemini-project  Write <workspace>/GEMINI.md
   codex-global    Write ~/.codex/AGENTS.md
   codex-project   Write <workspace>/AGENTS.md
-  openclaw-staging Stage a future plugin layout under <workspace>/.openclaw/staging/plugins/switchbot
 
 Notes:
   - This script automates today's file-based installs. It does not publish the
@@ -76,7 +75,7 @@ while [[ $# -gt 0 ]]; do
 done
 
 case "$agent" in
-  claude-global|claude-project|copilot|cursor|cursor-legacy|gemini-global|gemini-project|codex-global|codex-project|openclaw-staging)
+  claude-global|claude-project|copilot|cursor|cursor-legacy|gemini-global|gemini-project|codex-global|codex-project)
     ;;
   *)
     echo "Unsupported agent target: $agent" >&2
@@ -140,29 +139,31 @@ remove_existing_path() {
 
 copy_skill_tree() {
   local destination="$1"
+  local source="${2:-$repo_root}"
 
   remove_existing_path "$destination"
   mkdir -p "$destination"
-  find "$repo_root" -mindepth 1 -maxdepth 1 ! -name .git -exec cp -R {} "$destination/" \;
+  find "$source" -mindepth 1 -maxdepth 1 ! -name .git -exec cp -R {} "$destination/" \;
 }
 
 link_or_copy_skill_tree() {
   local destination="$1"
+  local source="${2:-$repo_root}"
 
   remove_existing_path "$destination"
   mkdir -p "$(dirname "$destination")"
 
   if [[ "$mode" == "copy" ]]; then
-    copy_skill_tree "$destination"
+    copy_skill_tree "$destination" "$source"
     return
   fi
 
-  if ln -s "$repo_root" "$destination" 2>/dev/null; then
+  if ln -s "$source" "$destination" 2>/dev/null; then
     return
   fi
 
   echo "Symlink creation failed; falling back to copy mode." >&2
-  copy_skill_tree "$destination"
+  copy_skill_tree "$destination" "$source"
 }
 
 if [[ "$install_cli" == "true" ]]; then
@@ -246,12 +247,6 @@ case "$agent" in
     destination="$workspace_path/AGENTS.md"
     strip_frontmatter | write_file "$destination"
     echo "Installed Codex project instructions at $destination"
-    ;;
-  openclaw-staging)
-    require_workspace_path
-    destination="$workspace_path/.openclaw/staging/plugins/switchbot"
-    link_or_copy_skill_tree "$destination"
-    echo "Staged OpenClaw plugin preview at $destination"
     ;;
 esac
 

@@ -1,0 +1,156 @@
+name: Install Matrix
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/**'
+      - 'SKILL.md'
+      - 'examples/**'
+      - 'plugin/openclaw/**'
+      - 'policy-editor/**'
+  pull_request:
+    paths:
+      - 'scripts/**'
+      - 'plugin/openclaw/**'
+      - 'policy-editor/**'
+
+jobs:
+  install-unix:
+    name: ${{ matrix.agent }} on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+        agent:
+          - claude-global
+          - gemini-global
+          - codex-global
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Create switchbot stub
+        run: |
+          mkdir -p "$HOME/.local/bin"
+          printf '#!/bin/sh\necho "3.0.0"\n' > "$HOME/.local/bin/switchbot"
+          chmod +x "$HOME/.local/bin/switchbot"
+          echo "$HOME/.local/bin" >> "$GITHUB_PATH"
+      - name: Create agent dir
+        run: |
+          case "${{ matrix.agent }}" in
+            claude-global)  mkdir -p "$HOME/.claude" ;;
+            gemini-global)  mkdir -p "$HOME/.gemini" ;;
+            codex-global)   mkdir -p "$HOME/.codex" ;;
+          esac
+      - name: Run bootstrap (dry-run)
+        run: bash scripts/bootstrap.sh --dry-run --skip-token --skip-verify
+      - name: Run bootstrap (real, skip token + verify)
+        run: bash scripts/bootstrap.sh --yes --skip-token --skip-verify --no-cli
+      - name: Verify skill files exist
+        run: |
+          case "${{ matrix.agent }}" in
+            claude-global) test -e "$HOME/.claude/skills/switchbot/SKILL.md" ;;
+            gemini-global) test -f "$HOME/.gemini/GEMINI.md" ;;
+            codex-global)  test -f "$HOME/.codex/AGENTS.md" ;;
+          esac
+          echo "Skill file present ✓"
+      - name: Verify skill file content
+        run: |
+          case "${{ matrix.agent }}" in
+            claude-global)
+              skill_file="$HOME/.claude/skills/switchbot/SKILL.md"
+              size=$(wc -c < "$skill_file")
+              [ "$size" -gt 100 ] || { echo "SKILL.md too small ($size bytes)"; exit 1; }
+              grep -q "switchbot" "$skill_file" || { echo "SKILL.md missing expected content"; exit 1; }
+              ;;
+            gemini-global)
+              size=$(wc -c < "$HOME/.gemini/GEMINI.md")
+              [ "$size" -gt 100 ] || { echo "GEMINI.md too small ($size bytes)"; exit 1; }
+              ;;
+            codex-global)
+              size=$(wc -c < "$HOME/.codex/AGENTS.md")
+              [ "$size" -gt 100 ] || { echo "AGENTS.md too small ($size bytes)"; exit 1; }
+              ;;
+          esac
+          echo "Skill file content verified ✓"
+      - name: Run uninstall
+        run: bash scripts/uninstall.sh --agent ${{ matrix.agent }} --force
+      - name: Verify skill files removed
+        run: |
+          case "${{ matrix.agent }}" in
+            claude-global) test ! -e "$HOME/.claude/skills/switchbot" ;;
+            gemini-global) test ! -f "$HOME/.gemini/GEMINI.md" ;;
+            codex-global)  test ! -f "$HOME/.codex/AGENTS.md" ;;
+          esac
+          echo "Skill file removed ✓"
+
+  install-windows:
+    name: ${{ matrix.agent }} on windows-latest
+    runs-on: windows-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        agent: [claude-global, gemini-global, codex-global]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Create switchbot stub
+        shell: pwsh
+        run: |
+          $stubDir = "$env:USERPROFILE\.local\bin"
+          New-Item -ItemType Directory -Force $stubDir | Out-Null
+          Set-Content "$stubDir\switchbot.cmd" "@echo off`necho 3.0.0"
+          Add-Content -Path $env:GITHUB_PATH -Value $stubDir
+      - name: Create agent dir
+        shell: pwsh
+        run: |
+          switch ("${{ matrix.agent }}") {
+            "claude-global" { New-Item -ItemType Directory -Force "$env:USERPROFILE\.claude" | Out-Null }
+            "gemini-global" { New-Item -ItemType Directory -Force "$env:USERPROFILE\.gemini" | Out-Null }
+            "codex-global"  { New-Item -ItemType Directory -Force "$env:USERPROFILE\.codex"  | Out-Null }
+          }
+      - name: Run bootstrap dry-run
+        shell: pwsh
+        run: pwsh scripts/bootstrap.ps1 -DryRun -SkipToken -SkipVerify
+      - name: Run bootstrap real
+        shell: pwsh
+        run: pwsh scripts/bootstrap.ps1 -Yes -SkipToken -SkipVerify -NoCli
+      - name: Verify skill files
+        shell: pwsh
+        run: |
+          $ok = switch ("${{ matrix.agent }}") {
+            "claude-global" { Test-Path "$env:USERPROFILE\.claude\skills\switchbot\SKILL.md" }
+            "gemini-global" { Test-Path "$env:USERPROFILE\.gemini\GEMINI.md" }
+            "codex-global"  { Test-Path "$env:USERPROFILE\.codex\AGENTS.md" }
+          }
+          if (-not $ok) { exit 1 }
+          Write-Host "Skill file present ✓"
+      - name: Verify skill file content
+        shell: pwsh
+        run: |
+          $path = switch ("${{ matrix.agent }}") {
+            "claude-global" { "$env:USERPROFILE\.claude\skills\switchbot\SKILL.md" }
+            "gemini-global" { "$env:USERPROFILE\.gemini\GEMINI.md" }
+            "codex-global"  { "$env:USERPROFILE\.codex\AGENTS.md" }
+          }
+          $size = (Get-Item $path).Length
+          if ($size -lt 100) { Write-Error "Skill file too small ($size bytes)"; exit 1 }
+          Write-Host "Skill file content verified ($size bytes) ✓"
+      - name: Run uninstall
+        shell: pwsh
+        run: pwsh scripts/uninstall.ps1 --agent ${{ matrix.agent }} --force
+      - name: Verify skill files removed
+        shell: pwsh
+        run: |
+          $ok = switch ("${{ matrix.agent }}") {
+            "claude-global" { -not (Test-Path "$env:USERPROFILE\.claude\skills\switchbot") }
+            "gemini-global" { -not (Test-Path "$env:USERPROFILE\.gemini\GEMINI.md") }
+            "codex-global"  { -not (Test-Path "$env:USERPROFILE\.codex\AGENTS.md") }
+          }
+          if (-not $ok) { exit 1 }
+          Write-Host "Skill file removed ✓"
