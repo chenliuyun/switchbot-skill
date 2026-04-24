@@ -1,0 +1,24 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "name": "switchbot",
+  "version": "0.5.0",
+  "displayName": "SwitchBot OpenClaw Preview Plugin",
+  "description": "Preview plugin bundle for OpenClaw-style agents. Stages a status-sync channel wrapper that forwards SwitchBot MQTT events into the OpenClaw gateway via @switchbot/openapi-cli.",
+  "pluginMode": "preview",
+  "entrypoint": "README.md",
+  "requires": {
+    "cli": "@switchbot/openapi-cli@>=3.0.0 <4.0.0"
+  },
+  "channels": [
+    {
+      "id": "switchbot-status-sync",
+      "kind": "process-preview",
+      "description": "Runs switchbot events mqtt-tail and forwards device shadow events to the OpenClaw gateway.",
+      "launcher": {
+        "posix": "scripts/run-status-sync.sh",
+        "windows": "scripts/run-status-sync.ps1"
+      },
+      "template": "channels/switchbot-status-sync.channel.json"
+    }
+  ]
+}

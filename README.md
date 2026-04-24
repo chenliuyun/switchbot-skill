@@ -403,6 +403,7 @@ What the scripts do:
 - generate front-matter-free instruction files for Copilot, Gemini, and Codex
 - generate a ready-to-load `.mdc` rule for Cursor
 - stage a future plugin preview under `<workspace>/.openclaw/staging/plugins/switchbot`
+- include a status-sync channel launcher that wraps the CLI's `switchbot status-sync` commands
 - optionally install `@switchbot/openapi-cli`
 - optionally create and validate `~/.config/openclaw/switchbot/policy.yaml`
 
@@ -471,6 +472,32 @@ Upgrade the staged OpenClaw preview layout:
 cd /path/to/switchbot-skill
 ./scripts/upgrade.sh --agent openclaw-staging --workspace-path /path/to/workspace
 ```
+
+The staged preview plugin includes a channel launcher at:
+
+- `<workspace>/.openclaw/staging/plugins/switchbot/scripts/run-status-sync.ps1`
+- `<workspace>/.openclaw/staging/plugins/switchbot/scripts/run-status-sync.sh`
+
+That launcher uses the CLI's built-in OpenClaw sink to push MQTT shadow events
+into the agent gateway. Export `OPENCLAW_TOKEN` and `OPENCLAW_MODEL` before
+starting it.
+
+The preview scripts now delegate lifecycle management to the CLI's formal
+`switchbot status-sync run|start|stop|status` commands instead of carrying a
+separate PID/log implementation in the skill repo.
+
+For manual lifecycle management outside an agent supervisor, the staged preview
+also includes:
+
+- `<workspace>/.openclaw/staging/plugins/switchbot/scripts/start-status-sync.*`
+- `<workspace>/.openclaw/staging/plugins/switchbot/scripts/stop-status-sync.*`
+- `<workspace>/.openclaw/staging/plugins/switchbot/scripts/status-status-sync.*`
+
+`start-status-sync` runs the bridge in the background, `status-status-sync`
+reports PID/log paths, and `stop-status-sync` terminates it.
+
+For a real-machine MQTT -> OpenClaw verification flow with actual credentials,
+see [docs/openclaw-status-sync-e2e.md](./docs/openclaw-status-sync-e2e.md).
 
 ### CLI only
 

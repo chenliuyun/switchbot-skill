@@ -96,6 +96,7 @@ esac
 repo_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 skill_file="$repo_root/SKILL.md"
 policy_path="$HOME/.config/openclaw/switchbot/policy.yaml"
+openclaw_bundle_root="$repo_root/plugin/openclaw-staging"
 
 require_workspace_path() {
   if [[ -z "$workspace_path" ]]; then
@@ -140,29 +141,31 @@ remove_existing_path() {
 
 copy_skill_tree() {
   local destination="$1"
+  local source="${2:-$repo_root}"
 
   remove_existing_path "$destination"
   mkdir -p "$destination"
-  find "$repo_root" -mindepth 1 -maxdepth 1 ! -name .git -exec cp -R {} "$destination/" \;
+  find "$source" -mindepth 1 -maxdepth 1 ! -name .git -exec cp -R {} "$destination/" \;
 }
 
 link_or_copy_skill_tree() {
   local destination="$1"
+  local source="${2:-$repo_root}"
 
   remove_existing_path "$destination"
   mkdir -p "$(dirname "$destination")"
 
   if [[ "$mode" == "copy" ]]; then
-    copy_skill_tree "$destination"
+    copy_skill_tree "$destination" "$source"
     return
   fi
 
-  if ln -s "$repo_root" "$destination" 2>/dev/null; then
+  if ln -s "$source" "$destination" 2>/dev/null; then
     return
   fi
 
   echo "Symlink creation failed; falling back to copy mode." >&2
-  copy_skill_tree "$destination"
+  copy_skill_tree "$destination" "$source"
 }
 
 if [[ "$install_cli" == "true" ]]; then
@@ -250,7 +253,7 @@ case "$agent" in
   openclaw-staging)
     require_workspace_path
     destination="$workspace_path/.openclaw/staging/plugins/switchbot"
-    link_or_copy_skill_tree "$destination"
+    link_or_copy_skill_tree "$destination" "$openclaw_bundle_root"
     echo "Staged OpenClaw plugin preview at $destination"
     ;;
 esac

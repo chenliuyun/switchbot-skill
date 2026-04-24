@@ -64,6 +64,7 @@ if ($Help) {
 $repoRoot = Split-Path -Parent $PSScriptRoot
 $skillPath = Join-Path $repoRoot 'SKILL.md'
 $policyPath = Join-Path $HOME '.config/openclaw/switchbot/policy.yaml'
+$openClawBundleRoot = Join-Path $repoRoot 'plugin/openclaw-staging'
 
 function Get-SkillBody {
   $content = Get-Content -Raw -LiteralPath $skillPath
@@ -131,12 +132,15 @@ function Write-Utf8File {
 }
 
 function Copy-SkillTree {
-  param([string]$Destination)
+  param(
+    [string]$Destination,
+    [string]$Source = $repoRoot
+  )
 
   Remove-ExistingPath -Path $Destination
   New-Item -ItemType Directory -Path $Destination -Force | Out-Null
 
-  Get-ChildItem -LiteralPath $repoRoot -Force |
+  Get-ChildItem -LiteralPath $Source -Force |
     Where-Object { $_.Name -ne '.git' } |
     ForEach-Object {
       Copy-Item -LiteralPath $_.FullName -Destination $Destination -Recurse -Force
@@ -144,22 +148,25 @@ function Copy-SkillTree {
 }
 
 function Link-OrCopySkillTree {
-  param([string]$Destination)
+  param(
+    [string]$Destination,
+    [string]$Source = $repoRoot
+  )
 
   Remove-ExistingPath -Path $Destination
   Ensure-ParentDirectory -Path $Destination
 
   if ($Mode -eq 'copy') {
-    Copy-SkillTree -Destination $Destination
+    Copy-SkillTree -Destination $Destination -Source $Source
     return
   }
 
   try {
-    New-Item -ItemType SymbolicLink -Path $Destination -Target $repoRoot -Force | Out-Null
+    New-Item -ItemType SymbolicLink -Path $Destination -Target $Source -Force | Out-Null
   }
   catch {
     Write-Warning 'Symbolic link creation failed; falling back to copy mode.'
-    Copy-SkillTree -Destination $Destination
+    Copy-SkillTree -Destination $Destination -Source $Source
   }
 }
 
@@ -247,7 +254,7 @@ switch ($Agent) {
   'openclaw-staging' {
     $workspaceRoot = Require-WorkspacePath
     $destination = Join-Path $workspaceRoot '.openclaw/staging/plugins/switchbot'
-    Link-OrCopySkillTree -Destination $destination
+    Link-OrCopySkillTree -Destination $destination -Source $openClawBundleRoot
     Write-Host "Staged OpenClaw plugin preview at $destination"
   }
 }

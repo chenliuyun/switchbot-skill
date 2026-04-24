@@ -98,6 +98,7 @@ What the installer does:
 - writes front-matter-free instruction files for Copilot, Gemini, and Codex
 - writes a ready-to-load `.mdc` rule for Cursor
 - stages a future plugin preview under `<workspace>/.openclaw/staging/plugins/switchbot`
+- includes a foreground status-sync runner plus start/stop/status wrappers around the CLI's `switchbot status-sync` commands
 - optionally installs `@switchbot/openapi-cli`
 - optionally creates and validates `~/.config/openclaw/switchbot/policy.yaml`
 
@@ -155,13 +156,26 @@ Expected behavior:
 ## Step 7: Optional OpenClaw-aware event flow
 
 If the user wants live events into an OpenClaw-aware setup, the CLI can forward
-MQTT events to a local gateway:
+MQTT events to a local gateway via the formal status-sync command family:
 
 ```bash
-switchbot events mqtt-tail --sink openclaw --openclaw-url http://localhost:18789 --openclaw-token "$OPENCLAW_TOKEN"
+switchbot status-sync run --openclaw-url http://localhost:18789 --openclaw-token "$OPENCLAW_TOKEN"
 ```
 
 This is optional. It is not the same thing as a published OpenClaw plugin.
+
+If the user installed the `openclaw-staging` target, the staged plugin preview
+also includes a channel launcher and a preview channel definition file:
+
+- `.openclaw/staging/plugins/switchbot/scripts/run-status-sync.*`
+- `.openclaw/staging/plugins/switchbot/channels/switchbot-status-sync.channel.json`
+- `.openclaw/staging/plugins/switchbot/scripts/start-status-sync.*`
+- `.openclaw/staging/plugins/switchbot/scripts/stop-status-sync.*`
+- `.openclaw/staging/plugins/switchbot/scripts/status-status-sync.*`
+
+Those files let an OpenClaw-style agent supervisor start a long-running status
+push process that forwards MQTT shadow updates into the gateway, or let a user
+manage that process manually from the shell.
 
 ## Upgrade
 

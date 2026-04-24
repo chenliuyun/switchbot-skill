@@ -1,0 +1,36 @@
+{
+  "id": "switchbot-status-sync",
+  "displayName": "SwitchBot Status Sync",
+  "kind": "process-preview",
+  "description": "Preview channel definition that forwards SwitchBot MQTT shadow events into the OpenClaw gateway.",
+  "launch": {
+    "windows": {
+      "command": "pwsh",
+      "args": [
+        "-NoProfile",
+        "-File",
+        "${pluginRoot}/scripts/run-status-sync.ps1"
+      ]
+    },
+    "posix": {
+      "command": "bash",
+      "args": [
+        "${pluginRoot}/scripts/run-status-sync.sh"
+      ]
+    }
+  },
+  "requiredEnv": [
+    "OPENCLAW_TOKEN",
+    "OPENCLAW_MODEL"
+  ],
+  "optionalEnv": [
+    "OPENCLAW_URL",
+    "SWITCHBOT_MQTT_TOPIC"
+  ],
+  "notes": [
+    "Requires @switchbot/openapi-cli 3.0.0+ on PATH.",
+    "Requires switchbot config set-token to have been completed already.",
+    "Uses the CLI's built-in openclaw sink rather than a separate MQTT bridge.",
+    "Use start-status-sync / stop-status-sync / status-status-sync for manual process management."
+  ]
+}
