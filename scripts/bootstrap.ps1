@@ -180,16 +180,16 @@ function Get-DetectedAgents {
     return
   }
 
-  $home = $env:USERPROFILE ?? $env:HOME
-  if (Test-Path (Join-Path $home ".claude"))                       { $DetectedAgents.Add("claude-global") }
-  if (Test-Path (Join-Path $home ".gemini"))                       { $DetectedAgents.Add("gemini-global") }
-  if (Test-Path (Join-Path $home ".codex"))                        { $DetectedAgents.Add("codex-global") }
+  $homeDir = $env:USERPROFILE ?? $env:HOME
+  if (Test-Path (Join-Path $homeDir ".claude"))                       { $DetectedAgents.Add("claude-global") }
+  if (Test-Path (Join-Path $homeDir ".gemini"))                       { $DetectedAgents.Add("gemini-global") }
+  if (Test-Path (Join-Path $homeDir ".codex"))                        { $DetectedAgents.Add("codex-global") }
 
   # cursor and Copilot both need -WorkspacePath; skip with a hint
-  if (Test-Path (Join-Path $home ".cursor")) {
+  if (Test-Path (Join-Path $homeDir ".cursor")) {
     Write-Warn "Cursor detected — skipping (requires -WorkspacePath; run install.ps1 manually)"
   }
-  $copilotDir = Join-Path $home ".config\github-copilot"
+  $copilotDir = Join-Path $homeDir ".config\github-copilot"
   if (Test-Path $copilotDir) {
     Write-Warn "GitHub Copilot detected — skipping (requires -WorkspacePath; run install.ps1 manually)"
   }
@@ -204,11 +204,11 @@ Get-DetectedAgents
 
 function Get-DestinationPath {
   param([string]$AgentTarget)
-  $home = $env:USERPROFILE ?? $env:HOME
+  $homeDir = $env:USERPROFILE ?? $env:HOME
   switch ($AgentTarget) {
-    "claude-global"  { return Join-Path $home ".claude\skills\switchbot" }
-    "gemini-global"  { return Join-Path $home ".gemini\GEMINI.md" }
-    "codex-global"   { return Join-Path $home ".codex\AGENTS.md" }
+    "claude-global"  { return Join-Path $homeDir ".claude\skills\switchbot" }
+    "gemini-global"  { return Join-Path $homeDir ".gemini\GEMINI.md" }
+    "codex-global"   { return Join-Path $homeDir ".codex\AGENTS.md" }
     default          { return "" }
   }
 }
