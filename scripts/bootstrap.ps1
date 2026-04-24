@@ -233,6 +233,7 @@ foreach ($ag in $DetectedAgents) {
   if ($Force) { $installArgs += "-Force" }
 
   & pwsh -File $installerScript @installArgs
+  if ($LASTEXITCODE -ne 0) { throw "install.ps1 failed for agent '$ag' (exit $LASTEXITCODE)" }
 
   # Only track freshly created paths; don't rollback pre-existing user files
   if (-not $preExisted -and $dest) { $InstalledPaths.Add($dest) }
