@@ -1,0 +1,27 @@
+# OS
+.DS_Store
+Thumbs.db
+
+# Editors
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Claude Code local session state
+.claude/
+
+# Dogfood / local runs
+.dogfood/
+*.log
+audit.log
+
+# User-specific policy files (anything outside examples/ that's private)
+policy.local.yaml
+policy.yaml
+!examples/*.yaml
+
+# Node (in case we add schema tooling later)
+node_modules/
+dist/
+*.tsbuildinfo

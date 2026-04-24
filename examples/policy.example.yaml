@@ -1,0 +1,118 @@
+# ============================================================================
+#  OpenClaw SwitchBot policy — example
+# ============================================================================
+#  Copy this file to your user config directory and edit it:
+#
+#    mkdir -p ~/.config/openclaw/switchbot
+#    cp policy.example.yaml ~/.config/openclaw/switchbot/policy.yaml
+#
+#  Every section is OPTIONAL. If a field isn't set, the skill falls back to
+#  a safe default (documented next to each field).
+#
+#  The skill reads this file before every session. It never writes to it
+#  without showing you the diff and asking first.
+# ============================================================================
+
+# Schema version. Do not remove this line — `switchbot policy validate` uses it.
+# Run `switchbot policy migrate` to upgrade from v0.1.
+version: "0.2"
+
+# ----------------------------------------------------------------------------
+# aliases  —  friendly names the agent can resolve to real devices
+# ----------------------------------------------------------------------------
+# The #1 reason to have a policy file. Without aliases, the agent has to
+# guess which device you mean when you say "the bedroom light", and it can
+# guess wrong if two devices have similar names.
+#
+# Get each deviceId from:
+#   switchbot devices list --format=tsv
+#
+# The format is:  "what the user says": "<deviceId>"
+# Quote the key if it contains spaces or non-ASCII characters.
+aliases:
+  # "living room light": "01-202407090924-26354212"
+  # "bedroom AC":        "02-202502111234-85411230"
+  # "front door lock":   "03-202501201700-99887766"
+  # "kitchen plug":      "04-202503081500-55443322"
+
+# ----------------------------------------------------------------------------
+# confirmations  —  which actions require explicit user approval
+# ----------------------------------------------------------------------------
+# The skill already refuses destructive actions (locks, deletions) by
+# default. Use this section to adjust the defaults for your account.
+#
+# always_confirm: extra actions that need confirmation even though they
+#                 wouldn't by default (e.g. you never want the agent to
+#                 turn on the AC without asking).
+# never_confirm:  actions that normally confirm but you trust (NEVER add
+#                 destructive actions here — the skill will reject that).
+confirmations:
+  always_confirm:
+    # - "setTargetTemperature"
+    # - "setThermostatMode"
+
+  never_confirm:
+    # - "turnOn"
+    # - "turnOff"
+
+# ----------------------------------------------------------------------------
+# quiet_hours  —  during these hours, every mutation requires confirmation
+# ----------------------------------------------------------------------------
+# Times are 24-hour, local system time. If omitted, no quiet hours apply.
+quiet_hours:
+  # start: "22:00"
+  # end:   "08:00"
+
+# ----------------------------------------------------------------------------
+# audit  —  where to log every action the agent takes
+# ----------------------------------------------------------------------------
+# The skill ALWAYS logs mutations and destructive actions. This section
+# controls where the log goes and how long it's kept.
+audit:
+  # Path for the audit log. "~" is expanded. JSON Lines format.
+  log_path: "~/.switchbot/audit.log"
+
+  # How long to keep log lines. "never" disables rotation. Accepts units:
+  # d (days), w (weeks), m (months). Default: "90d".
+  retention: "90d"
+
+# ----------------------------------------------------------------------------
+# automation  —  rule engine (policy v0.2, CLI ≥ 2.9.0)
+# ----------------------------------------------------------------------------
+# Rules fire on MQTT events, cron schedules, or webhook calls.
+# Set `enabled: true` and define rules to activate the engine.
+# Start with `dry_run: true` on each rule — the engine logs firings to
+# audit.log without touching devices, so you can verify before arming.
+automation:
+  enabled: false
+  rules: []
+  # Example 1 — motion-triggered light with overnight + weekday filter:
+  # - name: "hallway motion on weeknights"
+  #   when: { source: mqtt, event: motion.detected, device: "hallway sensor" }
+  #   conditions:
+  #     - time_between: ["22:00", "07:00"]
+  #     - any:
+  #         - { device: "hallway lamp", field: "power", op: "==", value: "off" }
+  #   then:
+  #     - { command: "devices command <id> turnOn", device: "hallway lamp" }
+  #   throttle: { max_per: "10m" }
+  #   dry_run: true
+  #
+  # Example 2 — cron rule with weekday filter:
+  # - name: "morning AC on weekdays"
+  #   when: { source: cron, schedule: "0 7 * * *", days: [mon, tue, wed, thu, fri] }
+  #   then:
+  #     - { command: "devices command <id> turnOn", device: "bedroom AC" }
+  #   dry_run: true
+
+# ----------------------------------------------------------------------------
+# cli  —  optional CLI-level overrides
+# ----------------------------------------------------------------------------
+cli:
+  # Which profile to use if you have multiple SwitchBot accounts. The CLI
+  # supports `switchbot --profile <name>`. Default: "default".
+  profile: "default"
+
+  # Device cache TTL. The skill refreshes the cache when it's older than
+  # this. Defaults to the CLI's own default (typically 5 minutes).
+  # cache_ttl: "5m"

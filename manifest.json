@@ -1,0 +1,67 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "name": "switchbot",
+  "version": "0.5.0",
+  "displayName": "SwitchBot",
+  "description": "Control SwitchBot smart-home devices (lights, locks, curtains, sensors, plugs, IR appliances) from an AI agent. Drives the authoritative @switchbot/openapi-cli.",
+  "license": "MIT",
+  "homepage": "https://github.com/OpenWonderLabs/openclaw-switchbot-skill",
+  "repository": "https://github.com/OpenWonderLabs/openclaw-switchbot-skill",
+  "keywords": [
+    "switchbot",
+    "smart-home",
+    "iot",
+    "home-automation",
+    "skill",
+    "openclaw"
+  ],
+  "categories": [
+    "smart-home",
+    "device-control"
+  ],
+  "entrypoint": "SKILL.md",
+  "authority": {
+    "cli": "@switchbot/openapi-cli@>=2.13.0 <3.0.0",
+    "apiVersion": "v1.1",
+    "apiDocs": "https://github.com/OpenWonderLabs/SwitchBotAPI"
+  },
+  "policy": {
+    "location": "~/.config/openclaw/switchbot/policy.yaml",
+    "schema": "./examples/policy.schema.json",
+    "version": "0.2"
+  },
+  "capabilities": {
+    "safetyTiers": [
+      "read",
+      "ir-fire-forget",
+      "mutation",
+      "destructive",
+      "maintenance"
+    ],
+    "productCategories": [
+      "lights (bulbs / strips / color)",
+      "locks / keypads",
+      "curtains / blinds / shades",
+      "sensors (motion / contact / climate / water-leak)",
+      "plugs / strips",
+      "bots / mechanical pushers",
+      "robot vacuums",
+      "IR appliances via Hub (TV / AC / fan / projector)"
+    ]
+  },
+  "requirements": {
+    "node": ">=18",
+    "operatingSystems": ["macos", "linux", "windows"]
+  },
+  "companionPlugin": {
+    "planned": "clawhub:switchbot",
+    "status": "not-yet-published",
+    "phase": "3B"
+  },
+  "roadmap": {
+    "source": "https://github.com/OpenWonderLabs/switchbot-openapi-cli/blob/main/docs/design/roadmap.md",
+    "tracksCliPhase": ">=4",
+    "autonomyLevel": "L3",
+    "notes": "Skill packaging is orthogonal to the CLI's phase numbering. autonomyLevel L3 means 'fully autonomous inside the policy envelope': the skill can draft a rule from intent via `rules suggest`, inject it into policy.yaml via `policy add-rule`, lint, reload, and guide the dry-run→arm transition — all without manual policy.yaml editing. L1 (single command) and L2 (plan suggest + --require-approval) remain available. See the CLI repo's roadmap.md for the authoritative phase and autonomy level definitions."
+  }
+}
