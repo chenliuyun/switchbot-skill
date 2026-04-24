@@ -1,0 +1,15 @@
+{
+  "schemaVersion": "1.0",
+  "id": "switchbot",
+  "displayName": "SwitchBot",
+  "description": "Control SwitchBot smart-home devices via MCP tools",
+  "transport": "stdio",
+  "launcher": {
+    "command": "node",
+    "args": ["${pluginDir}/bin/start.js"]
+  },
+  "capabilities": {
+    "tools": true,
+    "systemPrompt": true
+  }
+}

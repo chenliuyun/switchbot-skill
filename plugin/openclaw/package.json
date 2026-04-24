@@ -1,0 +1,29 @@
+{
+  "name": "@switchbot/openclaw-skill",
+  "version": "0.5.0",
+  "type": "module",
+  "description": "SwitchBot smart-home skill for OpenClaw",
+  "main": "index.js",
+  "bin": {
+    "switchbot-openclaw": "./bin/start.js",
+    "switchbot-policy-edit": "./bin/policy-edit.js"
+  },
+  "keywords": ["openclaw", "switchbot", "mcp", "smart-home"],
+  "license": "MIT",
+  "engines": { "node": ">=18" },
+  "dependencies": {},
+  "peerDependencies": {
+    "@switchbot/openapi-cli": ">=3.0.0"
+  },
+  "files": [
+    "index.js",
+    "tools/",
+    "channels/",
+    "bin/",
+    "cli.js"
+  ],
+  "scripts": {
+    "test": "node --test tests/**/*.test.js",
+    "start": "node bin/start.js"
+  }
+}
