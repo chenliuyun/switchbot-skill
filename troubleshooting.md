@@ -224,25 +224,22 @@ ls ~/.config/openclaw/switchbot/policy.yaml   # should exist
 
 ### Valid YAML and valid schema?
 
-With CLI ≥ 2.8.0 (recommended):
+With the supported CLI floor (3.0.0+):
 
 ```bash
 switchbot policy validate
 ```
 
-Exit 0 means the file parses AND conforms to the v0.1 schema. Any other
+Exit 0 means the file parses AND conforms to the v0.2 schema. Any other
 exit code prints a compiler-style error with the offending line and a
 fix hint (e.g. lowercase deviceId, destructive action in `never_confirm`,
 quiet-hours missing an `end:`).
 
-Fallback for older CLIs (pre-2.8.0), check YAML syntax only:
+Older 2.x CLIs are outside the supported range for this repo. Update the CLI
+first rather than trying to validate against an older command surface.
 
-```bash
-python -c "import yaml, os; p=os.path.expanduser('~/.config/openclaw/switchbot/policy.yaml'); yaml.safe_load(open(p, encoding='utf-8')); print('policy.yaml parses OK')"
-```
-
-(The explicit `encoding='utf-8'` matters on Windows, where Python
-defaults to the system codepage and can fail on policy files that
+(The explicit `encoding='utf-8'` mattered in the old Python fallback on
+Windows, where Python defaults to the system codepage and can fail on policy files that
 contain non-ASCII aliases like device names in Chinese or Japanese.
 This checks only that the YAML parses — it does NOT catch schema
 violations like a lowercase deviceId or an out-of-range `quiet_hours`.)

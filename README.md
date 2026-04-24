@@ -59,16 +59,16 @@ the authoritative source for what the underlying binary can do; see
 
 | Level | Status | Meaning | CLI version it needs |
 |---|---|---|---|
-| **L1 · Manual orchestration** | ✅ Shipped (v0.3) | Skill turns NL into CLI calls; user confirms each mutation; rules the skill authors default to `dry_run: true` until the user arms them. | CLI 2.9.0 (Phase 1+4) |
-| **L2 · Semi-autonomous (propose-then-approve)** | ✅ Shipped (v0.4) | Skill drafts a multi-step plan from intent (`plan suggest`); `plan run --require-approval` prompts the user once per destructive step; non-destructive steps run without interruption. | CLI 2.12.0 (Track δ) |
-| **L3 · Fully autonomous inside the policy envelope** | ✅ Shipped (v0.5) | Skill proactively authors rules via `rules suggest` + `policy add-rule`, shows the diff for one-time user approval, then the rules engine fires them indefinitely without further prompts. | CLI 2.13.0 (Track ζ) |
+| **L1 · Manual orchestration** | ✅ Shipped (v0.3) | Skill turns NL into CLI calls; user confirms each mutation; rules the skill authors default to `dry_run: true` until the user arms them. | CLI 3.0.0+ |
+| **L2 · Semi-autonomous (propose-then-approve)** | ✅ Shipped (v0.4) | Skill drafts a multi-step plan from intent (`plan suggest`); `plan run --require-approval` prompts the user once per destructive step; non-destructive steps run without interruption. | CLI 3.0.0+ |
+| **L3 · Fully autonomous inside the policy envelope** | ✅ Shipped (v0.5) | Skill proactively authors rules via `rules suggest` + `policy add-rule`, shows the diff for one-time user approval, then the rules engine fires them indefinitely without further prompts. | CLI 3.0.0+ |
 
 [cli-roadmap]: https://github.com/OpenWonderLabs/switchbot-openapi-cli/blob/main/docs/design/roadmap.md
 
 You are at **L3**. The skill can author automation rules from intent,
 inject them into policy.yaml (with a diff shown to the user for approval),
-and guide the dry-run → arm transition. L3 shipped in v0.5.0 alongside
-CLI 2.13.0.
+and guide the dry-run → arm transition. This repo now standardizes on
+CLI 3.0.0 or later for all supported installs.
 
 ---
 
@@ -102,7 +102,7 @@ switchbot --version
 Expected output:
 
 ```
-2.13.0
+3.0.0
 ```
 
 If `switchbot --version` says "command not found", your global npm bin is
@@ -223,7 +223,7 @@ into the destination works — you'll just have to re-copy on updates.
 
 ### 7. Create your `policy.yaml`
 
-Requires `@switchbot/openapi-cli` ≥ 2.9.0:
+Requires `@switchbot/openapi-cli` ≥ 3.0.0:
 
 ```bash
 switchbot policy new --version 0.2
@@ -271,6 +271,35 @@ The agent should:
 If any step above doesn't happen — e.g. the agent asks you for the token,
 or tries to invent device IDs — see
 [`troubleshooting.md`](./troubleshooting.md#agent-ignores-the-skill).
+
+---
+
+## Install / Configure / Execute
+
+Think about this skill in three phases:
+
+1. **Install** — put the skill or instruction files in the right place,
+  install the CLI, and verify `switchbot doctor` / `switchbot devices list`.
+2. **Configure** — create or edit `policy.yaml` so the agent knows your
+  aliases, confirmation rules, quiet hours, and automation preferences.
+3. **Execute** — let the agent control devices, run plans, or author rules
+  using the CLI and the policy you approved.
+
+After installation, the **recommended next step is configuration**. That is
+when you create `~/.config/openclaw/switchbot/policy.yaml`, add aliases, and
+decide how strict confirmations should be.
+
+But configuration is **not a hard gate**. If you accept the defaults, you can
+go straight from install to execution and start with simple read-only or
+low-risk commands. The configuration phase is also triggered later whenever:
+
+- you want friendlier aliases instead of raw device IDs
+- you want to change confirmation behavior or quiet hours
+- you want to set up or refine automations in `policy.yaml`
+- the agent needs policy context to make a safe decision
+
+Short version: install usually flows into configuration next, but execution can
+begin immediately with defaults.
 
 ---
 

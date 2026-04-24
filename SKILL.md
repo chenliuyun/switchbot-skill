@@ -87,7 +87,7 @@ cat "$USERPROFILE/.config/openclaw/switchbot/policy.yaml" 2>/dev/null
 
 If the file doesn't exist, proceed with defaults from the safety section
 below — but tell the user once that they don't have a policy yet and
-point them at `switchbot policy new` (requires CLI ≥ 2.8.0).
+point them at `switchbot policy new` (requires CLI ≥ 3.0.0).
 
 If the user asks whether their policy file is correct, run:
 
@@ -204,12 +204,12 @@ assuming.
 
 ---
 
-## Declarative automations (CLI ≥ 2.9.0, policy v0.2)
+## Declarative automations (CLI ≥ 3.0.0, policy v0.2)
 
 When the user wants "when X happens, do Y" rather than one-shot commands,
 author a rule in the `automation:` block of `policy.yaml` instead of
-spawning a shell loop. The rules engine ships in `@switchbot/openapi-cli`
-2.9.0 and executes rules in the same process that reads the policy.
+spawning a shell loop. This repo requires `@switchbot/openapi-cli` 3.0.0+
+and runs the rules engine in the same process that reads the policy.
 
 Before you touch `policy.yaml`, check the schema version:
 
@@ -306,7 +306,7 @@ Recommend a shell loop when:
 
 ---
 
-## Credentials in the keychain (CLI ≥ 2.9.0)
+## Credentials in the keychain (CLI ≥ 3.0.0)
 
 If the user asks "can I move my token out of the `0600` file?", point
 them at `switchbot auth keychain migrate` — it moves the token + secret
@@ -314,7 +314,7 @@ to the OS keychain (macOS `security(1)`, Windows PowerShell + Win32
 `CredRead`/`CredWrite`, Linux `secret-tool` via libsecret) and deletes
 the file on success.
 
-For first-time setup, `switchbot install` (CLI ≥ 2.10.0) handles the
+For first-time setup, `switchbot install` (CLI ≥ 3.0.0) handles the
 entire bootstrap — credential capture, keychain write, skill symlink,
 and doctor verification — as a single rollback-aware command.
 `switchbot uninstall [--purge]` reverses it.
@@ -414,7 +414,7 @@ a door twice.
 
 ---
 
-## Semi-autonomous workflow — `plan suggest` + `--require-approval` (CLI ≥ 2.12.0)
+## Semi-autonomous workflow — `plan suggest` + `--require-approval` (CLI ≥ 3.0.0)
 
 When the user wants to review each dangerous step rather than confirm
 each command interactively, use the Plan workflow:
@@ -457,7 +457,7 @@ with `--require-approval` in a TTY session.
 
 ---
 
-## L3 · Proactive rule authoring (CLI ≥ 2.13.0)
+## L3 · Proactive rule authoring (CLI ≥ 3.0.0)
 
 ### When to proactively suggest a rule
 
@@ -513,16 +513,11 @@ Run `switchbot rules replay --since 24h --json` regularly to surface misfires.
 
 ## Version pinning
 
-This skill targets `@switchbot/openapi-cli` **≥ 2.13.0** and has been
-validated against `2.13.x`. Minimum version by feature:
+This skill targets `@switchbot/openapi-cli` **≥ 3.0.0** and has been
+validated against `3.0.x`.
 
-| Feature | Minimum CLI version |
-|---|---|
-| `rules *`, `auth keychain *`, policy v0.2, `device_state` | 2.9.0 |
-| `switchbot install` / `switchbot uninstall` | 2.10.0 |
-| `days` weekday filter, `all`/`any`/`not` conditions | 2.11.0 |
-| `plan suggest`, `plan run --require-approval`, `plan_suggest` MCP | 2.12.0 |
-| `rules suggest`, `policy add-rule`, `rules_suggest` + `policy_add_rule` MCP | 2.13.0 |
+This repo standardizes on CLI 3.0.0+ for all installation, upgrade, and
+support paths, even though some underlying features shipped earlier in 2.x.
 
 If `switchbot --version` prints an older version, tell the user to run:
 
@@ -530,11 +525,9 @@ If `switchbot --version` prints an older version, tell the user to run:
 npm update -g @switchbot/openapi-cli
 ```
 
-If the CLI reports `3.0.0` or later, check
-`switchbot capabilities --json` for schema changes — the v3.0 release
-removes `destructive:boolean` and `statusFields` (this skill already
-uses the replacements, but double-check the examples you see in the
-wild).
+The skill already expects the v3 capability schema. If you see examples in the
+wild that still rely on old 2.x fields, prefer the current `switchbot
+capabilities --json` output over those examples.
 
 This skill declares `autonomyLevel: "L2"` in its `manifest.json`.
 L2 means the skill can draft a plan from intent and run it with

@@ -11,7 +11,7 @@ npm install -g @switchbot/openapi-cli
 # 2. Configure credentials once
 switchbot config set-token <token> <secret>
 
-# 3. Create and validate a policy (v2.8.0+)
+# 3. Create and validate a policy (v3.0.0+)
 switchbot policy new
 $EDITOR ~/.config/openclaw/switchbot/policy.yaml   # fill in aliases
 switchbot policy validate
@@ -63,5 +63,5 @@ Claude: [runs `switchbot agent-bootstrap --compact` then `switchbot devices comm
 If Claude Code doesn't pick up the skill, check that:
 
 - `manifest.json` and `SKILL.md` both live directly under `~/.claude/skills/switchbot/` (not a sub-folder).
-- `@switchbot/openapi-cli` is ≥ 2.8.0 on `PATH` — the skill's `authority.cli` is pinned.
+- `@switchbot/openapi-cli` is ≥ 3.0.0 on `PATH` — the skill's `authority.cli` is pinned.
 - Restart the Claude Code session once after installing; skills are discovered at session start.
