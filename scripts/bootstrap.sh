@@ -64,6 +64,16 @@ warn()  { echo -e "  ${YELLOW}!${RESET} $1"; }
 die()   { echo -e "  ${RED}✗${RESET} $1" >&2; exit 1; }
 dryrun(){ echo -e "  ${DIM}(dry-run) $1${RESET}"; }
 
+# --- telemetry (optional, sourced if available) ---
+_SELF_DIR="$(cd "$(dirname "${BASH_SOURCE[0]:-$0}")" 2>/dev/null && pwd || echo "")"
+if [[ -n "$_SELF_DIR" && -f "$_SELF_DIR/telemetry.sh" ]]; then
+  # shellcheck source=scripts/telemetry.sh
+  source "$_SELF_DIR/telemetry.sh"
+else
+  prompt_telemetry_opt_in() { :; }
+  report_telemetry() { :; }
+fi
+
 # --- rollback ---
 INSTALLED_PATHS=()
 
@@ -78,6 +88,7 @@ cleanup() {
         warn "  removed: $p"
       fi
     done
+    report_telemetry "failed_at_exit_$exit_code" "unknown" || true
   fi
 }
 trap cleanup EXIT
@@ -434,6 +445,8 @@ fi
 # ─────────────────────────────────────────────
 trap - EXIT  # disarm rollback — install succeeded
 
+trap - EXIT  # disarm rollback — install succeeded
+
 # ── Optional: register rules engine as a system service ──────────────────────
 if [[ "$DRY_RUN" != "true" && "$AUTO" != "true" ]]; then
   echo ""
@@ -458,3 +471,9 @@ echo -e "        ${DIM}\"List my SwitchBot devices\"${RESET}"
 echo ""
 echo "  Upgrade later:  bash scripts/upgrade.sh"
 echo "  Uninstall:      bash scripts/uninstall.sh"
+
+if [[ "$AUTO" != "true" && "$DRY_RUN" != "true" ]]; then
+  prompt_telemetry_opt_in
+fi
+AGENTS_STR="${DETECTED_AGENTS[*]:-unknown}"
+report_telemetry "success" "${AGENTS_STR// /,}"

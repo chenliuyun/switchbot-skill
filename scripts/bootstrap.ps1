@@ -45,6 +45,15 @@ function Write-Warn  { param($Msg) Write-Host "  [!]  $Msg" -ForegroundColor Yel
 function Write-Dry   { param($Msg) Write-Host "  (dry-run) $Msg" -ForegroundColor DarkGray }
 function Write-Fail  { param($Msg) Write-Error "  [X]  $Msg" }
 
+# --- telemetry (optional, dot-sourced if available) ---
+$_telemetryScript = Join-Path $PSScriptRoot "telemetry.ps1"
+if (Test-Path $_telemetryScript) {
+  . $_telemetryScript
+} else {
+  function Invoke-TelemetryOptIn {}
+  function Send-Telemetry {}
+}
+
 $InstalledPaths = [System.Collections.Generic.List[string]]::new()
 
 function Invoke-Rollback {
@@ -322,6 +331,9 @@ Write-Host ""
 Write-Host "  Upgrade later:  pwsh scripts/upgrade.ps1"
 Write-Host "  Uninstall:      pwsh scripts/uninstall.ps1"
 
+if (-not $NonInteractive -and -not $DryRun) { Invoke-TelemetryOptIn }
+Send-Telemetry -Status "success" -AgentStr ($DetectedAgents -join ',')
+
 # ─────────────────────────────────────────────
 # [7/7] First-use wizard
 # ─────────────────────────────────────────────
@@ -404,6 +416,7 @@ if (-not $DryRun -and -not $NonInteractive) {
 }
 
 } catch {
+  Send-Telemetry -Status "failed" -AgentStr "unknown"
   Invoke-Rollback
   throw
 }
