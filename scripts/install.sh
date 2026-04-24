@@ -27,7 +27,6 @@ Agents:
   gemini-project  Write <workspace>/GEMINI.md
   codex-global    Write ~/.codex/AGENTS.md
   codex-project   Write <workspace>/AGENTS.md
-  openclaw-staging Stage a future plugin layout under <workspace>/.openclaw/staging/plugins/switchbot
 
 Notes:
   - This script automates today's file-based installs. It does not publish the
@@ -76,7 +75,7 @@ while [[ $# -gt 0 ]]; do
 done
 
 case "$agent" in
-  claude-global|claude-project|copilot|cursor|cursor-legacy|gemini-global|gemini-project|codex-global|codex-project|openclaw-staging)
+  claude-global|claude-project|copilot|cursor|cursor-legacy|gemini-global|gemini-project|codex-global|codex-project)
     ;;
   *)
     echo "Unsupported agent target: $agent" >&2
@@ -96,7 +95,6 @@ esac
 repo_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 skill_file="$repo_root/SKILL.md"
 policy_path="$HOME/.config/openclaw/switchbot/policy.yaml"
-openclaw_bundle_root="$repo_root/plugin/openclaw-staging"
 
 require_workspace_path() {
   if [[ -z "$workspace_path" ]]; then
@@ -249,12 +247,6 @@ case "$agent" in
     destination="$workspace_path/AGENTS.md"
     strip_frontmatter | write_file "$destination"
     echo "Installed Codex project instructions at $destination"
-    ;;
-  openclaw-staging)
-    require_workspace_path
-    destination="$workspace_path/.openclaw/staging/plugins/switchbot"
-    link_or_copy_skill_tree "$destination" "$openclaw_bundle_root"
-    echo "Staged OpenClaw plugin preview at $destination"
     ;;
 esac
 

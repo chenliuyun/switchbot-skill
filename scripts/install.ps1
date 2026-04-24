@@ -9,8 +9,7 @@ param(
     'gemini-global',
     'gemini-project',
     'codex-global',
-    'codex-project',
-    'openclaw-staging'
+    'codex-project'
   )]
   [string]$Agent = 'claude-global',
 
@@ -64,7 +63,6 @@ if ($Help) {
 $repoRoot = Split-Path -Parent $PSScriptRoot
 $skillPath = Join-Path $repoRoot 'SKILL.md'
 $policyPath = Join-Path $HOME '.config/openclaw/switchbot/policy.yaml'
-$openClawBundleRoot = Join-Path $repoRoot 'plugin/openclaw-staging'
 
 function Get-SkillBody {
   $content = Get-Content -Raw -LiteralPath $skillPath
@@ -250,12 +248,6 @@ switch ($Agent) {
     $destination = Join-Path $workspaceRoot 'AGENTS.md'
     Write-Utf8File -Path $destination -Content $skillBody
     Write-Host "Installed Codex project instructions at $destination"
-  }
-  'openclaw-staging' {
-    $workspaceRoot = Require-WorkspacePath
-    $destination = Join-Path $workspaceRoot '.openclaw/staging/plugins/switchbot'
-    Link-OrCopySkillTree -Destination $destination -Source $openClawBundleRoot
-    Write-Host "Staged OpenClaw plugin preview at $destination"
   }
 }
 
