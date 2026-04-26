@@ -9,6 +9,35 @@ This project follows [Semantic Versioning](https://semver.org/).
 
 _No changes yet._
 
+## [0.6.1] - 2026-04-26
+
+CI-only release. Fixes the npm-publish workflow that v0.6.0's release
+event failed to trigger cleanly.
+
+### Fixed
+
+- **`plugin/openclaw/package.json` `test` script**: `node --test tests/**/*.test.js`
+  → `node --test tests/*.test.js`. Node's `--test` doesn't glob on its own,
+  and Linux bash (used by GitHub Actions runners) doesn't expand `**`
+  without `shopt -s globstar`, so the publish CI saw "Could not find
+  tests/**/*.test.js" and aborted before `npm publish`. The flat shell
+  glob works on all runners. Three tests (13 cases total) pass unchanged.
+
+### Shipped alongside
+
+- **`.github/workflows/publish-npm.yml`** (added earlier in the same
+  cycle as 0.6.0) — triggers on `release: published` or
+  `workflow_dispatch`, verifies tag matches `package.json.version`, runs
+  `npm ci` + `npm test`, then `npm publish --access public --provenance`.
+  First successful publish of `@chenliuyun/switchbot-openclaw-skill` to
+  npm lands on this version (0.6.0 never made it past the CI test gate).
+
+### Package contents
+
+Byte-identical to 0.6.0 — nothing in the `files` allowlist changed. The
+version bump exists purely because npm forbids re-publishing a version
+that was already registered as a "deleted"/unpublish-candidate.
+
 ## [0.6.0] - 2026-04-26
 
 First release of the **OpenClaw / ClawHub plugin**. The same skill is now
