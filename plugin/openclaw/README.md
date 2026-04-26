@@ -32,7 +32,12 @@ All mutation commands (`devices_command`, `scenes_run`) automatically append to 
 
 ## Usage
 
-The server communicates over **stdio** (MCP protocol). OpenClaw launches it via the channel definition in `channels/switchbot.channel.json`.
+The server communicates over **stdio** (MCP protocol). OpenClaw detects
+this tree as a Claude-style bundle and launches the MCP server via the
+declarations in:
+
+- `.claude-plugin/plugin.json` — bundle identity
+- `.mcp.json` — stdio launcher (`node ${pluginDir}/bin/start.js`)
 
 To start manually (for debugging):
 

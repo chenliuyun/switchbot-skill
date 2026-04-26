@@ -31,7 +31,8 @@
   "files": [
     "index.js",
     "cli.js",
-    "channels/",
+    ".claude-plugin/",
+    ".mcp.json",
     "bin/",
     "policy-editor/"
   ],
