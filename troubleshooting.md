@@ -7,6 +7,32 @@ issue.
 
 ---
 
+## `switchbot --version` is below 3.3.0
+
+**Cause:** the skill requires `@switchbot/openapi-cli@>=3.3.0` because
+earlier 3.x versions silently return the wrong envelope shape
+(downstream parsers read `undefined` instead of `.data`), have a known
+cache bug on batch/long-lived reads, and accept malformed policy files.
+The four pitfalls documented in `SKILL.md` §5–§9 all assume 3.3.0
+behavior.
+
+**Fix:**
+
+```bash
+npm install -g @switchbot/openapi-cli@latest
+switchbot --version   # should print 3.3.0 or newer
+```
+
+The `scripts/bootstrap.sh` / `scripts/bootstrap.ps1` installers refuse
+to proceed below this floor; they will print the upgrade command and
+exit 1 before touching anything else.
+
+If you cannot upgrade (e.g. a pinned corporate build), pin the skill to
+version `0.5.0` (the last release whose `authority.cli` accepted
+`>=3.0.0`) and do not use the §5–§9 guidance.
+
+---
+
 ## `switchbot --version` says "command not found"
 
 **Cause:** your global npm bin directory isn't on `PATH`.
