@@ -2,32 +2,32 @@
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
 import { z } from 'zod';
-import { runCli } from './cli.js';
+import { buildCliArgs, runCli } from './cli.js';
+
+async function callTool(tool, params) {
+  const args = buildCliArgs({ tool, params });
+  const result = await runCli(args);
+  return { content: [{ type: 'text', text: JSON.stringify(result) }] };
+}
 
 export function createServer() {
-  const server = new McpServer({ name: 'switchbot', version: '0.5.0' });
+  const server = new McpServer({ name: 'switchbot', version: '0.5.1' });
 
   server.tool('devices_list',
     'List all SwitchBot devices in the account.',
-    async () => ({
-      content: [{ type: 'text', text: JSON.stringify(await runCli(['devices', 'list', '--json'])) }]
-    })
+    async () => callTool('devices_list', {})
   );
 
   server.tool('devices_status',
     'Get current status of a specific device.',
     { deviceId: z.string().describe('Device ID') },
-    async ({ deviceId }) => ({
-      content: [{ type: 'text', text: JSON.stringify(await runCli(['devices', 'status', deviceId, '--json'])) }]
-    })
+    async ({ deviceId }) => callTool('devices_status', { deviceId })
   );
 
   server.tool('devices_describe',
     'Describe supported commands for a device type.',
     { deviceId: z.string() },
-    async ({ deviceId }) => ({
-      content: [{ type: 'text', text: JSON.stringify(await runCli(['devices', 'describe', deviceId, '--json'])) }]
-    })
+    async ({ deviceId }) => callTool('devices_describe', { deviceId })
   );
 
   server.tool('devices_command',
@@ -37,26 +37,19 @@ export function createServer() {
       command:  z.string().describe('Command name (turnOn, turnOff, setBrightness, …)'),
       params:   z.record(z.unknown()).optional().describe('Command parameters'),
     },
-    async ({ deviceId, command, params }) => {
-      const args = ['--audit-log', 'devices', 'command', deviceId, command, '--json'];
-      if (params) args.push('--params', JSON.stringify(params));
-      return { content: [{ type: 'text', text: JSON.stringify(await runCli(args)) }] };
-    }
+    async ({ deviceId, command, params }) =>
+      callTool('devices_command', { deviceId, command, params })
   );
 
   server.tool('scenes_list',
     'List all saved SwitchBot scenes.',
-    async () => ({
-      content: [{ type: 'text', text: JSON.stringify(await runCli(['scenes', 'list', '--json'])) }]
-    })
+    async () => callTool('scenes_list', {})
   );
 
   server.tool('scenes_run',
     'Execute a scene by ID.',
     { sceneId: z.string() },
-    async ({ sceneId }) => ({
-      content: [{ type: 'text', text: JSON.stringify(await runCli(['--audit-log', 'scenes', 'run', sceneId, '--json'])) }]
-    })
+    async ({ sceneId }) => callTool('scenes_run', { sceneId })
   );
 
   return server;
