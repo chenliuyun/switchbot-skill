@@ -279,6 +279,7 @@ agent session and start a new one.
 
 ## Batch or long-lived calls return stale device state
 
+<!-- TODO: delete this section when the upstream cache bug is fixed in @switchbot/openapi-cli 3.3.1+. Keep the "Device shows offline but works" section below — that's unrelated. -->
 > **Workaround (temporary)** — remove once the upstream cache bug is fixed.
 
 Symptom: a loop or long agent session reads `switchbot devices status

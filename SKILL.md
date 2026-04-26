@@ -355,6 +355,7 @@ Read these once and avoid them:
 7. **Cold-start the cache when the user adds a device.** The cache
    doesn't auto-refresh; when a user says "I just added a new
    sensor", run `switchbot devices list --json` first.
+<!-- TODO: revisit when @switchbot/openapi-cli fixes the cache bug (expected in 3.3.1+). Delete this pitfall entirely if upstream fix is verified; keep cross-link to troubleshooting.md if that section is retained. -->
 8. **Force `--no-cache` on batch/long-lived reads** *(temporary — remove
    when upstream cache bug is fixed)*. Loops, fan-outs, and reads after
    long idle hit a cache bug returning stale state. Don't substitute by
@@ -426,6 +427,7 @@ The envelope looks like:
 Never retry `destructive` actions automatically — that's how you unlock
 a door twice.
 
+<!-- TODO: revisit when @switchbot/openapi-cli documents --idempotency-key as reliable. When reliable, replace the fingerprint guidance with a brief note to use the flag. -->
 For `mutation` retries, gate with your own idempotency layer — a local
 fingerprint (e.g. `{deviceId, command, args, minute-bucket}`) + short
 TTL. Do **not** rely on `--idempotency-key` for dedupe *(temporary —
