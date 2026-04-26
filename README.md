@@ -41,6 +41,10 @@ known cache bug by forcing `--no-cache`; mutations write to
 Verification, uninstall, and plugin-specific troubleshooting:
 [`docs/openclaw-plugin-install.md`](./docs/openclaw-plugin-install.md).
 
+Using Claude Desktop, Cursor, Zed, Windsurf, Continue.dev, or Cline
+instead of OpenClaw? The plugin is a standard MCP stdio server — see
+[`docs/mcp-clients.md`](./docs/mcp-clients.md) for per-host config.
+
 ### B. File-based install (agents without OpenClaw)
 
 ```bash

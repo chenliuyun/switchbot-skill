@@ -58,7 +58,7 @@ while True:
 
 The skill explicitly tells the model to call `switchbot agent-bootstrap` first, so your harness should allow at minimum `switchbot *` command execution. Respect the safety tiers in the skill body (`destructive` actions should prompt the human).
 
-## MCP-capable clients
+## CLI-level MCP server (`switchbot mcp serve`)
 
 The `switchbot` CLI ships a Model Context Protocol server:
 
@@ -69,6 +69,20 @@ switchbot mcp serve
 Any MCP client (Claude Desktop, Continue.dev, Cline, Zed AI, custom) can connect to it and get typed tools for every capability the CLI exposes. When using MCP, `SKILL.md` is **optional** — the tools are self-describing — but pasting the skill body as a system prompt still helps, because it encodes the safety tiers, bootstrap sequence, and name-resolution strategy that the raw tool schemas don't.
 
 Consult `switchbot mcp --help` for the current list of transports (stdio / SSE / HTTP) and how to register the server with your MCP client.
+
+## Plugin-level MCP server (`@chenliuyun/switchbot-openclaw-skill`)
+
+For hosts that want a higher-level surface — 6 curated tools with
+`--no-cache` absorption on reads and audit-log on mutations — register
+the published plugin instead of the raw CLI server:
+
+```bash
+npm install -g @chenliuyun/switchbot-openclaw-skill
+```
+
+Then wire `switchbot-openclaw` as an MCP stdio server in your host.
+Copy-paste config snippets for Claude Desktop, Cursor, Zed, Windsurf,
+Continue.dev, and Cline live in [`../mcp-clients.md`](../mcp-clients.md).
 
 ## Verification (applies to all)
 
