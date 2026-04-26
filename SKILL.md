@@ -342,10 +342,12 @@ Read these once and avoid them:
 4. **Quota counts attempts, not successes.** A burst of failed calls
    still eats the daily 10 000 budget. If `switchbot quota --json`
    shows you're above 80%, slow down and batch.
-5. **`--json` failure path is always enveloped.** Structure is
-   `{"schemaVersion":"1.1","data":...}` on success and
-   `{"schemaVersion":"1.1","error":{...}}` on failure. Check for the
-   `error` key before reading `data`.
+5. **`--json` envelope — read `.data`, check `.error` first.** Every
+   `--json` response is wrapped: `{"schemaVersion":"1.1","data":...}` on
+   success, `{"schemaVersion":"1.1","error":{...}}` on failure. This was
+   a breaking envelope change — parsers that reach for top-level fields
+   (e.g. `obj.devices` instead of `obj.data.devices`) silently get
+   `undefined`.
 6. **Some fields are deprecated.** Prefer `safetyTier` over
    `destructive:boolean`; prefer `statusQueries` over `statusFields`.
    The old fields still appear in CLI 2.7.x output but are removed in
@@ -353,6 +355,18 @@ Read these once and avoid them:
 7. **Cold-start the cache when the user adds a device.** The cache
    doesn't auto-refresh; when a user says "I just added a new
    sensor", run `switchbot devices list --json` first.
+8. **Force `--no-cache` on batch/long-lived reads** *(temporary — remove
+   when upstream cache bug is fixed)*. Loops, fan-outs, and reads after
+   long idle hit a cache bug returning stale state. Don't substitute by
+   lowering `cli.cache_ttl` — that's durable config; `--no-cache` is a
+   per-call flag. See `troubleshooting.md` §&nbsp;*Batch or long-lived calls return stale device state*.
+9. **Validate deviceId shape yourself before writing rules.** The
+   policy schema patterns only the `aliases` map
+   (`^[A-Z0-9]{2,}-[A-Z0-9-]+$`); `device:` on triggers, conditions, and
+   actions is a plain string. `switchbot policy validate` will accept
+   `01-abc` and fail at runtime. Before authoring a rule, if the value
+   is not a known alias key from `policy.yaml`, match it against the
+   same regex yourself and reject on mismatch.
 
 ---
 
@@ -411,6 +425,12 @@ The envelope looks like:
 
 Never retry `destructive` actions automatically — that's how you unlock
 a door twice.
+
+For `mutation` retries, gate with your own idempotency layer — a local
+fingerprint (e.g. `{deviceId, command, args, minute-bucket}`) + short
+TTL. Do **not** rely on `--idempotency-key` for dedupe *(temporary —
+revisit when CLI idempotency is documented as reliable)*; a retry after
+a `network` or `internal` error can double-fire without a local gate.
 
 ---
 

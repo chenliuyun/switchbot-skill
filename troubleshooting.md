@@ -251,6 +251,37 @@ agent session and start a new one.
 
 ---
 
+## Batch or long-lived calls return stale device state
+
+> **Workaround (temporary)** — remove once the upstream cache bug is fixed.
+
+Symptom: a loop or long agent session reads `switchbot devices status
+<id> --json` and gets state that doesn't match reality — the lamp is
+off in the app but the CLI reports `"power": "on"`.
+
+**Cause:** known CLI cache bug. The cached value isn't invalidated
+promptly for some read paths.
+
+**Workaround:** pass `--no-cache` on the read.
+
+```bash
+switchbot devices status <id> --json --no-cache
+```
+
+Apply this to:
+
+- batch fan-outs (`for id in ...; do switchbot devices status "$id" ...; done`)
+- long-lived agent sessions that re-read device state after sitting idle
+- any rule or script that compares current state against a previous snapshot
+
+Short one-shot interactive calls are usually fine without the flag.
+Do **not** lower `cli.cache_ttl` in `policy.yaml` as a substitute —
+that's a durable config change; `--no-cache` is the targeted workaround.
+
+Remove the flag once the cache bug is fixed upstream.
+
+---
+
 ## Device shows `offline` but works in the SwitchBot app
 
 Symptom: `switchbot devices status <id> --json` returns `{"online":

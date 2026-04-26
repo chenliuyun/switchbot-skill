@@ -5,6 +5,35 @@ All notable changes to the OpenClaw SwitchBot skill are documented here.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 This project follows [Semantic Versioning](https://semver.org/).
 
+## [Unreleased]
+
+Documentation-only changes capturing five action items from the 2026-04-26
+downstream review. No CLI version floor change, no manifest change.
+
+### Changed
+
+- **`SKILL.md` — Common pitfalls §5** rewritten as "`--json` envelope —
+  read `.data`, check `.error` first." Flags the breaking envelope change
+  explicitly so downstream parsers that reached for top-level fields
+  notice the silent `undefined` path.
+- **`SKILL.md` — If the CLI returns an error**: new paragraph on
+  idempotency for `mutation` retries. Marked *(temporary — revisit when
+  CLI idempotency is documented as reliable)*. Retries must use a local
+  fingerprint (`{deviceId, command, args, minute-bucket}`) + short TTL;
+  `--idempotency-key` is not a substitute.
+
+### Added
+
+- **`SKILL.md` — Common pitfalls §8** *(temporary)*: force `--no-cache`
+  on batch/long-lived reads until the upstream CLI cache bug is fixed.
+  Cross-links to `troubleshooting.md`.
+- **`SKILL.md` — Common pitfalls §9**: validate deviceId shape yourself
+  before writing rules. The policy schema patterns only the `aliases`
+  map, so `device:` on triggers/conditions/actions passes
+  `switchbot policy validate` and fails at runtime.
+- **`troubleshooting.md` — new section** "Batch or long-lived calls
+  return stale device state" (marked temporary workaround).
+
 ## [0.5.0] - 2026-04-24
 
 Feature release — L3 fully autonomous rule authoring. Requires CLI ≥ 2.13.0.
