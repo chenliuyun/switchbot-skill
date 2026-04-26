@@ -9,6 +9,64 @@ This project follows [Semantic Versioning](https://semver.org/).
 
 _No changes yet._
 
+## [0.6.0] - 2026-04-26
+
+First release of the **OpenClaw / ClawHub plugin**. The same skill is now
+installable as a one-command plugin from ClawHub (or npm, or a pinned
+GitHub tag) — no symlinks, no manual file copy, no per-agent setup.
+
+The file-based path stays available for agents that don't run OpenClaw.
+
+### Added
+
+- **`plugin/openclaw/` — Claude-bundle plugin published to npm** as
+  `@chenliuyun/switchbot-openclaw-skill`. Ships a `.claude-plugin/plugin.json`
+  + `.mcp.json` pair that OpenClaw auto-detects, registering the stdio MCP
+  server and the 6 SwitchBot tools (`devices_list`, `devices_status`,
+  `devices_describe`, `devices_command`, `scenes_list`, `scenes_run`).
+- **Plugin-level `--no-cache` absorption**: the three read tools
+  (`devices_list`, `devices_status`, `devices_describe`) and `scenes_list`
+  always pass `--no-cache` to the underlying CLI, paper-covering the
+  documented cache bug without the agent needing to remember. Mutations
+  (`devices_command`, `scenes_run`) deliberately don't pass the flag — they
+  don't hit the cache.
+- **`plugin/openclaw/cli.js` — `buildCliArgs` as single source of truth**
+  for argv shape. All 6 tool handlers route through it, which makes the
+  `--no-cache` policy and the `--audit-log` policy for mutations
+  centrally enforced.
+- **`plugin/openclaw/tests/cli-args.test.js`** — 8 tests covering
+  `--no-cache` on reads, absence on mutations, audit-log on mutations,
+  params forwarding, and the "unknown tool throws" edge. Plus the
+  migrated `server.test.js` from the policy editor. Node `--test`, zero
+  new runtime deps.
+- **`docs/openclaw-plugin-install.md`** — canonical install guide for
+  the plugin path (ClawHub, GitHub tag, local clone), verification
+  spot-checks, uninstall, and plugin-specific troubleshooting.
+- **README `Quickstart` lead-in** — ClawHub install block at the top of
+  Quickstart with pointer to the install doc.
+- **`manifest.json` — `companionPlugin`** gains `name`, `npm`, and
+  `install` fields; `status` flipped from `not-yet-published` to
+  `published`.
+
+### Changed
+
+- **`plugin/openclaw/package.json`** switched to scoped name
+  `@chenliuyun/switchbot-openclaw-skill` with `publishConfig.access: public`,
+  `files` allowlist (12 files, 6.6 kB tarball), `engines.node: ">=18"`,
+  and `peerDependencies["@switchbot/openapi-cli"]: ">=3.3.0"`.
+- **`plugin/openclaw/channels/switchbot.channel.json`** — **removed**.
+  OpenClaw's "channels" concept refers to messaging platforms
+  (Slack/Discord/Teams), not MCP wiring. The file was never a valid
+  channel manifest; its job is now done by the `.claude-plugin/plugin.json`
+  + `.mcp.json` pair that OpenClaw actually reads.
+
+### Publish path
+
+`npm publish` from `plugin/openclaw/`, then
+`clawhub package publish .` from the same directory (requires
+`clawhub login` / GitHub OAuth). ClawHub auto-populates source
+attribution from the git remote; no separate metadata file needed.
+
 ## [0.5.1] - 2026-04-26
 
 Hardening release. Tightens the supported `@switchbot/openapi-cli` floor to

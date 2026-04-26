@@ -74,6 +74,18 @@ CLI 3.3.0 or later for all supported installs.
 
 ## Quickstart (15 minutes)
 
+### Install via OpenClaw / ClawHub (recommended)
+
+If you have [OpenClaw](https://openclaw.ai) installed and `@switchbot/openapi-cli` ≥ 3.3.0 authenticated, the whole skill is one command:
+
+```bash
+openclaw plugins install @chenliuyun/switchbot-openclaw-skill
+```
+
+OpenClaw auto-detects the Claude-bundle manifest and exposes 6 MCP tools (`devices_list`, `devices_status`, `devices_describe`, `devices_command`, `scenes_list`, `scenes_run`) to the agent. See [docs/openclaw-plugin-install.md](./docs/openclaw-plugin-install.md) for verification and troubleshooting.
+
+For everything else (raw Claude Code, Cursor, Copilot CLI, Gemini, …), use the file-based Quickstart below.
+
 ### 0. Prerequisites
 
 ```bash
@@ -364,11 +376,12 @@ Full details and the list of actions per tier live in [SKILL.md](./SKILL.md).
 
 `SKILL.md` was born in the Claude Code skill format (YAML front-matter + Markdown body), but the body itself is plain prose — any LLM-backed agent that accepts a system prompt or an instruction file can use it. Drop `SKILL.md` into the agent's instruction slot, strip the `---` front-matter if the agent doesn't speak it, and you're done.
 
-## One-Command Install (Until The Plugin Ships)
+## One-Command Install (file-based bridge)
 
-This repo now includes installer scripts in `scripts/` that automate the
-current file-based setup. They do **not** publish the future OpenClaw /
-ClawHub plugin; they are the bridge until that plugin exists.
+If you don't run OpenClaw, this repo ships installer scripts in `scripts/`
+that automate the file-based setup across 10 agent targets. The
+[ClawHub plugin](#install-via-openclaw--clawhub-recommended) is preferred
+when available — these scripts are the bridge for everything else.
 
 PowerShell:
 
