@@ -7,11 +7,24 @@ This project follows [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
-Documentation-only changes capturing five action items from the 2026-04-26
-downstream review. No CLI version floor change, no manifest change.
+_No changes yet._
+
+## [0.5.1] - 2026-04-26
+
+Hardening release. Tightens the supported `@switchbot/openapi-cli` floor to
+`>=3.3.0` (the first version where the envelope, cache, idempotency, and
+policy-validate behaviors documented in `SKILL.md` are stable), removes the
+duplicate root `policy-editor/` tree, and anchors the `(temporary)`
+workarounds with TODO comments so they get revisited when upstream ships
+fixes. No runtime behavior change for users already on CLI 3.3.0+.
 
 ### Changed
 
+- **`manifest.json` — `authority.cli`**: `>=3.0.0 <4.0.0` →
+  `>=3.3.0 <4.0.0`. All four pitfalls documented in `SKILL.md` §5–§9 rely
+  on 3.3.0 behavior (envelope shape, cache invalidation, idempotency
+  semantics, policy schema v0.2 strictness). CLI 3.0.0–3.2.x silently hit
+  the documented footguns.
 - **`SKILL.md` — Common pitfalls §5** rewritten as "`--json` envelope —
   read `.data`, check `.error` first." Flags the breaking envelope change
   explicitly so downstream parsers that reached for top-level fields
@@ -21,18 +34,43 @@ downstream review. No CLI version floor change, no manifest change.
   CLI idempotency is documented as reliable)*. Retries must use a local
   fingerprint (`{deviceId, command, args, minute-bucket}`) + short TTL;
   `--idempotency-key` is not a substitute.
+- **`SKILL.md` — Version pinning section**: expanded explanation of why
+  3.0.0–3.2.x are unsupported; added a fallback for users on pinned
+  corporate builds (pin skill to 0.5.0).
+- **Section headings across `SKILL.md` / `README.md` / docs**: all `CLI
+  ≥ 3.0.0` references bumped to `CLI ≥ 3.3.0`.
+- **`plugin/openclaw/package.json`**: peerDependency
+  `@switchbot/openapi-cli` floor `>=3.0.0` → `>=3.3.0`;
+  `package-lock.json` regenerated.
 
 ### Added
 
 - **`SKILL.md` — Common pitfalls §8** *(temporary)*: force `--no-cache`
   on batch/long-lived reads until the upstream CLI cache bug is fixed.
-  Cross-links to `troubleshooting.md`.
+  Cross-links to `troubleshooting.md`. Anchored with a TODO comment so
+  the section can be removed when `@switchbot/openapi-cli@3.3.1+` ships
+  the fix.
 - **`SKILL.md` — Common pitfalls §9**: validate deviceId shape yourself
   before writing rules. The policy schema patterns only the `aliases`
   map, so `device:` on triggers/conditions/actions passes
   `switchbot policy validate` and fails at runtime.
+- **`troubleshooting.md` — new section** "`switchbot --version` is below
+  3.3.0" explaining the four footguns and directing users to
+  `npm install -g @switchbot/openapi-cli@latest`.
 - **`troubleshooting.md` — new section** "Batch or long-lived calls
-  return stale device state" (marked temporary workaround).
+  return stale device state" (marked temporary workaround; anchored with
+  a TODO comment).
+- **`scripts/bootstrap.sh` + `scripts/bootstrap.ps1`**: pre-flight CLI
+  version guard. Bootstrap refuses to proceed if
+  `switchbot --version` < 3.3.0 and prints the upgrade command. Bash
+  uses `sort -V`; PowerShell uses the native `[version]` cast.
+
+### Removed
+
+- **Root `./policy-editor/` directory**: byte-identical duplicate of
+  `plugin/openclaw/policy-editor/`. Test coverage migrated into the
+  plugin tree as `plugin/openclaw/tests/policy-editor.test.js` before
+  deletion, so the editor server keeps its test suite.
 
 ## [0.5.0] - 2026-04-24
 

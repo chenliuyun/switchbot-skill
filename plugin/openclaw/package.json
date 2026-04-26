@@ -1,6 +1,6 @@
 {
   "name": "@switchbot/openclaw-skill",
-  "version": "0.5.0",
+  "version": "0.5.1",
   "type": "module",
   "description": "SwitchBot smart-home skill for OpenClaw",
   "main": "index.js",
