@@ -1,0 +1,55 @@
+name: Publish to npm
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Git tag to publish (e.g. v0.6.1). Must match plugin/openclaw/package.json version.'
+        required: true
+
+jobs:
+  publish:
+    name: npm publish @chenliuyun/switchbot-openclaw-skill
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write   # for npm provenance
+    steps:
+      - name: Checkout (release tag)
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.release.tag_name || inputs.tag }}
+
+      - name: Setup Node 20 + npm registry
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          registry-url: 'https://registry.npmjs.org'
+
+      - name: Verify tag matches package.json version
+        working-directory: plugin/openclaw
+        run: |
+          TAG="${{ github.event.release.tag_name || inputs.tag }}"
+          TAG_VER="${TAG#v}"
+          PKG_VER=$(node -p "require('./package.json').version")
+          echo "tag=$TAG_VER  package.json=$PKG_VER"
+          if [ "$TAG_VER" != "$PKG_VER" ]; then
+            echo "::error::Tag ($TAG_VER) does not match plugin/openclaw/package.json version ($PKG_VER)."
+            exit 1
+          fi
+
+      - name: Install (npm ci)
+        working-directory: plugin/openclaw
+        run: npm ci
+
+      - name: Test
+        working-directory: plugin/openclaw
+        run: npm test
+
+      - name: Publish (public, with provenance)
+        working-directory: plugin/openclaw
+        run: npm publish --access public --provenance
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
