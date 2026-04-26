@@ -7,7 +7,7 @@ SwitchBot MQTT -> `switchbot status-sync` -> OpenClaw gateway -> target agent
 
 This is an operator checklist, not a mocked smoke test. It assumes:
 
-- `@switchbot/openapi-cli` `3.0.0+` is installed and on `PATH`
+- `@switchbot/openapi-cli` `3.3.0+` is installed and on `PATH`
 - the local machine already has valid SwitchBot credentials
 - the OpenClaw gateway is reachable and already has a valid token + model ID
 - you are testing against real device state changes
@@ -24,7 +24,7 @@ switchbot devices list
 
 Success criteria:
 
-- `switchbot --version` prints `3.0.0` or newer
+- `switchbot --version` prints `3.3.0` or newer
 - `switchbot doctor` ends with `0 fail`
 - `switchbot devices list` returns the expected device set
 

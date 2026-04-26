@@ -59,16 +59,16 @@ the authoritative source for what the underlying binary can do; see
 
 | Level | Status | Meaning | CLI version it needs |
 |---|---|---|---|
-| **L1 · Manual orchestration** | ✅ Shipped (v0.3) | Skill turns NL into CLI calls; user confirms each mutation; rules the skill authors default to `dry_run: true` until the user arms them. | CLI 3.0.0+ |
-| **L2 · Semi-autonomous (propose-then-approve)** | ✅ Shipped (v0.4) | Skill drafts a multi-step plan from intent (`plan suggest`); `plan run --require-approval` prompts the user once per destructive step; non-destructive steps run without interruption. | CLI 3.0.0+ |
-| **L3 · Fully autonomous inside the policy envelope** | ✅ Shipped (v0.5) | Skill proactively authors rules via `rules suggest` + `policy add-rule`, shows the diff for one-time user approval, then the rules engine fires them indefinitely without further prompts. | CLI 3.0.0+ |
+| **L1 · Manual orchestration** | ✅ Shipped (v0.3) | Skill turns NL into CLI calls; user confirms each mutation; rules the skill authors default to `dry_run: true` until the user arms them. | CLI 3.3.0+ |
+| **L2 · Semi-autonomous (propose-then-approve)** | ✅ Shipped (v0.4) | Skill drafts a multi-step plan from intent (`plan suggest`); `plan run --require-approval` prompts the user once per destructive step; non-destructive steps run without interruption. | CLI 3.3.0+ |
+| **L3 · Fully autonomous inside the policy envelope** | ✅ Shipped (v0.5) | Skill proactively authors rules via `rules suggest` + `policy add-rule`, shows the diff for one-time user approval, then the rules engine fires them indefinitely without further prompts. | CLI 3.3.0+ |
 
 [cli-roadmap]: https://github.com/OpenWonderLabs/switchbot-openapi-cli/blob/main/docs/design/roadmap.md
 
 You are at **L3**. The skill can author automation rules from intent,
 inject them into policy.yaml (with a diff shown to the user for approval),
 and guide the dry-run → arm transition. This repo now standardizes on
-CLI 3.0.0 or later for all supported installs.
+CLI 3.3.0 or later for all supported installs.
 
 ---
 
@@ -102,7 +102,7 @@ switchbot --version
 Expected output:
 
 ```
-3.0.0
+3.3.0
 ```
 
 If `switchbot --version` says "command not found", your global npm bin is
@@ -223,7 +223,7 @@ into the destination works — you'll just have to re-copy on updates.
 
 ### 7. Create your `policy.yaml`
 
-Requires `@switchbot/openapi-cli` ≥ 3.0.0:
+Requires `@switchbot/openapi-cli` ≥ 3.3.0:
 
 ```bash
 switchbot policy new --version 0.2

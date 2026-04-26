@@ -224,7 +224,7 @@ ls ~/.config/openclaw/switchbot/policy.yaml   # should exist
 
 ### Valid YAML and valid schema?
 
-With the supported CLI floor (3.0.0+):
+With the supported CLI floor (3.3.0+):
 
 ```bash
 switchbot policy validate

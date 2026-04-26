@@ -5,7 +5,7 @@ SwitchBot smart-home skill for [OpenClaw](https://openclaw.dev) — exposes 6 MC
 ## Prerequisites
 
 - Node.js 18+
-- [`@switchbot/openapi-cli`](https://www.npmjs.com/package/@switchbot/openapi-cli) ≥ 3.0.0 with credentials configured (`switchbot config set-token`)
+- [`@switchbot/openapi-cli`](https://www.npmjs.com/package/@switchbot/openapi-cli) ≥ 3.3.0 with credentials configured (`switchbot config set-token`)
 
 ## Installation
 
