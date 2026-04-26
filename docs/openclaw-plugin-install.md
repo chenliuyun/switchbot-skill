@@ -27,7 +27,7 @@ CLI install.
 ## Install path A — via ClawHub (recommended once published)
 
 ```bash
-openclaw plugins install @chenliuyun/switchbot-openclaw-skill
+openclaw plugins install @cly-org/switchbot-openclaw-skill
 ```
 
 OpenClaw resolves the name against ClawHub first, then npm. The plugin
@@ -64,8 +64,8 @@ After install, confirm the plugin is visible and the tools land in your
 agent:
 
 ```bash
-openclaw plugins list            # expect: @chenliuyun/switchbot-openclaw-skill
-openclaw plugins inspect @chenliuyun/switchbot-openclaw-skill
+openclaw plugins list            # expect: @cly-org/switchbot-openclaw-skill
+openclaw plugins inspect @cly-org/switchbot-openclaw-skill
 ```
 
 Then open an agent session and ask: "list my switchbot devices". The
@@ -89,7 +89,7 @@ array.
 ## Uninstall
 
 ```bash
-openclaw plugins uninstall @chenliuyun/switchbot-openclaw-skill
+openclaw plugins uninstall @cly-org/switchbot-openclaw-skill
 ```
 
 Policy file (`~/.config/openclaw/switchbot/policy.yaml`) and audit log
@@ -123,7 +123,7 @@ failure modes:
 Open at <https://github.com/chenliuyun/switchbot-skill/issues> and include:
 
 - `openclaw --version`, `node --version`, `switchbot --version`
-- `openclaw plugins inspect @chenliuyun/switchbot-openclaw-skill`
+- `openclaw plugins inspect @cly-org/switchbot-openclaw-skill`
 - The exact agent prompt + reply
 - Relevant lines from `~/.switchbot/audit.log`
 

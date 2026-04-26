@@ -1,5 +1,5 @@
 {
-  "name": "@chenliuyun/switchbot-openclaw-skill",
+  "name": "@cly-org/switchbot-openclaw-skill",
   "version": "0.6.1",
   "type": "module",
   "description": "OpenClaw plugin that drives @switchbot/openapi-cli >= 3.3.0. Exposes 6 MCP tools (devices_list/status/describe/command, scenes_list/run) for SwitchBot smart-home control.",

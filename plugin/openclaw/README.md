@@ -1,4 +1,4 @@
-# @chenliuyun/switchbot-openclaw-skill
+# @cly-org/switchbot-openclaw-skill
 
 SwitchBot smart-home skill for [OpenClaw](https://openclaw.ai) — exposes 6 MCP tools so AI agents can control SwitchBot devices, run scenes, and send commands.
 
@@ -11,10 +11,10 @@ SwitchBot smart-home skill for [OpenClaw](https://openclaw.ai) — exposes 6 MCP
 
 ```bash
 # Via OpenClaw plugin manager (recommended)
-openclaw plugins install @chenliuyun/switchbot-openclaw-skill
+openclaw plugins install @cly-org/switchbot-openclaw-skill
 
 # Or global npm
-npm install -g @chenliuyun/switchbot-openclaw-skill
+npm install -g @cly-org/switchbot-openclaw-skill
 ```
 
 ## MCP Tools

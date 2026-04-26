@@ -11,7 +11,7 @@ on:
 
 jobs:
   publish:
-    name: npm publish @chenliuyun/switchbot-openclaw-skill
+    name: npm publish @cly-org/switchbot-openclaw-skill
     runs-on: ubuntu-latest
     permissions:
       contents: read

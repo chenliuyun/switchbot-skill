@@ -54,12 +54,12 @@
     "operatingSystems": ["macos", "linux", "windows"]
   },
   "companionPlugin": {
-    "name": "@chenliuyun/switchbot-openclaw-skill",
+    "name": "@cly-org/switchbot-openclaw-skill",
     "planned": "clawhub:switchbot",
     "status": "published",
     "phase": "3B",
-    "npm": "https://www.npmjs.com/package/@chenliuyun/switchbot-openclaw-skill",
-    "install": "openclaw plugins install @chenliuyun/switchbot-openclaw-skill"
+    "npm": "https://www.npmjs.com/package/@cly-org/switchbot-openclaw-skill",
+    "install": "openclaw plugins install @cly-org/switchbot-openclaw-skill"
   },
   "roadmap": {
     "source": "https://github.com/OpenWonderLabs/switchbot-openapi-cli/blob/main/docs/design/roadmap.md",

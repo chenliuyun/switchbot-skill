@@ -11,8 +11,17 @@ _No changes yet._
 
 ## [0.6.1] - 2026-04-26
 
-CI-only release. Fixes the npm-publish workflow that v0.6.0's release
-event failed to trigger cleanly.
+CI + packaging fix release. Gets the plugin onto npm for the first time.
+
+### Changed
+
+- **npm scope renamed**: `@chenliuyun/switchbot-openclaw-skill` →
+  `@cly-org/switchbot-openclaw-skill`. The publish-token's owning npm
+  account is `cly-org`, not `chenliuyun`, and a scope belongs to exactly
+  one user/org. Old install commands in README / docs / examples all
+  updated. The GitHub repository stays at `chenliuyun/switchbot-skill`;
+  only the npm package name moves. v0.6.0 never reached the npm registry
+  (CI aborted before publish), so no downstream pinning breaks.
 
 ### Fixed
 
@@ -25,18 +34,11 @@ event failed to trigger cleanly.
 
 ### Shipped alongside
 
-- **`.github/workflows/publish-npm.yml`** (added earlier in the same
-  cycle as 0.6.0) — triggers on `release: published` or
-  `workflow_dispatch`, verifies tag matches `package.json.version`, runs
+- **`.github/workflows/publish-npm.yml`** — triggers on `release: published`
+  or `workflow_dispatch`, verifies tag matches `package.json.version`, runs
   `npm ci` + `npm test`, then `npm publish --access public --provenance`.
-  First successful publish of `@chenliuyun/switchbot-openclaw-skill` to
+  First successful publish of `@cly-org/switchbot-openclaw-skill` to
   npm lands on this version (0.6.0 never made it past the CI test gate).
-
-### Package contents
-
-Byte-identical to 0.6.0 — nothing in the `files` allowlist changed. The
-version bump exists purely because npm forbids re-publishing a version
-that was already registered as a "deleted"/unpublish-candidate.
 
 ## [0.6.0] - 2026-04-26
 
@@ -49,7 +51,7 @@ The file-based path stays available for agents that don't run OpenClaw.
 ### Added
 
 - **`plugin/openclaw/` — Claude-bundle plugin published to npm** as
-  `@chenliuyun/switchbot-openclaw-skill`. Ships a `.claude-plugin/plugin.json`
+  `@cly-org/switchbot-openclaw-skill`. Ships a `.claude-plugin/plugin.json`
   + `.mcp.json` pair that OpenClaw auto-detects, registering the stdio MCP
   server and the 6 SwitchBot tools (`devices_list`, `devices_status`,
   `devices_describe`, `devices_command`, `scenes_list`, `scenes_run`).
@@ -80,7 +82,7 @@ The file-based path stays available for agents that don't run OpenClaw.
 ### Changed
 
 - **`plugin/openclaw/package.json`** switched to scoped name
-  `@chenliuyun/switchbot-openclaw-skill` with `publishConfig.access: public`,
+  `@cly-org/switchbot-openclaw-skill` with `publishConfig.access: public`,
   `files` allowlist (12 files, 6.6 kB tarball), `engines.node: ">=18"`,
   and `peerDependencies["@switchbot/openapi-cli"]: ">=3.3.0"`.
 - **`plugin/openclaw/channels/switchbot.channel.json`** — **removed**.

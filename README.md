@@ -7,7 +7,7 @@ an audit log of every action.
 This repo ships:
 
 - **An OpenClaw plugin** (`plugin/openclaw/`) published as
-  [`@chenliuyun/switchbot-openclaw-skill`][npm] — 6 MCP tools, one-command
+  [`@cly-org/switchbot-openclaw-skill`][npm] — 6 MCP tools, one-command
   install.
 - **A skill** (`SKILL.md`) that teaches any LLM-backed agent how to drive
   the [`@switchbot/openapi-cli`][cli] safely — command surface, safety
@@ -18,7 +18,7 @@ This repo ships:
 The skill **does not duplicate CLI docs**. The CLI is authoritative; the
 skill teaches the agent how to read it.
 
-[npm]: https://www.npmjs.com/package/@chenliuyun/switchbot-openclaw-skill
+[npm]: https://www.npmjs.com/package/@cly-org/switchbot-openclaw-skill
 [cli]: https://www.npmjs.com/package/@switchbot/openapi-cli
 
 ---
@@ -28,7 +28,7 @@ skill teaches the agent how to read it.
 ### A. Via OpenClaw / ClawHub (recommended)
 
 ```bash
-openclaw plugins install @chenliuyun/switchbot-openclaw-skill
+openclaw plugins install @cly-org/switchbot-openclaw-skill
 switchbot config set-token       # paste token + secret from the SwitchBot app
 ```
 
@@ -226,7 +226,7 @@ Upgrade my SwitchBot skill for <agent-target> and update the CLI too.
 ├── README.md                   # You are here
 ├── SKILL.md                    # Agent-facing: authority, safety, bootstrap
 ├── manifest.json               # Skill manifest + compatibility metadata
-├── plugin/openclaw/            # Published plugin @chenliuyun/switchbot-openclaw-skill
+├── plugin/openclaw/            # Published plugin @cly-org/switchbot-openclaw-skill
 ├── examples/
 │   ├── policy.example.yaml     # Starting point
 │   └── policy.schema.json      # JSON Schema v0.2 for editor autocomplete

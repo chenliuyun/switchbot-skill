@@ -1,6 +1,6 @@
 # Using the SwitchBot plugin with MCP clients
 
-The plugin `@chenliuyun/switchbot-openclaw-skill` is a standard MCP stdio
+The plugin `@cly-org/switchbot-openclaw-skill` is a standard MCP stdio
 server. Any host that speaks Model Context Protocol can launch it and
 expose its 6 tools (`devices_list`, `devices_status`, `devices_describe`,
 `devices_command`, `scenes_list`, `scenes_run`) to its agent.
@@ -14,7 +14,7 @@ instead — OpenClaw auto-detects the bundle manifest.
 Install the plugin globally and authenticate the underlying CLI:
 
 ```bash
-npm install -g @chenliuyun/switchbot-openclaw-skill
+npm install -g @cly-org/switchbot-openclaw-skill
 npm install -g @switchbot/openapi-cli@latest     # if not already installed
 switchbot config set-token                        # paste token + secret
 switchbot --version                               # must be >= 3.3.0

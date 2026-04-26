@@ -70,14 +70,14 @@ Any MCP client (Claude Desktop, Continue.dev, Cline, Zed AI, custom) can connect
 
 Consult `switchbot mcp --help` for the current list of transports (stdio / SSE / HTTP) and how to register the server with your MCP client.
 
-## Plugin-level MCP server (`@chenliuyun/switchbot-openclaw-skill`)
+## Plugin-level MCP server (`@cly-org/switchbot-openclaw-skill`)
 
 For hosts that want a higher-level surface — 6 curated tools with
 `--no-cache` absorption on reads and audit-log on mutations — register
 the published plugin instead of the raw CLI server:
 
 ```bash
-npm install -g @chenliuyun/switchbot-openclaw-skill
+npm install -g @cly-org/switchbot-openclaw-skill
 ```
 
 Then wire `switchbot-openclaw` as an MCP stdio server in your host.
