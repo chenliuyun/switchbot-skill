@@ -1,6 +1,6 @@
 import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
-import { buildCliArgs } from '../cli.js';
+import { buildCliArgs, looksLikeAuthError } from '../cli.js';
 
 describe('buildCliArgs', () => {
   it('devices_list passes --no-cache', () => {
@@ -55,5 +55,30 @@ describe('buildCliArgs', () => {
 
   it('throws for unknown tool', () => {
     assert.throws(() => buildCliArgs({ tool: 'unknown_tool', params: {} }), /unknown tool/);
+  });
+});
+
+describe('looksLikeAuthError', () => {
+  it('matches "token not set"', () => {
+    assert.ok(looksLikeAuthError('Error: token not set'));
+  });
+
+  it('matches "401" as standalone code', () => {
+    assert.ok(looksLikeAuthError('HTTP 401 Unauthorized'));
+  });
+
+  it('matches "credentials not configured"', () => {
+    assert.ok(looksLikeAuthError('credentials not configured'));
+  });
+
+  it('matches the hint "switchbot config set-token"', () => {
+    assert.ok(looksLikeAuthError('run `switchbot config set-token` first'));
+  });
+
+  it('does not match unrelated errors', () => {
+    assert.ok(!looksLikeAuthError('device is offline'));
+    assert.ok(!looksLikeAuthError('connection timeout after 15s'));
+    assert.ok(!looksLikeAuthError(''));
+    assert.ok(!looksLikeAuthError(null));
   });
 });

@@ -28,12 +28,20 @@ CLI install.
 
 ```bash
 openclaw plugins install @cly-org/switchbot-openclaw-skill
+switchbot-openclaw setup
 ```
 
 OpenClaw resolves the name against ClawHub first, then npm. The plugin
 tree ships a Claude-bundle manifest (`.claude-plugin/plugin.json`) + an
 MCP stdio declaration (`.mcp.json`), so OpenClaw auto-detects the MCP
 server and exposes its 6 tools to the embedded Pi agent.
+
+`switchbot-openclaw setup` is an interactive bootstrap: it verifies
+the underlying `@switchbot/openapi-cli` is installed, satisfies the
+`>=3.3.0` floor, and is authenticated (via `switchbot doctor`). At each
+failing step it prints the exact command to run next. Safe to re-run
+at any time — it's idempotent and read-only when everything is already
+working.
 
 ## Install path B — direct from GitHub (pre-publish or pinned version)
 

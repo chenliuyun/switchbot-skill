@@ -42,12 +42,69 @@ export function buildCliArgs({ tool, params = {} }) {
   }
 }
 
+// Substring patterns that indicate the CLI is installed but lacks
+// credentials. We match on text (not a fixed envelope) because auth
+// failures surface both from the CLI's own pre-flight checks and from
+// the upstream SwitchBot API, and neither path conforms to the v0.2
+// envelope in every release.
+const AUTH_ERROR_PATTERNS = [
+  /token\s+not\s+(set|configured|found)/i,
+  /credentials?\s+not\s+(set|configured|found)/i,
+  /no\s+credentials/i,
+  /\b401\b/,
+  /unauthorized/i,
+  /missing\s+(token|credentials)/i,
+  /switchbot\s+config\s+set-token/i,
+];
+
+export function looksLikeAuthError(text) {
+  if (!text) return false;
+  return AUTH_ERROR_PATTERNS.some((re) => re.test(text));
+}
+
+function setupRequired(reason, message) {
+  return {
+    error: {
+      kind: 'setup-required',
+      reason,
+      message,
+      nextStep: 'Run `switchbot-openclaw setup` in a terminal to bootstrap the CLI.',
+    },
+  };
+}
+
 export async function runCli(args) {
   try {
     const { stdout } = await exec('switchbot', args, { timeout: 15000 });
     return JSON.parse(stdout);
   } catch (err) {
-    const msg = err.stdout ?? err.message ?? String(err);
-    try { return JSON.parse(msg); } catch { return { error: { kind: 'internal', message: msg } }; }
+    if (err && err.code === 'ENOENT') {
+      return setupRequired(
+        'cli-missing',
+        'SwitchBot CLI (`switchbot`) is not installed on PATH. ' +
+        'Install with: npm install -g @switchbot/openapi-cli@latest',
+      );
+    }
+    const raw = (err && (err.stdout ?? err.stderr ?? err.message)) ?? String(err);
+    let parsed = null;
+    try { parsed = JSON.parse(raw); } catch { /* non-JSON failure */ }
+
+    const envelopeKind = parsed?.error?.kind;
+    if (envelopeKind === 'auth' || envelopeKind === 'credentials' || envelopeKind === 'unauthorized') {
+      return setupRequired(
+        'auth-missing',
+        'SwitchBot CLI is installed but has no credentials. ' +
+        'Configure with: switchbot config set-token',
+      );
+    }
+    if (!parsed && looksLikeAuthError(raw)) {
+      return setupRequired(
+        'auth-missing',
+        'SwitchBot CLI rejected the request with an auth error. ' +
+        'Configure credentials: switchbot config set-token',
+      );
+    }
+    if (parsed) return parsed;
+    return { error: { kind: 'internal', message: raw } };
   }
 }

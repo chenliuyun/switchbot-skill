@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "name": "switchbot",
-  "version": "0.6.1",
+  "version": "0.7.0",
   "displayName": "SwitchBot",
   "description": "Control SwitchBot smart-home devices (lights, locks, curtains, sensors, plugs, IR appliances) from an AI agent. Drives the authoritative @switchbot/openapi-cli.",
   "license": "MIT",

@@ -29,7 +29,7 @@ skill teaches the agent how to read it.
 
 ```bash
 openclaw plugins install @cly-org/switchbot-openclaw-skill
-switchbot config set-token       # paste token + secret from the SwitchBot app
+switchbot-openclaw setup         # guided CLI install + token config
 ```
 
 OpenClaw auto-detects the bundle manifest, launches the stdio MCP server,
@@ -37,6 +37,12 @@ and exposes 6 tools: `devices_list`, `devices_status`, `devices_describe`,
 `devices_command`, `scenes_list`, `scenes_run`. Read tools absorb the CLI's
 known cache bug by forcing `--no-cache`; mutations write to
 `~/.switchbot/audit.log`.
+
+`switchbot-openclaw setup` verifies the underlying
+`@switchbot/openapi-cli` is installed, at `>=3.3.0`, and authenticated —
+with paste-friendly fix commands at every step. Already set up? The
+plugin detects the "not installed" and "no credentials" cases at
+runtime too and surfaces the same guidance as an MCP tool error.
 
 Verification, uninstall, and plugin-specific troubleshooting:
 [`docs/openclaw-plugin-install.md`](./docs/openclaw-plugin-install.md).

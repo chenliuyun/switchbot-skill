@@ -7,11 +7,13 @@ import { buildCliArgs, runCli } from './cli.js';
 async function callTool(tool, params) {
   const args = buildCliArgs({ tool, params });
   const result = await runCli(args);
-  return { content: [{ type: 'text', text: JSON.stringify(result) }] };
+  const response = { content: [{ type: 'text', text: JSON.stringify(result) }] };
+  if (result && result.error) response.isError = true;
+  return response;
 }
 
 export function createServer() {
-  const server = new McpServer({ name: 'switchbot', version: '0.5.1' });
+  const server = new McpServer({ name: 'switchbot', version: '0.7.0' });
 
   server.tool('devices_list',
     'List all SwitchBot devices in the account.',

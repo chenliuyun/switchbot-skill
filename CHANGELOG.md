@@ -9,6 +9,76 @@ This project follows [Semantic Versioning](https://semver.org/).
 
 _No changes yet._
 
+## [0.7.0] - 2026-04-26
+
+Self-healing release. The plugin now recognises two common "I just
+installed this" failure modes — CLI missing, and CLI present but
+unauthenticated — and surfaces a paste-friendly fix instead of a raw
+stack trace. A new `switchbot-openclaw setup` subcommand automates the
+bootstrap end-to-end.
+
+### Added
+
+- **`switchbot-openclaw setup` subcommand** — interactive bootstrap
+  that (1) verifies `switchbot` is on `PATH`, (2) confirms version
+  `>=3.3.0`, (3) runs `switchbot doctor` to check credentials +
+  connectivity. Each step prints the exact command to fix the failure
+  so the user can copy-paste the next step without re-reading docs.
+  On Linux/macOS, if the npm global prefix lives under `/usr` or
+  `/opt`, the install hint adds the EACCES workaround
+  (`sudo` or `npm config set prefix ~/.npm-global`) instead of
+  letting the plain `npm install -g` blow up.
+- **`switchbot-openclaw --help` / `--version`** — argv-based dispatch
+  in `bin/start.js`. Default (no args) still launches the stdio MCP
+  server, so OpenClaw / Claude Desktop / Cursor / Zed / Windsurf /
+  Continue.dev / Cline invocations are unchanged.
+- **`plugin/openclaw/bin/setup-flow.js`** — new module, lazy-imported
+  from `bin/start.js` only on the `setup` path. MCP-server mode does
+  not load it, so the stdio JSON-RPC channel is never polluted with
+  setup prose.
+- **`plugin/openclaw/cli.js` — `setup-required` error kind**: `runCli`
+  now distinguishes three failure classes instead of one:
+    - `cli-missing` — `execFile` returned `ENOENT`. Message includes
+      the exact `npm install -g @switchbot/openapi-cli@latest` one-liner.
+    - `auth-missing` — either the CLI's own envelope flagged
+      `error.kind: auth / credentials / unauthorized`, or the raw
+      output matched one of seven substring patterns
+      (`token not set`, `401`, `unauthorized`, `credentials not configured`,
+      `switchbot config set-token`, …). Message tells the user to run
+      `switchbot config set-token`.
+    - `internal` — all other failure paths (unchanged from 0.6.1).
+  All three include a `nextStep: "Run \`switchbot-openclaw setup\` …"`
+  hint so MCP hosts that surface tool-error text get a consistent
+  recovery pointer.
+- **`plugin/openclaw/index.js`** now sets `isError: true` on the MCP
+  tool response whenever the underlying CLI returns an error envelope.
+  Hosts that distinguish successful tool results from failures (e.g.
+  Claude Desktop, Continue.dev) now render the `setup-required` message
+  as a tool failure instead of silent JSON text.
+- **`plugin/openclaw/tests/cli-args.test.js`** — 5 new cases for
+  `looksLikeAuthError` covering positive matches (`token not set`,
+  `HTTP 401`, `credentials not configured`, `switchbot config set-token`
+  hint), negative matches (`device offline`, timeout, empty, null),
+  and the exported symbol itself. Total suite: 18 cases, 4 suites,
+  still zero new runtime dependencies.
+
+### Changed
+
+- **`plugin/openclaw/index.js` — MCP server `version`**: `0.5.1` →
+  `0.7.0`. The hardcoded string was stale since 0.6.0; 0.7.0 is the
+  first release that touches MCP-layer behaviour (`isError`), so the
+  version bump doubles as a cache-buster for hosts that memoise server
+  capabilities by `name@version`.
+
+### Notes for MCP host authors
+
+The `setup-required` envelope is a forward-compatible extension of the
+existing `{error: {kind, message}}` shape. Hosts that already show
+`error.message` to the user need no changes — they'll just display a
+more actionable message. Hosts that pattern-match on `error.kind` can
+opt into a "restart the plugin after setup" UX by recognising
+`setup-required` specifically.
+
 ## [0.6.1] - 2026-04-26
 
 CI + packaging fix release. Gets the plugin onto npm for the first time.

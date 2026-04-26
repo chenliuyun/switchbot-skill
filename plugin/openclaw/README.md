@@ -15,7 +15,14 @@ openclaw plugins install @cly-org/switchbot-openclaw-skill
 
 # Or global npm
 npm install -g @cly-org/switchbot-openclaw-skill
+
+# Either way, then bootstrap the underlying CLI + credentials:
+switchbot-openclaw setup
 ```
+
+`switchbot-openclaw setup` verifies the `@switchbot/openapi-cli` is
+installed, at `>=3.3.0`, and authenticated — and prints the exact
+command to fix each step that isn't. Safe to re-run.
 
 ## MCP Tools
 
