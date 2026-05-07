@@ -1,11 +1,11 @@
 # @cly-org/switchbot-openclaw-skill
 
-SwitchBot smart-home skill for [OpenClaw](https://openclaw.ai) — exposes 6 MCP tools so AI agents can control SwitchBot devices, run scenes, and send commands.
+SwitchBot smart-home skill for [OpenClaw](https://openclaw.ai) — proxies all 24 MCP tools from `@switchbot/openapi-cli` so AI agents can control devices, run scenes, manage automation rules, and query audit logs.
 
 ## Prerequisites
 
 - Node.js 18+
-- [`@switchbot/openapi-cli`](https://www.npmjs.com/package/@switchbot/openapi-cli) ≥ 3.3.0 with credentials configured (`switchbot config set-token`)
+- SwitchBot API credentials (`switchbot config set-token`) — the CLI itself is **auto-installed** on first launch
 
 ## Installation
 
@@ -20,11 +20,12 @@ npm install -g @cly-org/switchbot-openclaw-skill
 switchbot-openclaw setup
 ```
 
-`switchbot-openclaw setup` verifies the `@switchbot/openapi-cli` is
-installed, at `>=3.3.0`, and authenticated — and prints the exact
-command to fix each step that isn't. Safe to re-run.
+`switchbot-openclaw setup` verifies `@switchbot/openapi-cli` is
+installed, at `>=3.3.0`, and authenticated. Safe to re-run.
 
 ## MCP Tools
+
+All 24 tools exposed by `switchbot mcp serve` are available. Key groups:
 
 | Tool | Description |
 |---|---|
@@ -34,17 +35,28 @@ command to fix each step that isn't. Safe to re-run.
 | `devices_command` | Send a command (turnOn, turnOff, setBrightness, …) |
 | `scenes_list` | List all saved scenes |
 | `scenes_run` | Execute a scene by ID |
+| `rules_list` | List automation rules |
+| `rules_suggest` | Ask AI to suggest a new rule based on intent |
+| `rules_explain` | Explain why a rule fired or was blocked (with trace) |
+| `rules_simulate` | Replay rule against historical events before enabling |
+| `daemon_start` / `daemon_stop` / `daemon_status` | Control the automation rule engine |
+| `audit_query` | Query the audit log for device/rule history |
 
-All mutation commands (`devices_command`, `scenes_run`) automatically append to `~/.switchbot/audit.log`.
+Full tool reference: `switchbot mcp tools`
 
 ## Usage
 
-The server communicates over **stdio** (MCP protocol). OpenClaw detects
-this tree as a Claude-style bundle and launches the MCP server via the
-declarations in:
+The server communicates over **stdio** (MCP protocol). OpenClaw launches
+the MCP server via the declarations in:
 
 - `.claude-plugin/plugin.json` — bundle identity
 - `.mcp.json` — stdio launcher (`node ${pluginDir}/bin/start.js`)
+
+**First launch auto-setup**: if `@switchbot/openapi-cli` is not installed,
+`bin/start.js` installs it automatically. If credentials are missing, it
+outputs a `setupRequired` prompt asking you to run
+`switchbot config set-token`. Once configured, the plugin stays out of the
+way and proxies the full 24-tool MCP server on every launch.
 
 To start manually (for debugging):
 
