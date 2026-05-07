@@ -40,6 +40,8 @@ supported actions — run the CLI rather than guessing.
 | Run a plan with per-step approval | `switchbot plan run <file> --require-approval` |
 | Draft an automation rule from intent | `switchbot rules suggest --intent "..." [--trigger mqtt|cron|webhook] [--device <id>…]` |
 | Inject a rule into policy.yaml | `switchbot policy add-rule [--dry-run] [--enable]` (reads rule YAML from stdin) |
+| Why did a rule fire or get blocked? | `switchbot rules trace-explain --rule <name> --last` (or `--fire-id <id>`) |
+| Pre-validate rule effect against history | `switchbot rules simulate <rule.yaml> --since 7d` |
 
 Never invent a deviceId, a command name, or a parameter value. If the
 CLI doesn't know about it, refuse and explain — don't paper over it.
@@ -489,6 +491,18 @@ When using MCP (no shell access), substitute `rules_suggest` and `policy_add_rul
 1. Call `rules_suggest` to get the rule YAML.
 2. Call `policy_add_rule` with `dry_run: true` — show the diff to the user.
 3. After user approves, call `policy_add_rule` with `dry_run: false`.
+
+When investigating why a rule fired or was blocked, use `rules_explain`:
+
+- `rules_explain` with `rule_name` + `last: true` → most recent evaluation
+- `rules_explain` with `fire_id` → specific evaluation by ID
+- Returns per-condition ✓/✗ trace, decision, and timing
+
+To pre-validate a new or modified rule against historical events before arming:
+
+- `rules_simulate` with `rule_yaml` + `since: "7d"` → replay last 7 days
+- Returns `wouldFire`, `blockedByCondition`, `throttled`, `topBlockReason`
+- Always simulate before removing `dry_run: true` from a rule
 
 ### Dry-run → arm transition
 
