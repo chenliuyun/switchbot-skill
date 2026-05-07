@@ -5,6 +5,232 @@ All notable changes to the OpenClaw SwitchBot skill are documented here.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 This project follows [Semantic Versioning](https://semver.org/).
 
+## [Unreleased]
+
+_No changes yet._
+
+## [0.7.0] - 2026-04-26
+
+Self-healing release. The plugin now recognises two common "I just
+installed this" failure modes — CLI missing, and CLI present but
+unauthenticated — and surfaces a paste-friendly fix instead of a raw
+stack trace. A new `switchbot-openclaw setup` subcommand automates the
+bootstrap end-to-end.
+
+### Added
+
+- **`switchbot-openclaw setup` subcommand** — interactive bootstrap
+  that (1) verifies `switchbot` is on `PATH`, (2) confirms version
+  `>=3.3.0`, (3) runs `switchbot doctor` to check credentials +
+  connectivity. Each step prints the exact command to fix the failure
+  so the user can copy-paste the next step without re-reading docs.
+  On Linux/macOS, if the npm global prefix lives under `/usr` or
+  `/opt`, the install hint adds the EACCES workaround
+  (`sudo` or `npm config set prefix ~/.npm-global`) instead of
+  letting the plain `npm install -g` blow up.
+- **`switchbot-openclaw --help` / `--version`** — argv-based dispatch
+  in `bin/start.js`. Default (no args) still launches the stdio MCP
+  server, so OpenClaw / Claude Desktop / Cursor / Zed / Windsurf /
+  Continue.dev / Cline invocations are unchanged.
+- **`plugin/openclaw/bin/setup-flow.js`** — new module, lazy-imported
+  from `bin/start.js` only on the `setup` path. MCP-server mode does
+  not load it, so the stdio JSON-RPC channel is never polluted with
+  setup prose.
+- **`plugin/openclaw/cli.js` — `setup-required` error kind**: `runCli`
+  now distinguishes three failure classes instead of one:
+    - `cli-missing` — `execFile` returned `ENOENT`. Message includes
+      the exact `npm install -g @switchbot/openapi-cli@latest` one-liner.
+    - `auth-missing` — either the CLI's own envelope flagged
+      `error.kind: auth / credentials / unauthorized`, or the raw
+      output matched one of seven substring patterns
+      (`token not set`, `401`, `unauthorized`, `credentials not configured`,
+      `switchbot config set-token`, …). Message tells the user to run
+      `switchbot config set-token`.
+    - `internal` — all other failure paths (unchanged from 0.6.1).
+  All three include a `nextStep: "Run \`switchbot-openclaw setup\` …"`
+  hint so MCP hosts that surface tool-error text get a consistent
+  recovery pointer.
+- **`plugin/openclaw/index.js`** now sets `isError: true` on the MCP
+  tool response whenever the underlying CLI returns an error envelope.
+  Hosts that distinguish successful tool results from failures (e.g.
+  Claude Desktop, Continue.dev) now render the `setup-required` message
+  as a tool failure instead of silent JSON text.
+- **`plugin/openclaw/tests/cli-args.test.js`** — 5 new cases for
+  `looksLikeAuthError` covering positive matches (`token not set`,
+  `HTTP 401`, `credentials not configured`, `switchbot config set-token`
+  hint), negative matches (`device offline`, timeout, empty, null),
+  and the exported symbol itself. Total suite: 18 cases, 4 suites,
+  still zero new runtime dependencies.
+
+### Changed
+
+- **`plugin/openclaw/index.js` — MCP server `version`**: `0.5.1` →
+  `0.7.0`. The hardcoded string was stale since 0.6.0; 0.7.0 is the
+  first release that touches MCP-layer behaviour (`isError`), so the
+  version bump doubles as a cache-buster for hosts that memoise server
+  capabilities by `name@version`.
+
+### Notes for MCP host authors
+
+The `setup-required` envelope is a forward-compatible extension of the
+existing `{error: {kind, message}}` shape. Hosts that already show
+`error.message` to the user need no changes — they'll just display a
+more actionable message. Hosts that pattern-match on `error.kind` can
+opt into a "restart the plugin after setup" UX by recognising
+`setup-required` specifically.
+
+## [0.6.1] - 2026-04-26
+
+CI + packaging fix release. Gets the plugin onto npm for the first time.
+
+### Changed
+
+- **npm scope renamed**: `@chenliuyun/switchbot-openclaw-skill` →
+  `@cly-org/switchbot-openclaw-skill`. The publish-token's owning npm
+  account is `cly-org`, not `chenliuyun`, and a scope belongs to exactly
+  one user/org. Old install commands in README / docs / examples all
+  updated. The GitHub repository stays at `chenliuyun/switchbot-skill`;
+  only the npm package name moves. v0.6.0 never reached the npm registry
+  (CI aborted before publish), so no downstream pinning breaks.
+
+### Fixed
+
+- **`plugin/openclaw/package.json` `test` script**: `node --test tests/**/*.test.js`
+  → `node --test tests/*.test.js`. Node's `--test` doesn't glob on its own,
+  and Linux bash (used by GitHub Actions runners) doesn't expand `**`
+  without `shopt -s globstar`, so the publish CI saw "Could not find
+  tests/**/*.test.js" and aborted before `npm publish`. The flat shell
+  glob works on all runners. Three tests (13 cases total) pass unchanged.
+
+### Shipped alongside
+
+- **`.github/workflows/publish-npm.yml`** — triggers on `release: published`
+  or `workflow_dispatch`, verifies tag matches `package.json.version`, runs
+  `npm ci` + `npm test`, then `npm publish --access public --provenance`.
+  First successful publish of `@cly-org/switchbot-openclaw-skill` to
+  npm lands on this version (0.6.0 never made it past the CI test gate).
+
+## [0.6.0] - 2026-04-26
+
+First release of the **OpenClaw / ClawHub plugin**. The same skill is now
+installable as a one-command plugin from ClawHub (or npm, or a pinned
+GitHub tag) — no symlinks, no manual file copy, no per-agent setup.
+
+The file-based path stays available for agents that don't run OpenClaw.
+
+### Added
+
+- **`plugin/openclaw/` — Claude-bundle plugin published to npm** as
+  `@cly-org/switchbot-openclaw-skill`. Ships a `.claude-plugin/plugin.json`
+  + `.mcp.json` pair that OpenClaw auto-detects, registering the stdio MCP
+  server and the 6 SwitchBot tools (`devices_list`, `devices_status`,
+  `devices_describe`, `devices_command`, `scenes_list`, `scenes_run`).
+- **Plugin-level `--no-cache` absorption**: the three read tools
+  (`devices_list`, `devices_status`, `devices_describe`) and `scenes_list`
+  always pass `--no-cache` to the underlying CLI, paper-covering the
+  documented cache bug without the agent needing to remember. Mutations
+  (`devices_command`, `scenes_run`) deliberately don't pass the flag — they
+  don't hit the cache.
+- **`plugin/openclaw/cli.js` — `buildCliArgs` as single source of truth**
+  for argv shape. All 6 tool handlers route through it, which makes the
+  `--no-cache` policy and the `--audit-log` policy for mutations
+  centrally enforced.
+- **`plugin/openclaw/tests/cli-args.test.js`** — 8 tests covering
+  `--no-cache` on reads, absence on mutations, audit-log on mutations,
+  params forwarding, and the "unknown tool throws" edge. Plus the
+  migrated `server.test.js` from the policy editor. Node `--test`, zero
+  new runtime deps.
+- **`docs/openclaw-plugin-install.md`** — canonical install guide for
+  the plugin path (ClawHub, GitHub tag, local clone), verification
+  spot-checks, uninstall, and plugin-specific troubleshooting.
+- **README `Quickstart` lead-in** — ClawHub install block at the top of
+  Quickstart with pointer to the install doc.
+- **`manifest.json` — `companionPlugin`** gains `name`, `npm`, and
+  `install` fields; `status` flipped from `not-yet-published` to
+  `published`.
+
+### Changed
+
+- **`plugin/openclaw/package.json`** switched to scoped name
+  `@cly-org/switchbot-openclaw-skill` with `publishConfig.access: public`,
+  `files` allowlist (12 files, 6.6 kB tarball), `engines.node: ">=18"`,
+  and `peerDependencies["@switchbot/openapi-cli"]: ">=3.3.0"`.
+- **`plugin/openclaw/channels/switchbot.channel.json`** — **removed**.
+  OpenClaw's "channels" concept refers to messaging platforms
+  (Slack/Discord/Teams), not MCP wiring. The file was never a valid
+  channel manifest; its job is now done by the `.claude-plugin/plugin.json`
+  + `.mcp.json` pair that OpenClaw actually reads.
+
+### Publish path
+
+`npm publish` from `plugin/openclaw/`, then
+`clawhub package publish .` from the same directory (requires
+`clawhub login` / GitHub OAuth). ClawHub auto-populates source
+attribution from the git remote; no separate metadata file needed.
+
+## [0.5.1] - 2026-04-26
+
+Hardening release. Tightens the supported `@switchbot/openapi-cli` floor to
+`>=3.3.0` (the first version where the envelope, cache, idempotency, and
+policy-validate behaviors documented in `SKILL.md` are stable), removes the
+duplicate root `policy-editor/` tree, and anchors the `(temporary)`
+workarounds with TODO comments so they get revisited when upstream ships
+fixes. No runtime behavior change for users already on CLI 3.3.0+.
+
+### Changed
+
+- **`manifest.json` — `authority.cli`**: `>=3.0.0 <4.0.0` →
+  `>=3.3.0 <4.0.0`. All four pitfalls documented in `SKILL.md` §5–§9 rely
+  on 3.3.0 behavior (envelope shape, cache invalidation, idempotency
+  semantics, policy schema v0.2 strictness). CLI 3.0.0–3.2.x silently hit
+  the documented footguns.
+- **`SKILL.md` — Common pitfalls §5** rewritten as "`--json` envelope —
+  read `.data`, check `.error` first." Flags the breaking envelope change
+  explicitly so downstream parsers that reached for top-level fields
+  notice the silent `undefined` path.
+- **`SKILL.md` — If the CLI returns an error**: new paragraph on
+  idempotency for `mutation` retries. Marked *(temporary — revisit when
+  CLI idempotency is documented as reliable)*. Retries must use a local
+  fingerprint (`{deviceId, command, args, minute-bucket}`) + short TTL;
+  `--idempotency-key` is not a substitute.
+- **`SKILL.md` — Version pinning section**: expanded explanation of why
+  3.0.0–3.2.x are unsupported; added a fallback for users on pinned
+  corporate builds (pin skill to 0.5.0).
+- **Section headings across `SKILL.md` / `README.md` / docs**: all `CLI
+  ≥ 3.0.0` references bumped to `CLI ≥ 3.3.0`.
+- **`plugin/openclaw/package.json`**: peerDependency
+  `@switchbot/openapi-cli` floor `>=3.0.0` → `>=3.3.0`;
+  `package-lock.json` regenerated.
+
+### Added
+
+- **`SKILL.md` — Common pitfalls §8** *(temporary)*: force `--no-cache`
+  on batch/long-lived reads until the upstream CLI cache bug is fixed.
+  Cross-links to `troubleshooting.md`. Anchored with a TODO comment so
+  the section can be removed when `@switchbot/openapi-cli@3.3.1+` ships
+  the fix.
+- **`SKILL.md` — Common pitfalls §9**: validate deviceId shape yourself
+  before writing rules. The policy schema patterns only the `aliases`
+  map, so `device:` on triggers/conditions/actions passes
+  `switchbot policy validate` and fails at runtime.
+- **`troubleshooting.md` — new section** "`switchbot --version` is below
+  3.3.0" explaining the four footguns and directing users to
+  `npm install -g @switchbot/openapi-cli@latest`.
+- **`troubleshooting.md` — new section** "Batch or long-lived calls
+  return stale device state" (marked temporary workaround; anchored with
+  a TODO comment).
+- **`scripts/bootstrap.sh` + `scripts/bootstrap.ps1`**: pre-flight CLI
+  version guard. Bootstrap refuses to proceed if
+  `switchbot --version` < 3.3.0 and prints the upgrade command. Bash
+  uses `sort -V`; PowerShell uses the native `[version]` cast.
+
+### Removed
+
+- **Root `./policy-editor/` directory**: byte-identical duplicate of
+  `plugin/openclaw/policy-editor/`. Test coverage migrated into the
+  plugin tree as `plugin/openclaw/tests/policy-editor.test.js` before
+  deletion, so the editor server keeps its test suite.
+
 ## [0.5.0] - 2026-04-24
 
 Feature release — L3 fully autonomous rule authoring. Requires CLI ≥ 2.13.0.

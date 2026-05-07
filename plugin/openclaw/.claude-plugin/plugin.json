@@ -1,0 +1,19 @@
+{
+  "name": "switchbot",
+  "version": "0.7.0",
+  "description": "Control SwitchBot smart-home devices (lights, locks, curtains, sensors, plugs, IR appliances) from an OpenClaw agent via MCP. Drives @switchbot/openapi-cli >= 3.3.0.",
+  "author": {
+    "name": "chenliuyun",
+    "url": "https://github.com/chenliuyun"
+  },
+  "homepage": "https://github.com/chenliuyun/switchbot-skill",
+  "repository": "https://github.com/chenliuyun/switchbot-skill",
+  "license": "MIT",
+  "keywords": [
+    "switchbot",
+    "smart-home",
+    "iot",
+    "mcp",
+    "openclaw"
+  ]
+}

@@ -95,17 +95,34 @@ Write-Ok "Node $(node --version), npm $(npm --version)"
 # ─────────────────────────────────────────────
 Write-Step "[2/7] Installing SwitchBot CLI..."
 
+$RequiredCliVersion = [version]'3.3.0'
+
+function Test-CliVersion {
+  $versionLine = (& switchbot --version 2>$null) | Select-Object -First 1
+  $match = [regex]::Match("$versionLine", '\d+\.\d+\.\d+')
+  if (-not $match.Success) {
+    Write-Fail "'switchbot --version' produced no version. Reinstall the CLI:`n  npm install -g @switchbot/openapi-cli@latest"
+  }
+  $actual = [version]$match.Value
+  if ($actual -lt $RequiredCliVersion) {
+    Write-Fail "switchbot $actual is below the required floor $RequiredCliVersion.`n  The skill's envelope/cache/idempotency guidance assumes 3.3.0 behavior.`n  Upgrade:`n    npm install -g @switchbot/openapi-cli@latest"
+  }
+  Write-Ok "CLI version $actual meets floor $RequiredCliVersion"
+}
+
 if ($NoCli) {
   Write-Warn "Skipping CLI install (-NoCli)."
 } elseif (Get-Command switchbot -ErrorAction SilentlyContinue) {
   $currentVer = (switchbot --version 2>$null) ?? "unknown"
   Write-Ok "CLI already installed: $currentVer"
+  if (-not $DryRun) { Test-CliVersion }
 } elseif ($DryRun) {
   Write-Dry "npm install -g @switchbot/openapi-cli"
 } else {
   Write-Host "  Installing @switchbot/openapi-cli..."
   npm install -g @switchbot/openapi-cli
   Write-Ok "CLI installed: $(switchbot --version 2>$null)"
+  Test-CliVersion
 }
 
 # ─────────────────────────────────────────────

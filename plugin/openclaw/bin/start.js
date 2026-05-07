@@ -1,37 +1,74 @@
 #!/usr/bin/env node
 // plugin/openclaw/bin/start.js
-// Bootstrap wrapper：依次完成环境检查，然后 exec switchbot mcp serve 接管进程。
-// 只有凭证配置需要人工介入；其余步骤（CLI 安装、policy 脚手架、daemon 启动）全自动完成。
-import { checkCli } from '../setup/check-cli.js';
-import { checkCredentials } from '../setup/check-credentials.js';
-import { checkDaemon } from '../setup/check-daemon.js';
+//
+// Default entry point for the @cly-org/switchbot-openclaw-skill plugin.
+//
+// Subcommands:
+//   setup       Interactive bootstrap: verify CLI installed + >=3.3.0,
+//               run `switchbot doctor` to confirm auth.
+//   --version   Print the plugin version.
+//   --help      Print this help.
+//
+// Default (no args): bootstrap wrapper — auto-installs CLI, verifies credentials,
+// starts daemon if needed, then exec switchbot mcp serve (exposes all 24 MCP tools).
+// Only credential setup requires user action; everything else is automatic.
+
+import { readFileSync } from 'node:fs';
+import { fileURLToPath } from 'node:url';
+import { dirname, join } from 'node:path';
 import { execFileSync } from 'node:child_process';
 
-function setupRequired(message) {
-  // 以 MCP 协议可识别的格式输出，同时写 stderr 保证日志可读
-  process.stderr.write(`[switchbot-channel] 需要配置：${message}\n`);
-  // JSON Lines 格式，OpenClaw 读取 stdout 的第一行用于展示
-  process.stdout.write(JSON.stringify({ setupRequired: true, message }) + '\n');
-  process.exit(1);
-}
+const cmd = process.argv[2];
 
-// [1] CLI 是否已安装？未安装则自动安装
-const cliCheck = await checkCli();
-if (!cliCheck.ok) setupRequired(cliCheck.message);
+if (cmd === 'setup') {
+  const { runSetup } = await import('./setup-flow.js');
+  await runSetup();
+} else if (cmd === '--version' || cmd === '-v') {
+  const here = dirname(fileURLToPath(import.meta.url));
+  const pkg = JSON.parse(readFileSync(join(here, '..', 'package.json'), 'utf8'));
+  console.log(pkg.version);
+} else if (cmd === '--help' || cmd === '-h' || cmd === 'help') {
+  console.log(`switchbot-openclaw — MCP plugin for SwitchBot smart-home control
 
-// [2] 凭证是否已配置？（必须人工输入，不能自动化）
-const credCheck = await checkCredentials();
-if (!credCheck.ok) setupRequired(credCheck.message);
+Usage:
+  switchbot-openclaw             Start the stdio MCP server (default; used by MCP hosts).
+  switchbot-openclaw setup       Interactive CLI install + token bootstrap.
+  switchbot-openclaw --version   Print the plugin version.
+  switchbot-openclaw --help      Show this help.
 
-// [3] 若 policy 启用了 automation，确保 daemon 运行中
-await checkDaemon();
+See https://github.com/chenliuyun/switchbot-skill for full docs.`);
+} else {
+  // Default: bootstrap wrapper — auto-configure then hand off to switchbot mcp serve.
+  // MCP mode must NOT write to stdout (it's the JSON-RPC channel); use stderr for logs.
 
-// [4] exec switchbot mcp serve 替换当前进程，暴露完整 24 个 MCP 工具
-try {
-  execFileSync('switchbot', ['mcp', 'serve'], { stdio: 'inherit' });
-} catch (err) {
-  process.stderr.write(
-    `[switchbot-channel] switchbot mcp serve 退出：${err instanceof Error ? err.message : String(err)}\n`,
-  );
-  process.exit(1);
+  const { checkCli } = await import('../setup/check-cli.js');
+  const { checkCredentials } = await import('../setup/check-credentials.js');
+  const { checkDaemon } = await import('../setup/check-daemon.js');
+
+  function setupRequired(message) {
+    process.stderr.write(`[switchbot-channel] Setup required: ${message}\n`);
+    process.stdout.write(JSON.stringify({ setupRequired: true, message }) + '\n');
+    process.exit(1);
+  }
+
+  // [1] CLI installed? → auto-install if missing
+  const cliCheck = await checkCli();
+  if (!cliCheck.ok) setupRequired(cliCheck.message);
+
+  // [2] Credentials configured? (must be done by user — can't automate token input)
+  const credCheck = await checkCredentials();
+  if (!credCheck.ok) setupRequired(credCheck.message);
+
+  // [3] Daemon needed? → auto-start if automation rules are active
+  await checkDaemon();
+
+  // [4] Hand off to switchbot mcp serve — exposes all 24 MCP tools
+  try {
+    execFileSync('switchbot', ['mcp', 'serve'], { stdio: 'inherit' });
+  } catch (err) {
+    process.stderr.write(
+      `[switchbot-channel] switchbot mcp serve exited: ${err instanceof Error ? err.message : String(err)}\n`,
+    );
+    process.exit(1);
+  }
 }

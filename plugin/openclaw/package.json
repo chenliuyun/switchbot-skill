@@ -1,8 +1,19 @@
 {
-  "name": "@switchbot/openclaw-skill",
-  "version": "0.5.0",
+  "name": "@cly-org/switchbot-openclaw-skill",
+  "version": "0.7.0",
   "type": "module",
-  "description": "SwitchBot smart-home skill for OpenClaw",
+  "description": "OpenClaw plugin that drives @switchbot/openapi-cli >= 3.3.0. Exposes 6 MCP tools (devices_list/status/describe/command, scenes_list/run) for SwitchBot smart-home control.",
+  "author": {
+    "name": "chenliuyun",
+    "url": "https://github.com/chenliuyun"
+  },
+  "homepage": "https://github.com/chenliuyun/switchbot-skill/tree/main/plugin/openclaw",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/chenliuyun/switchbot-skill.git",
+    "directory": "plugin/openclaw"
+  },
+  "bugs": "https://github.com/chenliuyun/switchbot-skill/issues",
   "main": "index.js",
   "bin": {
     "switchbot-openclaw": "./bin/start.js",
@@ -10,9 +21,12 @@
   },
   "keywords": [
     "openclaw",
+    "clawhub",
     "switchbot",
     "mcp",
-    "smart-home"
+    "smart-home",
+    "iot",
+    "claude-plugin"
   ],
   "license": "MIT",
   "engines": {
@@ -23,18 +37,23 @@
     "open": "^10.0.0"
   },
   "peerDependencies": {
-    "@switchbot/openapi-cli": ">=3.0.0"
+    "@switchbot/openapi-cli": ">=3.3.0"
   },
   "files": [
     "index.js",
     "cli.js",
-    "channels/",
+    ".claude-plugin/",
+    ".mcp.json",
     "bin/",
     "setup/",
-    "policy-editor/"
+    "policy-editor/",
+    "README.md"
   ],
+  "publishConfig": {
+    "access": "public"
+  },
   "scripts": {
-    "test": "node --test tests/**/*.test.js",
+    "test": "node --test tests/*.test.js",
     "start": "node bin/start.js"
   }
 }

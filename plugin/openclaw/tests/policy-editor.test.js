@@ -1,6 +1,6 @@
 import { describe, it, before, after } from 'node:test';
 import assert from 'node:assert/strict';
-import { startEditorServer } from '../server.js';
+import { startEditorServer } from '../policy-editor/server.js';
 
 describe('policy editor server', () => {
   let server;
