@@ -9,6 +9,8 @@ This repo ships:
 - **An OpenClaw plugin** (`plugin/openclaw/`) published as
   [`@cly-org/switchbot-openclaw-skill`][npm] — 6 MCP tools, one-command
   install.
+- **A Codex plugin wrapper** (`plugins/switchbot/`) plus a repo-local
+  marketplace at `.agents/plugins/marketplace.json`.
 - **A skill** (`SKILL.md`) that teaches any LLM-backed agent how to drive
   the [`@switchbot/openapi-cli`][cli] safely — command surface, safety
   tiers, bootstrap sequence, common pitfalls.
@@ -51,7 +53,17 @@ Using Claude Desktop, Cursor, Zed, Windsurf, Continue.dev, or Cline
 instead of OpenClaw? The plugin is a standard MCP stdio server — see
 [`docs/mcp-clients.md`](./docs/mcp-clients.md) for per-host config.
 
-### B. File-based install (agents without OpenClaw)
+### B. Via Codex plugin marketplace
+
+This repo also ships a Codex plugin wrapper at `plugins/switchbot/` and a
+repo-local marketplace at `.agents/plugins/marketplace.json`.
+
+The Codex plugin loads the same `SKILL.md` guidance and starts the published
+OpenClaw MCP wrapper through `npx -y @cly-org/switchbot-openclaw-skill@0.7.0`.
+Use this path when you want Codex to install SwitchBot as a plugin rather than
+copying instruction files into a workspace.
+
+### C. File-based install (agents without OpenClaw or Codex plugins)
 
 ```bash
 git clone https://github.com/chenliuyun/switchbot-skill.git
@@ -233,6 +245,8 @@ Upgrade my SwitchBot skill for <agent-target> and update the CLI too.
 ├── SKILL.md                    # Agent-facing: authority, safety, bootstrap
 ├── manifest.json               # Skill manifest + compatibility metadata
 ├── plugin/openclaw/            # Published plugin @cly-org/switchbot-openclaw-skill
+├── plugins/switchbot/          # Codex plugin wrapper
+├── .agents/plugins/            # Repo-local Codex marketplace
 ├── examples/
 │   ├── policy.example.yaml     # Starting point
 │   └── policy.schema.json      # JSON Schema v0.2 for editor autocomplete

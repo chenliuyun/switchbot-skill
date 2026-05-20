@@ -61,6 +61,12 @@
     "npm": "https://www.npmjs.com/package/@cly-org/switchbot-openclaw-skill",
     "install": "openclaw plugins install @cly-org/switchbot-openclaw-skill"
   },
+  "codexPlugin": {
+    "status": "repo-marketplace",
+    "path": "./plugins/switchbot",
+    "marketplace": "./.agents/plugins/marketplace.json",
+    "mcpServer": "npx -y @cly-org/switchbot-openclaw-skill@0.7.0"
+  },
   "roadmap": {
     "source": "https://github.com/OpenWonderLabs/switchbot-openapi-cli/blob/main/docs/design/roadmap.md",
     "tracksCliPhase": ">=4",
