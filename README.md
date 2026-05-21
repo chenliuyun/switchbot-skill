@@ -1,71 +1,102 @@
 # SwitchBot Skill
 
-Control your SwitchBot smart home (lights, locks, curtains, sensors, plugs, IR
-appliances) from an AI agent — safely, with an explicit policy envelope and
-an audit log of every action.
+Control SwitchBot smart-home devices (lights, locks, curtains, sensors,
+plugs, IR appliances) from an AI agent — safely, with a policy envelope
+and an audit log of every action.
 
 This repo ships:
 
+- **A Codex plugin** (`packages/codex-plugin/`) — one-command install via
+  the repo-local marketplace, self-contained MCP server, policy-gated safety layer.
 - **An OpenClaw plugin** (`packages/openclaw-skill/`) published as
-  [`@cly-org/switchbot-openclaw-skill`][npm] — 6 MCP tools, one-command
-  install.
-- **A Codex plugin wrapper** (`packages/codex-plugin/`) plus a repo-local
-  marketplace at `.agents/plugins/marketplace.json`.
+  [`@cly-org/switchbot-openclaw-skill`][npm] — same 6 MCP tools, one-command install.
 - **A skill** (`SKILL.md`) that teaches any LLM-backed agent how to drive
   the [`@switchbot/openapi-cli`][cli] safely — command surface, safety
   tiers, bootstrap sequence, common pitfalls.
-- **A starter policy** (`examples/policy.example.yaml`) + JSON Schema for
-  aliases, quiet hours, confirmation rules, and rule-engine automations.
-
-The skill **does not duplicate CLI docs**. The CLI is authoritative; the
-skill teaches the agent how to read it.
+- **A starter policy** (`examples/policy.example.yaml`) for aliases,
+  quiet hours, and confirmation rules.
 
 [npm]: https://www.npmjs.com/package/@cly-org/switchbot-openclaw-skill
 [cli]: https://www.npmjs.com/package/@switchbot/openapi-cli
 
 ---
 
+## Prerequisites
+
+```bash
+node --version        # >= 18
+npm install -g @switchbot/openapi-cli@latest
+switchbot --version   # must be >= 3.3.0
+switchbot auth login  # browser login — stores token in OS keychain
+switchbot doctor      # all checks pass before you touch an agent
+```
+
+Get your token + secret from the SwitchBot mobile app:
+**Profile → Preferences → tap App Version 10× → Developer Options**.
+
+---
+
 ## Install
 
-### A. Via OpenClaw / ClawHub (recommended)
+### A. Codex (recommended)
+
+**Step 1 — Register the marketplace (one-time, per machine)**
+
+```bash
+codex plugin marketplace add /path/to/switchbot-skill
+```
+
+Replace `/path/to/switchbot-skill` with the path where you cloned this repo.
+On Windows:
+
+```powershell
+codex plugin marketplace add D:\workspace\claudecode\switchbot-skill
+```
+
+**Step 2 — Install the plugin**
+
+```bash
+codex plugin add switchbot@switchbot-skill
+```
+
+The onInstall hook checks your CLI version and credentials automatically.
+If credentials are missing it opens a browser login.
+
+**Step 3 — Open any project in Codex**
+
+The `switchbot` MCP server starts automatically. Try:
+
+> List my SwitchBot devices and tell me which ones are currently on.
+
+To upgrade after pulling new commits, remove and re-add the plugin:
+
+```bash
+codex plugin remove switchbot@switchbot-skill
+codex plugin add switchbot@switchbot-skill
+```
+
+---
+
+### B. OpenClaw / ClawHub
 
 ```bash
 openclaw plugins install @cly-org/switchbot-openclaw-skill
-switchbot-openclaw setup         # guided CLI install + token config
+switchbot-openclaw setup
 ```
 
 OpenClaw auto-detects the bundle manifest, launches the stdio MCP server,
-and exposes 6 tools: `devices_list`, `devices_status`, `devices_describe`,
-`devices_command`, `scenes_list`, `scenes_run`. Read tools absorb the CLI's
-known cache bug by forcing `--no-cache`; mutations write to
-`~/.switchbot/audit.log`.
+and exposes 6 tools. `switchbot-openclaw setup` verifies the CLI is
+installed, at `>=3.3.0`, and authenticated.
 
-`switchbot-openclaw setup` verifies the underlying
-`@switchbot/openapi-cli` is installed, at `>=3.3.0`, and authenticated —
-with paste-friendly fix commands at every step. Already set up? The
-plugin detects the "not installed" and "no credentials" cases at
-runtime too and surfaces the same guidance as an MCP tool error.
+Per-host config for Claude Desktop, Cursor, Zed, Windsurf, Continue.dev,
+or Cline: [`docs/mcp-clients.md`](./docs/mcp-clients.md).
 
-Verification, uninstall, and plugin-specific troubleshooting:
+Verification, uninstall, and troubleshooting:
 [`docs/openclaw-plugin-install.md`](./docs/openclaw-plugin-install.md).
 
-Using Claude Desktop, Cursor, Zed, Windsurf, Continue.dev, or Cline
-instead of OpenClaw? The plugin is a standard MCP stdio server — see
-[`docs/mcp-clients.md`](./docs/mcp-clients.md) for per-host config.
+---
 
-### B. Via Codex
-
-Open a new Codex session and paste:
-
-```
-Fetch and follow: https://raw.githubusercontent.com/chenliuyun/switchbot-skill/main/CODEX_INSTALL.md
-```
-
-The agent installs the CLI, patches `~/.codex/config.toml`, writes `AGENTS.md`,
-and opens a browser login. The only manual step is signing in to your SwitchBot
-account in the browser.
-
-### C. File-based install (agents without OpenClaw or Codex plugins)
+### C. File-based install (agents without Codex or OpenClaw)
 
 ```bash
 git clone https://github.com/chenliuyun/switchbot-skill.git
@@ -78,32 +109,30 @@ cd switchbot-skill
 Supported `--agent` targets: `claude-global`, `claude-project`, `copilot`,
 `cursor`, `cursor-legacy`, `gemini-global`, `gemini-project`,
 `codex-global`, `codex-project`. Workspace-scoped agents also need
-`--workspace-path <dir>`. Per-agent notes in
-[`docs/agents/`](./docs/agents/).
+`--workspace-path <dir>`. Per-agent notes in [`docs/agents/`](./docs/agents/).
 
 ---
 
-## Prerequisites (both paths)
+## MCP Tools
 
-```bash
-node --version              # >= 18
-switchbot --version         # >= 3.3.0   (older versions silently hit documented footguns)
-switchbot doctor            # all checks ✓; summary "N ok, 0 warn, 0 fail"
-```
+All three install paths expose the same 6 tools:
 
-Get your token + secret from the SwitchBot mobile app:
-**Profile → Preferences → tap App Version 10× → Developer Options**.
-Treat them like a password — `switchbot config set-token` writes them
-to `~/.switchbot/config.json` with `0600` permissions. Multiple accounts?
-Use `--profile <name>`.
+| Tool | Safety tier | Description |
+|---|---|---|
+| `devices_list` | read | List all devices |
+| `devices_status` | read | Get device status |
+| `devices_describe` | read | Get device type and capabilities |
+| `devices_command` | mutation / destructive | Send a command to a device |
+| `scenes_list` | read | List all scenes |
+| `scenes_run` | mutation | Run a scene |
 
-If `switchbot --version` is below 3.3.0, run
-`npm install -g @switchbot/openapi-cli@latest`. The skill refuses to run
-against older CLIs — see [`troubleshooting.md`](./troubleshooting.md).
+`devices_command` with a lock command (`lockOff`) is **destructive** —
+the agent must pass `confirmed: true` after explicit user consent.
+Mutation tools automatically append to `~/.switchbot/audit.log`.
 
 ---
 
-## First run (15 minutes)
+## First Run (5 minutes)
 
 ### 1. Verify the CLI works without the agent
 
@@ -111,14 +140,13 @@ against older CLIs — see [`troubleshooting.md`](./troubleshooting.md).
 switchbot devices list
 ```
 
-A table of your devices confirms the CLI is end-to-end working **before**
+A table of your devices confirms the CLI is end-to-end working before
 you involve the agent.
 
-### 2. Edit `policy.yaml`
+### 2. Set up aliases in policy.yaml (optional but recommended)
 
-Path A and `--init-policy` already wrote
-`~/.config/openclaw/switchbot/policy.yaml` (schema v0.2). Set the
-`aliases:` block so the agent understands your room names:
+`--init-policy` (path C) creates `~/.config/openclaw/switchbot/policy.yaml`.
+Set the `aliases:` block so the agent understands your room names:
 
 ```yaml
 aliases:
@@ -126,116 +154,54 @@ aliases:
   "bedroom AC":        "02-202502111234-85411230"
 ```
 
-Device IDs come from `switchbot devices list --format=tsv`. Then:
+Device IDs come from `switchbot devices list`. Then validate:
 
 ```bash
 switchbot policy validate
 ```
 
-If validation fails, the CLI points at the exact line and suggests a fix
-(lowercase deviceId, missing `end:` on a quiet-hours block, a
-`destructive` action inside `never_confirm`, etc.).
-
 ### 3. Ask your agent
 
 > List my SwitchBot devices and tell me which ones are currently on.
 
-The agent should run `switchbot agent-bootstrap --compact` to learn your
-setup, enumerate devices via `devices list --json` + `devices status`,
-and report in plain language. If it asks for your token or invents
-device IDs, see
+If the agent asks for your token or invents device IDs, see
 [`troubleshooting.md`](./troubleshooting.md#agent-ignores-the-skill).
 
 ---
 
-## Safety model
+## Safety Model
 
-Every action is classified into one of five tiers, taken from
-`switchbot capabilities --json`:
-
-| Tier | Examples | Default |
+| Tier | Examples | Default behavior |
 |---|---|---|
-| `read` | device list, status queries | Run freely. |
-| `ir-fire-forget` | TV power, AC mode (IR, no state feedback) | Run; flag that verification isn't possible. |
-| `mutation` | turn on/off, set brightness | Run; append to `audit.log`. |
-| `destructive` | unlock, delete scene | **Refuse** without explicit user confirmation. |
-| `maintenance` | factory-reset etc. (unused today) | Always confirm. |
+| `read` | list, status queries | Run freely |
+| `mutation` | turn on/off, set brightness | Run; append to `audit.log` |
+| `destructive` | lock commands (`lockOff`) | Refuse without `confirmed: true` |
 
-Override per-action or per-device in the `confirmations:` section of
-`policy.yaml`. Full rules in [SKILL.md](./SKILL.md).
+The Codex plugin enforces these tiers in code (not just prompt instructions)
+via a two-layer pipeline: Layer 1 checks `policy.yaml` (quiet hours,
+allowed devices, blocked commands); Layer 2 gates destructive commands behind
+explicit confirmation. Full rules in [SKILL.md](./SKILL.md).
 
 ---
 
-## Real-time events (optional)
+## Upgrade & Uninstall
 
-Stream SwitchBot shadow updates (motion, contact, buttons) so the agent
-can react as they happen:
+**Codex:**
 
 ```bash
-# standalone tail
-switchbot events mqtt-tail --json
-
-# forward into an OpenClaw gateway
-switchbot events mqtt-tail \
-  --sink openclaw \
-  --openclaw-url http://localhost:18789 \
-  --openclaw-token "$OPENCLAW_TOKEN"
+codex plugin remove switchbot@switchbot-skill
+codex plugin add switchbot@switchbot-skill
 ```
 
-Real-hardware MQTT → OpenClaw walkthrough:
-[`docs/openclaw-status-sync-e2e.md`](./docs/openclaw-status-sync-e2e.md).
-
----
-
-## Roadmap
-
-**You are at L3** — fully autonomous inside the policy envelope. The
-skill drafts rules from intent via `rules suggest`, injects them with
-`policy add-rule` (showing a one-time diff for approval), then the rules
-engine fires them indefinitely. L1 (manual, one command per mutation)
-and L2 (propose-then-approve plans) remain available. All three require
-CLI ≥ 3.3.0.
-
-The CLI's own phase numbering is separate — see the [authoritative
-roadmap][cli-roadmap] in the CLI repo.
-
-[cli-roadmap]: https://github.com/OpenWonderLabs/switchbot-openapi-cli/blob/main/docs/design/roadmap.md
-
----
-
-## Upgrade & uninstall
+**File-based:**
 
 ```bash
-# upgrade: pulls the latest repo, refreshes the agent install, updates the CLI
-./scripts/upgrade.sh --agent claude-global
-
-# uninstall: removes the agent file; add --remove-cli / --remove-policy /
-# --remove-credentials to also wipe the CLI, policy, or secrets.
-./scripts/uninstall.sh --agent claude-global
+./scripts/upgrade.sh --agent claude-global     # pull + refresh
+./scripts/uninstall.sh --agent claude-global   # remove agent file
+# add --remove-cli / --remove-policy / --remove-credentials to wipe more
 ```
 
-PowerShell equivalents: `./scripts/upgrade.ps1` / `./scripts/uninstall.ps1`
-with `-Agent <name>`. Workspace-scoped targets also need
-`--workspace-path <dir>`.
-
-Agent-driven upgrade (let the agent update itself):
-
-```text
-Retrieve and follow the instructions at:
-https://raw.githubusercontent.com/chenliuyun/switchbot-skill/main/UPGRADE_FOR_AGENTS.md
-
-Upgrade my SwitchBot skill for <agent-target> and update the CLI too.
-```
-
----
-
-## What the skill does NOT do
-
-| Out of scope | Notes |
-|---|---|
-| Template variables in rule `then[]` args (`{{ device.status }}`) | Schema v0.3 feature; not yet in the rules engine. |
-| `policy remove-rule` / `policy edit-rule` | Users edit `policy.yaml` directly. |
-| LLM-backed trigger/schedule inference | `rules suggest` is pure heuristics, no AI inside. |
+PowerShell: `./scripts/upgrade.ps1` / `./scripts/uninstall.ps1` with `-Agent <name>`.
 
 ---
 
@@ -243,37 +209,37 @@ Upgrade my SwitchBot skill for <agent-target> and update the CLI too.
 
 ```
 .
-├── README.md                   # You are here
-├── SKILL.md                    # Agent-facing: authority, safety, bootstrap
-├── manifest.json               # Skill manifest + compatibility metadata
-├── packages/openclaw-skill/        # Published plugin @cly-org/switchbot-openclaw-skill
-├── packages/codex-plugin/          # Codex plugin wrapper
-├── .agents/plugins/            # Repo-local Codex marketplace
+├── README.md
+├── SKILL.md                        # Agent-facing: safety rules and bootstrap
+├── manifest.json                   # Skill manifest + compatibility metadata
+├── packages/
+│   ├── codex-plugin/               # Codex plugin v0.8.0 (self-contained MCP)
+│   │   ├── bin/server.js           # MCP server entry point
+│   │   ├── src/                    # server, tools, policy, executor
+│   │   ├── setup/                  # CLI + credential checks
+│   │   ├── .mcp.json               # Patched at install time with absolute path
+│   │   └── .codex-plugin/          # plugin.json + hooks.json
+│   └── openclaw-skill/             # Published @cly-org/switchbot-openclaw-skill
+├── .agents/plugins/marketplace.json  # Repo-local Codex plugin marketplace
 ├── examples/
-│   ├── policy.example.yaml     # Starting point
-│   └── policy.schema.json      # JSON Schema v0.2 for editor autocomplete
-├── scripts/                    # install / upgrade / uninstall (.sh + .ps1)
+│   ├── policy.example.yaml
+│   └── policy.schema.json
+├── scripts/                        # install / upgrade / uninstall (.sh + .ps1)
 ├── docs/
 │   ├── openclaw-plugin-install.md
-│   ├── openclaw-status-sync-e2e.md
-│   └── agents/                 # Per-agent install recipes
-├── troubleshooting.md
-├── LICENSE                     # MIT
-└── CHANGELOG.md
+│   └── agents/                     # Per-agent install recipes
+└── troubleshooting.md
 ```
 
 ---
 
-## Versioning & support
+## Versioning & Support
 
-Follows [SemVer][semver]. `manifest.json → authority.cli` pins the
-minimum CLI version; the agent refuses to run against older CLIs rather
-than guess at missing features. Breaking `policy.yaml` changes bump the
-minor version with a migration note in `CHANGELOG.md`.
+Follows [SemVer][semver]. `manifest.json → authority.cli` pins the minimum
+CLI version; the agent refuses to run against older CLIs rather than guess
+at missing features.
 
-Issues: <https://github.com/chenliuyun/switchbot-skill/issues>.
-Please don't open CLI-docs PRs to paper over skill quirks — the CLI is
-authoritative; the skill adapts.
+Issues: <https://github.com/chenliuyun/switchbot-skill/issues>
 
 [semver]: https://semver.org/
 
