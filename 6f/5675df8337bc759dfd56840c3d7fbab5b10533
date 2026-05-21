@@ -1,0 +1,22 @@
+plugins/switchbot/setup/check-cli.js
+  s_f747f12c72fa2c::t_3fcd93cb60a374 1-57
+plugins/switchbot/tests/setup.test.js
+  s_f747f12c72fa2c::t_649d8082bf4ce7 1-38,54
+  s_f747f12c72fa2c::t_416b11dc888236 39-53
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.11",
+  "base_commit_sha": "6f5675df8337bc759dfd56840c3d7fbab5b10533",
+  "prompts": {},
+  "sessions": {
+    "s_f747f12c72fa2c": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "fdade7b7-d423-40f1-bf71-642ae476520c",
+        "model": "claude-sonnet-4-6"
+      },
+      "human_author": null
+    }
+  }
+}
