@@ -102,6 +102,26 @@ What the installer does:
 - optionally installs `@switchbot/openapi-cli`
 - optionally creates and validates `~/.config/openclaw/switchbot/policy.yaml`
 
+## Step 3.5: Enable plugin hooks (Codex only, optional)
+
+If the user is installing via the Codex plugin marketplace and wants the
+login step to trigger automatically at install time, they need to enable
+plugin hooks in their Codex configuration. The feature is off by default
+in the current release.
+
+Add the following to `~/.codex/config.toml`:
+
+```toml
+[features]
+plugin_hooks = true
+```
+
+Without this flag, the `onInstall` hook in the plugin will not run.
+The user will still need to run `switchbot auth login` manually (Step 4).
+
+This step is not needed for the `codex-global` / `codex-project`
+file-based installs — those do not use hooks.
+
 ## Step 4: Credentials
 
 Have the user run this themselves in a terminal:
