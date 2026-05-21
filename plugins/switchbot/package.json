@@ -1,0 +1,45 @@
+{
+  "name": "@cly-org/switchbot-codex-plugin",
+  "version": "0.7.1",
+  "type": "module",
+  "description": "SwitchBot Codex plugin — ON_INSTALL auth entrypoint for @switchbot/openapi-cli",
+  "author": {
+    "name": "chenliuyun",
+    "url": "https://github.com/chenliuyun"
+  },
+  "homepage": "https://github.com/chenliuyun/switchbot-skill/tree/main/plugins/switchbot",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/chenliuyun/switchbot-skill.git",
+    "directory": "plugins/switchbot"
+  },
+  "bugs": "https://github.com/chenliuyun/switchbot-skill/issues",
+  "license": "MIT",
+  "keywords": [
+    "codex",
+    "switchbot",
+    "smart-home",
+    "iot",
+    "mcp"
+  ],
+  "engines": { "node": ">=18" },
+  "bin": {
+    "switchbot-codex-auth": "./bin/auth.js"
+  },
+  "files": [
+    "bin/",
+    "setup/",
+    "skills/",
+    ".codex-plugin/",
+    ".mcp.json"
+  ],
+  "peerDependencies": {
+    "@switchbot/openapi-cli": ">=3.3.0"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "test": "node --test tests/*.test.js"
+  }
+}
