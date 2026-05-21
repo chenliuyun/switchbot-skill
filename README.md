@@ -55,90 +55,50 @@ instead of OpenClaw? The plugin is a standard MCP stdio server — see
 
 ### B. Via Codex plugin marketplace
 
-This repo ships a Codex plugin at `packages/codex-plugin/` with a repo-local
-marketplace at `.agents/plugins/marketplace.json`. The plugin loads `SKILL.md`
-guidance and starts the MCP server via
-`npx -y @cly-org/switchbot-openclaw-skill@latest`.
-
-#### Step 1 — Prerequisites
+Clone this repo, then run one command:
 
 ```bash
-node --version          # >= 18
-npm install -g @switchbot/openapi-cli@latest
-switchbot --version     # should print >= 3.3.0
+# macOS / Linux
+git clone https://github.com/chenliuyun/switchbot-skill.git && bash switchbot-skill/scripts/setup-codex.sh
 ```
 
-#### Step 2 — Enable plugin hooks (recommended)
-
-Plugin hooks are **off by default** in the current Codex release. Without this
-flag, the `onInstall` hook that triggers browser login will not run — you will
-need to run `switchbot auth login` manually in Step 4.
-
-Add to `~/.codex/config.toml`:
-
-```toml
-[features]
-plugin_hooks = true
+```powershell
+# Windows (PowerShell)
+git clone https://github.com/chenliuyun/switchbot-skill.git; pwsh switchbot-skill/scripts/setup-codex.ps1
 ```
 
-#### Step 3 — Clone this repo
+Already cloned? Update and re-run:
 
 ```bash
-git clone https://github.com/chenliuyun/switchbot-skill.git
-cd switchbot-skill
+git -C switchbot-skill pull origin main && bash switchbot-skill/scripts/setup-codex.sh
 ```
 
-If the repo is already present, update it first:
+**What the script does automatically:**
+
+1. Installs `@switchbot/openapi-cli@latest` via npm
+2. Adds `plugin_hooks = true` to `~/.codex/config.toml` (enables the `onInstall` hook)
+3. Writes `AGENTS.md` to `~/.codex/` (file-based skill install)
+4. Opens a browser to the SwitchBot login page — **sign in once; credentials go to the OS keychain**
+5. Runs `switchbot doctor` to verify
+
+Step 4 is the only interactive step. If you are in a headless or SSH environment, pass `--no-open` directly after the script starts the login:
 
 ```bash
-cd switchbot-skill
-git pull origin main
+# The script will print this fallback — run it in another terminal instead:
+switchbot auth login --no-open
 ```
 
-#### Step 4 — Install the plugin
-
-Point Codex at the repo-local marketplace and install:
+Already authenticated? Skip the login step:
 
 ```bash
-codex plugins install --marketplace .agents/plugins/marketplace.json switchbot
+bash scripts/setup-codex.sh --no-auth
+# PowerShell: pwsh scripts/setup-codex.ps1 -NoAuth
 ```
 
-If `plugin_hooks = true` was set in Step 2, Codex runs the `onInstall` hook
-automatically — a browser window opens to the SwitchBot login page and stores
-your credentials in the OS keychain. No token copy-paste needed.
-
-If the hook did not run (feature flag off, headless environment, or manual
-preference), authenticate now:
+After the script completes, verify with:
 
 ```bash
-switchbot auth login           # opens browser
-# or in a headless/SSH environment:
-switchbot auth login --no-open # prints a URL you open on any machine
-```
-
-#### Step 5 — Verify
-
-```bash
-switchbot --version       # >= 3.3.0
-switchbot doctor          # should end with "0 fail"
-switchbot devices list    # returns your device list
-```
-
-If `doctor` reports failures, follow the printed fix commands or see
-[`troubleshooting.md`](./troubleshooting.md).
-
-#### File-based alternative (no Codex plugin support needed)
-
-If you prefer not to use the plugin marketplace, the installer scripts write
-`AGENTS.md` directly to `~/.codex/` or a project workspace:
-
-```bash
-./scripts/install.sh --agent codex-global --install-cli --init-policy
-# project-local:
-./scripts/install.sh --agent codex-project --workspace-path /path/to/workspace
-
-# PowerShell:
-pwsh ./scripts/install.ps1 -Agent codex-global -InstallCli -InitPolicy
+switchbot devices list   # should list your devices
 ```
 
 ### C. File-based install (agents without OpenClaw or Codex plugins)
