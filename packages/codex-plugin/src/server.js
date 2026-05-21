@@ -21,7 +21,10 @@ export function createMcpServer() {
   server.setRequestHandler(CallToolRequestSchema, async (request) => {
     const { name, arguments: args = {} } = request.params;
 
-    const policy = await loadPolicy().catch(() => null);
+    const policy = await loadPolicy().catch((err) => {
+      if (err.code !== 'ENOENT') process.stderr.write(`[switchbot-mcp] policy load error: ${err.message}\n`);
+      return null;
+    });
 
     const policyResult = checkPolicy(policy, {
       tool: name,
@@ -31,6 +34,7 @@ export function createMcpServer() {
 
     if (policyResult.blocked) {
       return {
+        isError: true,
         content: [
           {
             type: 'text',
@@ -44,10 +48,15 @@ export function createMcpServer() {
       };
     }
 
-    const result = await callTool(name, args, { policy });
-    return {
-      content: [{ type: 'text', text: JSON.stringify(result) }],
-    };
+    try {
+      const result = await callTool(name, args, { policy });
+      return { content: [{ type: 'text', text: JSON.stringify(result) }] };
+    } catch (err) {
+      return {
+        isError: true,
+        content: [{ type: 'text', text: err.message ?? String(err) }],
+      };
+    }
   });
 
   return server;

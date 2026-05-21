@@ -1,6 +1,8 @@
 import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
 import { TOOL_DEFINITIONS } from '../src/tools.js';
+import { createMcpServer } from '../src/server.js';
+import { Server } from '@modelcontextprotocol/sdk/server/index.js';
 
 const EXPECTED_TOOLS = [
   'devices_list',
@@ -55,5 +57,42 @@ describe('TOOL_DEFINITIONS', () => {
         `${tool.name} description missing 'Safety tier'`,
       );
     }
+  });
+});
+
+describe('createMcpServer', () => {
+  it('returns a Server instance', () => {
+    const server = createMcpServer();
+    assert.ok(server instanceof Server, 'should return a Server instance');
+  });
+
+  it('can be created without errors', () => {
+    assert.doesNotThrow(() => createMcpServer());
+  });
+});
+
+describe('createMcpServer handlers', () => {
+  it('ListTools returns all 6 tools', async () => {
+    const server = createMcpServer();
+    const handler = server._requestHandlers.get('tools/list');
+    assert.ok(handler, 'tools/list handler not registered');
+    const response = await handler({ method: 'tools/list', params: {} });
+    assert.equal(response.tools.length, 6);
+    const names = response.tools.map((t) => t.name);
+    for (const expected of EXPECTED_TOOLS) {
+      assert.ok(names.includes(expected), `Missing: ${expected}`);
+    }
+  });
+
+  it('CallTool returns isError:true for unknown tool name', async () => {
+    const server = createMcpServer();
+    const handler = server._requestHandlers.get('tools/call');
+    assert.ok(handler, 'tools/call handler not registered');
+    const response = await handler({ method: 'tools/call', params: { name: 'unknown_tool', arguments: {} } });
+    assert.equal(response.isError, true, 'expected isError:true for unknown tool');
+    assert.ok(
+      response.content[0].text.includes('unknown tool'),
+      `expected "unknown tool" in error text, got: ${response.content[0].text}`,
+    );
   });
 });
