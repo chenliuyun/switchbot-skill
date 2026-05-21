@@ -6,7 +6,7 @@ const defaultExec = promisify(execFile);
 
 const DESTRUCTIVE_COMMANDS = new Set(['lockOff']);
 
-const AUDIT_LOG_PATH = '~/.config/openclaw/switchbot/audit.log';
+const AUDIT_LOG_PATH = '~/.switchbot/audit.log';
 
 export function getTier(toolName, command, policy) {
   if (

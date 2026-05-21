@@ -1,4 +1,4 @@
-﻿import { execFile } from 'node:child_process';
+import { execFile } from 'node:child_process';
 import { promisify } from 'node:util';
 
 const exec = promisify(execFile);
@@ -6,7 +6,8 @@ const exec = promisify(execFile);
 async function tryDoctor() {
   try {
     const { stdout } = await exec('switchbot', ['doctor', '--json'], { timeout: 10000 });
-    const data = (JSON.parse(stdout)?.data ?? JSON.parse(stdout));
+    const parsed = JSON.parse(stdout);
+    const data = parsed?.data ?? parsed;
     return data?.credentials?.configured === true;
   } catch (err) {
     if (err?.code === 'ENOENT') throw err;

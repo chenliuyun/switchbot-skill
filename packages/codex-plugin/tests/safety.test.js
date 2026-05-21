@@ -104,7 +104,7 @@ describe('looksLikeAuthError', () => {
   it('returns false for empty string', () => assert.ok(!looksLikeAuthError('')));
 });
 
-import { getTier, callTool, TOOL_DEFINITIONS } from '../src/tools.js';
+import { getTier, callTool } from '../src/tools.js';
 
 describe('getTier', () => {
   it('devices_list → read', () => assert.equal(getTier('devices_list', undefined, null), 'read'));
