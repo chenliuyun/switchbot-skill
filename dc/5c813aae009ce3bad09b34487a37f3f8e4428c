@@ -1,0 +1,19 @@
+INSTALL_FOR_AGENTS.md
+  s_f747f12c72fa2c::t_2a2a60fa5b08f6 105-124
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.11",
+  "base_commit_sha": "dc5c813aae009ce3bad09b34487a37f3f8e4428c",
+  "prompts": {},
+  "sessions": {
+    "s_f747f12c72fa2c": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "fdade7b7-d423-40f1-bf71-642ae476520c",
+        "model": "claude-sonnet-4-6"
+      },
+      "human_author": "chenliuyun <chenliuyun@onero.com>"
+    }
+  }
+}
