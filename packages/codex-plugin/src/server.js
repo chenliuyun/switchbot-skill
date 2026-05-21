@@ -5,6 +5,7 @@ import {
   CallToolRequestSchema,
 } from '@modelcontextprotocol/sdk/types.js';
 import { fileURLToPath } from 'node:url';
+import { resolve } from 'node:path';
 import { TOOL_DEFINITIONS, callTool } from './tools.js';
 import { loadPolicy, checkPolicy } from './policy.js';
 
@@ -63,7 +64,7 @@ export function createMcpServer() {
 }
 
 const __filename = fileURLToPath(import.meta.url);
-if (process.argv[1] === __filename) {
+if (process.argv[1] && resolve(process.argv[1]) === resolve(__filename)) {
   const server = createMcpServer();
   const transport = new StdioServerTransport();
   await server.connect(transport);
