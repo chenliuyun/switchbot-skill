@@ -103,3 +103,101 @@ describe('looksLikeAuthError', () => {
   it('returns false for unrelated text', () => assert.ok(!looksLikeAuthError('device not found')));
   it('returns false for empty string', () => assert.ok(!looksLikeAuthError('')));
 });
+
+import { getTier, callTool, TOOL_DEFINITIONS } from '../src/tools.js';
+
+describe('getTier', () => {
+  it('devices_list → read', () => assert.equal(getTier('devices_list', undefined, null), 'read'));
+  it('devices_status → read', () => assert.equal(getTier('devices_status', undefined, null), 'read'));
+  it('devices_describe → read', () => assert.equal(getTier('devices_describe', undefined, null), 'read'));
+  it('scenes_list → read', () => assert.equal(getTier('scenes_list', undefined, null), 'read'));
+
+  it('scenes_run defaults to mutation', () => {
+    assert.equal(getTier('scenes_run', undefined, null), 'mutation');
+  });
+
+  it('scenes_run upgrades to destructive when policy.scenesTier = destructive', () => {
+    assert.equal(getTier('scenes_run', undefined, { scenesTier: 'destructive' }), 'destructive');
+  });
+
+  it('devices_command with lockOff → destructive', () => {
+    assert.equal(getTier('devices_command', 'lockOff', null), 'destructive');
+  });
+
+  it('devices_command with turnOn → mutation', () => {
+    assert.equal(getTier('devices_command', 'turnOn', null), 'mutation');
+  });
+
+  it('devices_command with setBrightness → mutation', () => {
+    assert.equal(getTier('devices_command', 'setBrightness', null), 'mutation');
+  });
+});
+
+describe('callTool', () => {
+  it('destructive command without confirmed returns requiresConfirmation:true', async () => {
+    const fakeExec = async () => { throw new Error('should not be called'); };
+    const result = await callTool('devices_command',
+      { deviceId: 'id1', command: 'lockOff' },
+      { exec: fakeExec, policy: null }
+    );
+    assert.equal(result.requiresConfirmation, true);
+    assert.equal(result.safetyTier, 'destructive');
+    assert.ok(result.message.includes('lockOff'));
+    assert.equal(result.auditLogPath, undefined);
+  });
+
+  it('destructive command with confirmed:true executes and includes auditLogPath', async () => {
+    let capturedArgs;
+    const fakeExec = async (cmd, args) => {
+      capturedArgs = args;
+      return { stdout: JSON.stringify({ status: 'success' }) };
+    };
+    const result = await callTool('devices_command',
+      { deviceId: 'id1', command: 'lockOff', confirmed: true },
+      { exec: fakeExec, policy: null }
+    );
+    assert.equal(result.requiresConfirmation, false);
+    assert.equal(result.safetyTier, 'destructive');
+    assert.ok(result.auditLogPath, 'auditLogPath must be present for destructive');
+    assert.ok(capturedArgs.includes('--audit-log'));
+  });
+
+  it('mutation command executes with --audit-log and includes auditLogPath', async () => {
+    let capturedArgs;
+    const fakeExec = async (cmd, args) => {
+      capturedArgs = args;
+      return { stdout: JSON.stringify({ status: 'ok' }) };
+    };
+    const result = await callTool('devices_command',
+      { deviceId: 'id1', command: 'turnOn' },
+      { exec: fakeExec, policy: null }
+    );
+    assert.equal(result.safetyTier, 'mutation');
+    assert.equal(result.requiresConfirmation, false);
+    assert.ok(result.auditLogPath);
+    assert.ok(capturedArgs.includes('--audit-log'));
+  });
+
+  it('read tool executes without --audit-log and no auditLogPath', async () => {
+    let capturedArgs;
+    const fakeExec = async (cmd, args) => {
+      capturedArgs = args;
+      return { stdout: JSON.stringify([]) };
+    };
+    const result = await callTool('devices_list', {}, { exec: fakeExec, policy: null });
+    assert.equal(result.safetyTier, 'read');
+    assert.equal(result.requiresConfirmation, false);
+    assert.equal(result.auditLogPath, undefined);
+    assert.ok(!capturedArgs.includes('--audit-log'));
+  });
+
+  it('scenes_run with scenesTier:destructive and no confirmed returns requiresConfirmation', async () => {
+    const fakeExec = async () => { throw new Error('should not be called'); };
+    const result = await callTool('scenes_run',
+      { sceneId: 's1' },
+      { exec: fakeExec, policy: { scenesTier: 'destructive' } }
+    );
+    assert.equal(result.requiresConfirmation, true);
+    assert.equal(result.safetyTier, 'destructive');
+  });
+});

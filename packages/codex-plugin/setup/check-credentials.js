@@ -1,26 +1,21 @@
 import { execFile } from 'node:child_process';
 import { promisify } from 'node:util';
 
-async function tryConfigShow(exec) {
+async function tryDoctor(exec) {
   try {
-    const { stdout } = await exec('switchbot', ['config', 'show', '--json'], { timeout: 8000 });
-    const result = JSON.parse(stdout);
-    const data = result?.data ?? result;
-    return typeof data?.token === 'string' && data.token.length > 0
-        && typeof data?.secret === 'string' && data.secret.length > 0;
-  } catch {
+    const { stdout } = await exec('switchbot', ['doctor', '--json'], { timeout: 10000 });
+    const data = (JSON.parse(stdout)?.data ?? JSON.parse(stdout));
+    return data?.credentials?.configured === true;
+  } catch (err) {
+    if (err?.code === 'ENOENT') throw err;
     return false;
   }
 }
 
-async function tryKeychainGet(exec) {
+async function tryKeychainDescribe(exec) {
   try {
-    const { stdout } = await exec(
-      'switchbot', ['auth', 'keychain', 'get', '--json'], { timeout: 8000 }
-    );
-    const result = JSON.parse(stdout);
-    const data = result?.data ?? result;
-    return data?.present === true;
+    await exec('switchbot', ['auth', 'keychain', 'describe', '--json'], { timeout: 8000 });
+    return true;
   } catch {
     return false;
   }
@@ -28,8 +23,12 @@ async function tryKeychainGet(exec) {
 
 export function makeCheckCredentials(exec) {
   return async function checkCredentials() {
-    if (await tryConfigShow(exec)) return { ok: true, source: 'config' };
-    if (await tryKeychainGet(exec))  return { ok: true, source: 'keychain' };
+    try {
+      if (await tryDoctor(exec)) return { ok: true, source: 'doctor' };
+    } catch {
+      // CLI missing — fall through to keychain
+    }
+    if (await tryKeychainDescribe(exec)) return { ok: true, source: 'keychain' };
     return {
       ok: false,
       message: 'SwitchBot credentials not configured. Run: switchbot auth login',
