@@ -1,0 +1,23 @@
+INSTALL_FOR_AGENTS.md
+  s_f747f12c72fa2c::t_98e8bc70a6d6a2 110-119,122-128
+plugins/switchbot/.codex-plugin/hooks.json
+  s_f747f12c72fa2c::t_b45fa6bf950c8d 1-6
+plugins/switchbot/.codex-plugin/plugin.json
+  s_f747f12c72fa2c::t_718354bc52c340 22
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.11",
+  "base_commit_sha": "f43f4fcd0196f686c603686e89e7844141f7c6ea",
+  "prompts": {},
+  "sessions": {
+    "s_f747f12c72fa2c": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "fdade7b7-d423-40f1-bf71-642ae476520c",
+        "model": "claude-sonnet-4-6"
+      },
+      "human_author": "chenliuyun <chenliuyun@onero.com>"
+    }
+  }
+}
