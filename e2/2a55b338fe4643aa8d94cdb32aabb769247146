@@ -1,0 +1,19 @@
+plugin/openclaw/setup/check-credentials.js
+  s_f747f12c72fa2c::t_4a88d469379771 7,10-13,15,17,19-30,32-34,39
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.11",
+  "base_commit_sha": "e22a55b338fe4643aa8d94cdb32aabb769247146",
+  "prompts": {},
+  "sessions": {
+    "s_f747f12c72fa2c": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "fdade7b7-d423-40f1-bf71-642ae476520c",
+        "model": "claude-sonnet-4-6"
+      },
+      "human_author": "chenliuyun <chenliuyun@onero.com>"
+    }
+  }
+}
