@@ -1,8 +1,8 @@
 {
   "name": "@cly-org/switchbot-codex-plugin",
-  "version": "0.7.1",
+  "version": "0.8.0",
   "type": "module",
-  "description": "SwitchBot Codex plugin — ON_INSTALL auth entrypoint for @switchbot/openapi-cli",
+  "description": "SwitchBot Codex plugin — self-contained MCP server with policy-gated safety layer",
   "author": {
     "name": "chenliuyun",
     "url": "https://github.com/chenliuyun"
@@ -15,13 +15,7 @@
   },
   "bugs": "https://github.com/chenliuyun/switchbot-skill/issues",
   "license": "MIT",
-  "keywords": [
-    "codex",
-    "switchbot",
-    "smart-home",
-    "iot",
-    "mcp"
-  ],
+  "keywords": ["codex", "switchbot", "smart-home", "iot", "mcp"],
   "engines": { "node": ">=18" },
   "bin": {
     "switchbot-codex-auth": "./bin/auth.js"
@@ -30,9 +24,14 @@
     "bin/",
     "setup/",
     "skills/",
+    "src/",
     ".codex-plugin/",
     ".mcp.json"
   ],
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.0.0",
+    "js-yaml": "^4.1.0"
+  },
   "peerDependencies": {
     "@switchbot/openapi-cli": ">=3.3.0"
   },
