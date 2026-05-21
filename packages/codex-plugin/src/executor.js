@@ -1,7 +1,7 @@
 import { execFile } from 'node:child_process';
 import { promisify } from 'node:util';
 
-const defaultExec = promisify(execFile);
+export const defaultExec = promisify(execFile);
 
 const READ_TOOLS = new Set([
   'devices_list',

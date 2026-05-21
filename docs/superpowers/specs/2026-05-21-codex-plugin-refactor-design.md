@@ -155,7 +155,7 @@ Mutation and destructive tools additionally include `auditLogPath`:
   "result": {},
   "safetyTier": "mutation",
   "requiresConfirmation": false,
-  "auditLogPath": "~/.config/openclaw/switchbot/audit.log"
+  "auditLogPath": "~/.switchbot/audit.log"
 }
 ```
 

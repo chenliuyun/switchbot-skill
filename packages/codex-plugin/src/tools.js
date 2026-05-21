@@ -1,8 +1,4 @@
-import { buildCliArgs, runCli } from './executor.js';
-import { execFile } from 'node:child_process';
-import { promisify } from 'node:util';
-
-const defaultExec = promisify(execFile);
+import { buildCliArgs, runCli, defaultExec } from './executor.js';
 
 const DESTRUCTIVE_COMMANDS = new Set(['lockOff']);
 
