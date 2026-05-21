@@ -4,24 +4,38 @@ import { promisify } from 'node:util';
 
 const exec = promisify(execFile);
 
-export async function checkCredentials() {
-  let result;
+async function tryConfigShow() {
   try {
     const { stdout } = await exec('switchbot', ['config', 'show', '--json'], { timeout: 8000 });
-    result = JSON.parse(stdout);
+    const result = JSON.parse(stdout);
+    const data = result?.data ?? result;
+    return typeof data?.token === 'string' && data.token.length > 0
+        && typeof data?.secret === 'string' && data.secret.length > 0;
   } catch {
-    result = null;
+    return false;
   }
+}
 
-  const data = result?.data ?? result;
-  const hasToken = typeof data?.token === 'string' && data.token.length > 0;
-  const hasSecret = typeof data?.secret === 'string' && data.secret.length > 0;
+async function tryKeychainGet() {
+  try {
+    const { stdout } = await exec(
+      'switchbot', ['auth', 'keychain', 'get', '--json'], { timeout: 8000 }
+    );
+    const result = JSON.parse(stdout);
+    const data = result?.data ?? result;
+    return data?.present === true;
+  } catch {
+    return false;
+  }
+}
 
-  if (hasToken && hasSecret) return { ok: true };
+export async function checkCredentials() {
+  if (await tryConfigShow()) return { ok: true };
+  if (await tryKeychainGet()) return { ok: true };
 
   return {
     ok: false,
     message:
-      'SwitchBot 账号尚未配置。请在终端运行以下命令完成配置，然后重新打开 SwitchBot channel：\n\n  switchbot config set-token\n\n（token 和 secret 可在 SwitchBot App → 个人中心 → 开发者选项 中获取）',
+      'SwitchBot 账号尚未配置。请在终端运行以下命令完成配置，然后重新打开 SwitchBot channel：\n\n  switchbot auth login\n\n或手动配置：switchbot config set-token\n\n（token 和 secret 可在 SwitchBot App → 个人中心 → 开发者选项 中获取）',
   };
 }
