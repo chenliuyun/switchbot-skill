@@ -52,3 +52,53 @@ describe('checkCli', () => {
     assert.match(result.message, /permission denied/);
   });
 });
+
+import { makeCheckCredentials } from '../setup/check-credentials.js';
+
+describe('checkCredentials', () => {
+  it('returns ok:true with source:config when config show has token+secret', async () => {
+    const fakeExec = async (cmd, args) => {
+      if (args.includes('show')) {
+        return { stdout: JSON.stringify({ data: { token: 'tok123', secret: 'sec456' } }) };
+      }
+      throw new Error('unexpected');
+    };
+    const checkCredentials = makeCheckCredentials(fakeExec);
+    const result = await checkCredentials();
+    assert.deepEqual(result, { ok: true, source: 'config' });
+  });
+
+  it('falls back to keychain when config show has no credentials', async () => {
+    const fakeExec = async (cmd, args) => {
+      if (args.includes('show')) return { stdout: JSON.stringify({ data: {} }) };
+      if (args.includes('get'))  return { stdout: JSON.stringify({ data: { present: true } }) };
+      throw new Error('unexpected');
+    };
+    const checkCredentials = makeCheckCredentials(fakeExec);
+    const result = await checkCredentials();
+    assert.deepEqual(result, { ok: true, source: 'keychain' });
+  });
+
+  it('returns ok:false when neither config nor keychain has credentials', async () => {
+    const fakeExec = async (cmd, args) => {
+      if (args.includes('show')) return { stdout: JSON.stringify({ data: {} }) };
+      if (args.includes('get'))  return { stdout: JSON.stringify({ data: { present: false } }) };
+      throw new Error('unexpected');
+    };
+    const checkCredentials = makeCheckCredentials(fakeExec);
+    const result = await checkCredentials();
+    assert.equal(result.ok, false);
+    assert.match(result.message, /switchbot auth login/);
+  });
+
+  it('falls back to keychain when config show throws', async () => {
+    const fakeExec = async (cmd, args) => {
+      if (args.includes('show')) throw new Error('config error');
+      if (args.includes('get'))  return { stdout: JSON.stringify({ data: { present: true } }) };
+      throw new Error('unexpected');
+    };
+    const checkCredentials = makeCheckCredentials(fakeExec);
+    const result = await checkCredentials();
+    assert.deepEqual(result, { ok: true, source: 'keychain' });
+  });
+});
