@@ -36,6 +36,8 @@ supported actions — run the CLI rather than guessing.
 | What past events match a rule? | `switchbot rules replay --since <duration> --dry-run` |
 | Where do credentials live? | `switchbot auth keychain describe --json` |
 | Move credentials into the OS keychain | `switchbot auth keychain migrate` (the user runs this; you don't) |
+| Sign in for the first time (browser) | `switchbot auth login` (the user runs this; you don't) |
+| Clear local cache / quota / history | `switchbot reset [--all]` (safe — does not delete credentials) |
 | Draft an execution plan from intent | `switchbot plan suggest --intent "..." --device <id> [--device <id>…]` |
 | Run a plan with per-step approval | `switchbot plan run <file> --require-approval` |
 | Draft an automation rule from intent | `switchbot rules suggest --intent "..." [--trigger mqtt|cron|webhook] [--device <id>…]` |
@@ -310,21 +312,32 @@ Recommend a shell loop when:
 
 ## Credentials in the keychain (CLI ≥ 3.3.0)
 
-If the user asks "can I move my token out of the `0600` file?", point
-them at `switchbot auth keychain migrate` — it moves the token + secret
-to the OS keychain (macOS `security(1)`, Windows PowerShell + Win32
-`CredRead`/`CredWrite`, Linux `secret-tool` via libsecret) and deletes
-the file on success.
+**First-time login (recommended path):**
+`switchbot auth login` opens a browser window to the SwitchBot login page. After the user signs in, the CLI stores `token` and `secret` directly in the OS keychain and verifies them automatically. The skill never needs to be involved — the user runs this once.
 
-For first-time setup, `switchbot install` (CLI ≥ 3.3.0) handles the
-entire bootstrap — credential capture, keychain write, skill symlink,
-and doctor verification — as a single rollback-aware command.
-`switchbot uninstall [--purge]` reverses it.
+If the browser cannot open (CI, headless, or SSH), pass `--no-open`:
+```bash
+switchbot auth login --no-open
+```
+The CLI prints a URL; the user opens it in any browser on any machine.
 
-The skill does **not** run `auth keychain set` or `migrate` on the
-user's behalf — the user always runs the credential handling command.
-You can run `switchbot auth keychain describe --json` to report which
-backend is active, so downstream troubleshooting steps are backend-accurate.
+**Moving existing credentials into the keychain:**
+If the user already has credentials in `~/.switchbot/config.json`, point them at `switchbot auth keychain migrate` — it moves token + secret to the OS keychain (macOS `security(1)`, Windows `CredRead`/`CredWrite`, Linux `secret-tool`) and deletes the plain-text file on success.
+
+**Inspecting the active backend:**
+```bash
+switchbot auth keychain describe --json
+```
+Relay the `backend` and `writable` fields verbatim — downstream troubleshooting steps depend on knowing which backend is active.
+
+**Resetting local state without touching credentials:**
+```bash
+switchbot reset          # clears device cache, quota counter, history
+switchbot reset --all    # also clears audit log and device metadata
+```
+`reset` never touches keychain entries. Suggest it when the user reports stale device state or a corrupted cache, **before** suggesting re-login.
+
+The skill does **not** run `auth login`, `auth keychain set`, or `migrate` on the user's behalf — the user always runs credential commands. You may run `auth keychain describe --json` to diagnose which backend is active.
 
 ---
 
