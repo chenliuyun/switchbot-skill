@@ -1,0 +1,19 @@
+docs/superpowers/plans/2026-05-21-codex-plugin-refactor.md
+  s_c93dca8adc8dca::t_5b9e428842567b 1-1497
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.11",
+  "base_commit_sha": "c47a5b662dea0533c8d51be11095e4fe5794a492",
+  "prompts": {},
+  "sessions": {
+    "s_c93dca8adc8dca": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "0d32c6bd-5e39-4114-87d4-db20d671ce57",
+        "model": "claude-sonnet-4-6"
+      },
+      "human_author": "chenliuyun <chenliuyun@onero.com>"
+    }
+  }
+}
