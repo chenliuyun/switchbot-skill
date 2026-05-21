@@ -53,53 +53,17 @@ Using Claude Desktop, Cursor, Zed, Windsurf, Continue.dev, or Cline
 instead of OpenClaw? The plugin is a standard MCP stdio server — see
 [`docs/mcp-clients.md`](./docs/mcp-clients.md) for per-host config.
 
-### B. Via Codex plugin marketplace
+### B. Via Codex
 
-Clone this repo, then run one command:
+Open a new Codex session and paste:
 
-```bash
-# macOS / Linux
-git clone https://github.com/chenliuyun/switchbot-skill.git && bash switchbot-skill/scripts/setup-codex.sh
+```
+Fetch and follow: https://raw.githubusercontent.com/chenliuyun/switchbot-skill/main/CODEX_INSTALL.md
 ```
 
-```powershell
-# Windows (PowerShell)
-git clone https://github.com/chenliuyun/switchbot-skill.git; pwsh switchbot-skill/scripts/setup-codex.ps1
-```
-
-Already cloned? Update and re-run:
-
-```bash
-git -C switchbot-skill pull origin main && bash switchbot-skill/scripts/setup-codex.sh
-```
-
-**What the script does automatically:**
-
-1. Installs `@switchbot/openapi-cli@latest` via npm
-2. Adds `plugin_hooks = true` to `~/.codex/config.toml` (enables the `onInstall` hook)
-3. Writes `AGENTS.md` to `~/.codex/` (file-based skill install)
-4. Opens a browser to the SwitchBot login page — **sign in once; credentials go to the OS keychain**
-5. Runs `switchbot doctor` to verify
-
-Step 4 is the only interactive step. If you are in a headless or SSH environment, pass `--no-open` directly after the script starts the login:
-
-```bash
-# The script will print this fallback — run it in another terminal instead:
-switchbot auth login --no-open
-```
-
-Already authenticated? Skip the login step:
-
-```bash
-bash scripts/setup-codex.sh --no-auth
-# PowerShell: pwsh scripts/setup-codex.ps1 -NoAuth
-```
-
-After the script completes, verify with:
-
-```bash
-switchbot devices list   # should list your devices
-```
+The agent installs the CLI, patches `~/.codex/config.toml`, writes `AGENTS.md`,
+and opens a browser login. The only manual step is signing in to your SwitchBot
+account in the browser.
 
 ### C. File-based install (agents without OpenClaw or Codex plugins)
 
