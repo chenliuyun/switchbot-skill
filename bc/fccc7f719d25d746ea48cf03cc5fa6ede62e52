@@ -1,0 +1,19 @@
+README.md
+  s_c93dca8adc8dca::t_5a4437ce9bbc5f 3-5,9-10,12,16-17,24-38,41-43,46,49-50,52-54,56,58-67,69-75,77-84,87-89,91-99,112,116,118,120-127,129-131,135,143,146,148-149,157,167,172,174,176-178,180-183,187,189,192-193,196,199-201,204,212-223,225-227,230-231,236,238-240,242
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.11",
+  "base_commit_sha": "bcfccc7f719d25d746ea48cf03cc5fa6ede62e52",
+  "prompts": {},
+  "sessions": {
+    "s_c93dca8adc8dca": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "0d32c6bd-5e39-4114-87d4-db20d671ce57",
+        "model": "claude-sonnet-4-6"
+      },
+      "human_author": "chenliuyun <chenliuyun@onero.com>"
+    }
+  }
+}
