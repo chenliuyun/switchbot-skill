@@ -19,7 +19,7 @@
   ],
   "skills": "./skills/",
   "mcpServers": "./.mcp.json",
-  "setup": "./bin/auth.js",
+  "hooks": "./.codex-plugin/hooks.json",
   "interface": {
     "displayName": "SwitchBot",
     "shortDescription": "Control SwitchBot devices and scenes from Codex.",

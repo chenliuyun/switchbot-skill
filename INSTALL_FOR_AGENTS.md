@@ -107,11 +107,25 @@ What the installer does:
 Have the user run this themselves in a terminal:
 
 ```bash
-switchbot config set-token
+switchbot auth login
 ```
 
-This prompt is interactive. The user should paste their token and secret into
-the terminal prompt, not into chat.
+This opens a browser window to the SwitchBot login page. After sign-in, the
+CLI stores the token and secret in the OS keychain automatically.
+
+If the browser cannot open (headless/SSH environment), use `--no-open`:
+
+```bash
+switchbot auth login --no-open
+```
+
+The CLI prints a URL the user can open on any machine.
+
+If the user prefers to enter token and secret manually (e.g. already has them):
+
+```bash
+switchbot config set-token
+```
 
 If they do not know where to get the token/secret, tell them:
 
