@@ -1,0 +1,87 @@
+packages/codex-plugin/.codex-plugin/hooks.json
+  s_f747f12c72fa2c::t_46a65c9b474aba 1-6
+packages/openclaw-skill/tests/cli-args.test.js
+  s_f747f12c72fa2c::t_46a65c9b474aba 1-84
+packages/codex-plugin/.mcp.json
+  s_f747f12c72fa2c::t_46a65c9b474aba 1-9
+.agents/plugins/marketplace.json
+  s_f747f12c72fa2c::t_46a65c9b474aba 11
+.github/workflows/publish-npm.yml
+  s_f747f12c72fa2c::t_46a65c9b474aba 9,32,39,44,48,52
+packages/openclaw-skill/bin/setup-flow.js
+  s_f747f12c72fa2c::t_4b54ee428aee86 1
+packages/openclaw-skill/.mcp.json
+  s_f747f12c72fa2c::t_46a65c9b474aba 1-9
+packages/openclaw-skill/.npmignore
+  s_f747f12c72fa2c::t_46a65c9b474aba 1
+packages/codex-plugin/package.json
+  s_f747f12c72fa2c::t_90902f93a0337e 10-14
+.github/workflows/ci-matrix.yml
+  s_f747f12c72fa2c::t_46a65c9b474aba 10,15
+packages/openclaw-skill/policy-editor/server.js
+  s_f747f12c72fa2c::t_46a65c9b474aba 1-70
+packages/codex-plugin/bin/auth.js
+  s_f747f12c72fa2c::t_46a65c9b474aba 1-60
+packages/codex-plugin/setup/check-credentials.js
+  s_f747f12c72fa2c::t_46a65c9b474aba 1-41
+packages/codex-plugin/setup/check-cli.js
+  s_f747f12c72fa2c::t_46a65c9b474aba 1-57
+packages/openclaw-skill/cli.js
+  s_f747f12c72fa2c::t_4a3988d08d04bd 1
+packages/codex-plugin/tests/setup.test.js
+  s_f747f12c72fa2c::t_46a65c9b474aba 1-104
+packages/codex-plugin/tests/auth.test.js
+  s_f747f12c72fa2c::t_46a65c9b474aba 1-92
+packages/openclaw-skill/policy-editor/index.html
+  s_f747f12c72fa2c::t_46a65c9b474aba 1-37
+packages/openclaw-skill/setup/check-cli.js
+  s_f747f12c72fa2c::t_46a65c9b474aba 1-57
+packages/openclaw-skill/policy-editor/style.css
+  s_f747f12c72fa2c::t_46a65c9b474aba 1-10
+packages/openclaw-skill/bin/start.js
+  s_f747f12c72fa2c::t_0ed2a54569c092 2
+packages/openclaw-skill/bin/policy-edit.js
+  s_f747f12c72fa2c::t_5adeedbfee7c8b 2
+packages/openclaw-skill/.claude-plugin/plugin.json
+  s_f747f12c72fa2c::t_46a65c9b474aba 1-19
+packages/openclaw-skill/setup/check-credentials.js
+  s_f747f12c72fa2c::t_46a65c9b474aba 1-41
+packages/openclaw-skill/tests/policy-editor.test.js
+  s_f747f12c72fa2c::t_46a65c9b474aba 1-38
+docs/openclaw-plugin-install.md
+  s_f747f12c72fa2c::t_46a65c9b474aba 5,60,67
+packages/openclaw-skill/policy-editor/editor.js
+  s_f747f12c72fa2c::t_46a65c9b474aba 1-136
+packages/openclaw-skill/index.js
+  s_f747f12c72fa2c::t_ef2512126df0e6 1
+packages/openclaw-skill/README.md
+  s_f747f12c72fa2c::t_46a65c9b474aba 1-82
+packages/openclaw-skill/setup/check-daemon.js
+  s_f747f12c72fa2c::t_46a65c9b474aba 1-59
+manifest.json
+  s_f747f12c72fa2c::t_46a65c9b474aba 66
+packages/openclaw-skill/package.json
+  s_f747f12c72fa2c::t_9a5039f2eb8095 10-14
+README.md
+  s_f747f12c72fa2c::t_46a65c9b474aba 9,12,58,247-248
+packages/codex-plugin/.codex-plugin/plugin.json
+  s_f747f12c72fa2c::t_46a65c9b474aba 1-42
+packages/codex-plugin/skills/switchbot/SKILL.md
+  s_f747f12c72fa2c::t_46a65c9b474aba 1-589
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.11",
+  "base_commit_sha": "6f19770a70ae1deba393cb256b97c0c63c3e2e13",
+  "prompts": {},
+  "sessions": {
+    "s_f747f12c72fa2c": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "fdade7b7-d423-40f1-bf71-642ae476520c",
+        "model": "claude-sonnet-4-6"
+      },
+      "human_author": "chenliuyun <chenliuyun@onero.com>"
+    }
+  }
+}
