@@ -1,0 +1,19 @@
+plugins/switchbot/.codex-plugin/plugin.json
+  s_f747f12c72fa2c::t_96de896e9f8b2e 3,22
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.11",
+  "base_commit_sha": "0039e4978efed48ad770c707039354021c1b83c1",
+  "prompts": {},
+  "sessions": {
+    "s_f747f12c72fa2c": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "fdade7b7-d423-40f1-bf71-642ae476520c",
+        "model": "claude-sonnet-4-6"
+      },
+      "human_author": "chenliuyun <chenliuyun@onero.com>"
+    }
+  }
+}
