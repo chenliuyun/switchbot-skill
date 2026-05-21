@@ -1,0 +1,19 @@
+plugins/switchbot/skills/switchbot/SKILL.md
+  s_f747f12c72fa2c::t_8990faca3d83d3 40
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.11",
+  "base_commit_sha": "67db612bddea57bd524658315bf569e33e794c76",
+  "prompts": {},
+  "sessions": {
+    "s_f747f12c72fa2c": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "fdade7b7-d423-40f1-bf71-642ae476520c",
+        "model": "claude-sonnet-4-6"
+      },
+      "human_author": "chenliuyun <chenliuyun@onero.com>"
+    }
+  }
+}
