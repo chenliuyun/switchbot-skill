@@ -2,7 +2,7 @@
 
 Canonical install guide for the SwitchBot plugin when used with
 [OpenClaw](https://openclaw.ai). For the lower-level MCP-only path (any
-Claude-compatible runtime) see `plugin/openclaw/README.md`.
+Claude-compatible runtime) see `packages/openclaw-skill/README.md`.
 
 ## Prerequisites
 
@@ -57,14 +57,14 @@ merge.
 
 ```bash
 git clone https://github.com/chenliuyun/switchbot-skill.git
-cd switchbot-skill/plugin/openclaw
+cd switchbot-skill/packages/openclaw-skill
 npm install
 openclaw plugins install-local .
 ```
 
 `install-local` registers the current directory as a plugin without
 publishing. Use this when iterating on the MCP handlers in
-`plugin/openclaw/index.js`.
+`packages/openclaw-skill/index.js`.
 
 ## Verify
 

@@ -7,11 +7,11 @@
     "name": "chenliuyun",
     "url": "https://github.com/chenliuyun"
   },
-  "homepage": "https://github.com/chenliuyun/switchbot-skill/tree/main/plugin/openclaw",
+  "homepage": "https://github.com/chenliuyun/switchbot-skill/tree/main/packages/openclaw-skill",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/chenliuyun/switchbot-skill.git",
-    "directory": "plugin/openclaw"
+    "directory": "packages/openclaw-skill"
   },
   "bugs": "https://github.com/chenliuyun/switchbot-skill/issues",
   "main": "index.js",

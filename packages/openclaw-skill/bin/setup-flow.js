@@ -1,4 +1,4 @@
-// plugin/openclaw/bin/setup-flow.js
+// packages/openclaw-skill/bin/setup-flow.js
 // Interactive setup for the SwitchBot OpenClaw plugin. Guides the user
 // through installing the underlying @switchbot/openapi-cli, verifying
 // version >= 3.3.0, and confirming credentials via `switchbot doctor`.

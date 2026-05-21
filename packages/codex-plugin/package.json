@@ -7,11 +7,11 @@
     "name": "chenliuyun",
     "url": "https://github.com/chenliuyun"
   },
-  "homepage": "https://github.com/chenliuyun/switchbot-skill/tree/main/plugins/switchbot",
+  "homepage": "https://github.com/chenliuyun/switchbot-skill/tree/main/packages/codex-plugin",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/chenliuyun/switchbot-skill.git",
-    "directory": "plugins/switchbot"
+    "directory": "packages/codex-plugin"
   },
   "bugs": "https://github.com/chenliuyun/switchbot-skill/issues",
   "license": "MIT",

@@ -8,7 +8,7 @@
       "name": "switchbot",
       "source": {
         "source": "local",
-        "path": "./plugins/switchbot"
+        "path": "./packages/codex-plugin"
       },
       "policy": {
         "installation": "AVAILABLE",

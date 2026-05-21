@@ -6,10 +6,10 @@ an audit log of every action.
 
 This repo ships:
 
-- **An OpenClaw plugin** (`plugin/openclaw/`) published as
+- **An OpenClaw plugin** (`packages/openclaw-skill/`) published as
   [`@cly-org/switchbot-openclaw-skill`][npm] — 6 MCP tools, one-command
   install.
-- **A Codex plugin wrapper** (`plugins/switchbot/`) plus a repo-local
+- **A Codex plugin wrapper** (`packages/codex-plugin/`) plus a repo-local
   marketplace at `.agents/plugins/marketplace.json`.
 - **A skill** (`SKILL.md`) that teaches any LLM-backed agent how to drive
   the [`@switchbot/openapi-cli`][cli] safely — command surface, safety
@@ -55,7 +55,7 @@ instead of OpenClaw? The plugin is a standard MCP stdio server — see
 
 ### B. Via Codex plugin marketplace
 
-This repo also ships a Codex plugin wrapper at `plugins/switchbot/` and a
+This repo also ships a Codex plugin wrapper at `packages/codex-plugin/` and a
 repo-local marketplace at `.agents/plugins/marketplace.json`.
 
 The Codex plugin loads the same `SKILL.md` guidance and starts the published
@@ -244,8 +244,8 @@ Upgrade my SwitchBot skill for <agent-target> and update the CLI too.
 ├── README.md                   # You are here
 ├── SKILL.md                    # Agent-facing: authority, safety, bootstrap
 ├── manifest.json               # Skill manifest + compatibility metadata
-├── plugin/openclaw/            # Published plugin @cly-org/switchbot-openclaw-skill
-├── plugins/switchbot/          # Codex plugin wrapper
+├── packages/openclaw-skill/        # Published plugin @cly-org/switchbot-openclaw-skill
+├── packages/codex-plugin/          # Codex plugin wrapper
 ├── .agents/plugins/            # Repo-local Codex marketplace
 ├── examples/
 │   ├── policy.example.yaml     # Starting point

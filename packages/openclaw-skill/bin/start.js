@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// plugin/openclaw/bin/start.js
+// packages/openclaw-skill/bin/start.js
 //
 // Default entry point for the @cly-org/switchbot-openclaw-skill plugin.
 //

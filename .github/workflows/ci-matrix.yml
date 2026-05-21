@@ -7,12 +7,12 @@ on:
       - 'scripts/**'
       - 'SKILL.md'
       - 'examples/**'
-      - 'plugin/openclaw/**'
+      - 'packages/openclaw-skill/**'
       - 'policy-editor/**'
   pull_request:
     paths:
       - 'scripts/**'
-      - 'plugin/openclaw/**'
+      - 'packages/openclaw-skill/**'
       - 'policy-editor/**'
 
 jobs:

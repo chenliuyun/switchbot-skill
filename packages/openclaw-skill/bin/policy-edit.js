@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// plugin/openclaw/bin/policy-edit.js — invoked as `switchbot-policy-edit`
+// packages/openclaw-skill/bin/policy-edit.js — invoked as `switchbot-policy-edit`
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 

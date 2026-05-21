@@ -63,7 +63,7 @@
   },
   "codexPlugin": {
     "status": "repo-marketplace",
-    "path": "./plugins/switchbot",
+    "path": "./packages/codex-plugin",
     "marketplace": "./.agents/plugins/marketplace.json",
     "mcpServer": "npx -y @cly-org/switchbot-openclaw-skill@0.7.0"
   },
