@@ -1,0 +1,24 @@
+packages/codex-plugin/src/server.js
+  s_c93dca8adc8dca::t_6b36bf0ec9cff2 24-27
+  s_c93dca8adc8dca::t_396b4c5d6748b0 37
+  s_c93dca8adc8dca::t_ad76f65b15305b 51-59
+packages/codex-plugin/tests/server.test.js
+  s_c93dca8adc8dca::t_0c61c7b5a93a1d 62-98
+  s_c93dca8adc8dca::t_d98d975b501932 4-5
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.11",
+  "base_commit_sha": "64d6b294dbd3ab2165c1a038db6c9deccba6c2af",
+  "prompts": {},
+  "sessions": {
+    "s_c93dca8adc8dca": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "0d32c6bd-5e39-4114-87d4-db20d671ce57",
+        "model": "claude-sonnet-4-6"
+      },
+      "human_author": "chenliuyun <chenliuyun@onero.com>"
+    }
+  }
+}
