@@ -1,0 +1,25 @@
+packages/openclaw-skill/setup/check-credentials.js
+  s_c93dca8adc8dca::t_4ec3b32154d2d9 1,9-10,40
+packages/codex-plugin/src/tools.js
+  s_c93dca8adc8dca::t_d1dcbc25fd1f4c 9
+packages/codex-plugin/setup/check-credentials.js
+  s_c93dca8adc8dca::t_a74cd33b75b134 7-8
+packages/codex-plugin/tests/safety.test.js
+  s_c93dca8adc8dca::t_ce61f36b5005ee 107
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.11",
+  "base_commit_sha": "0a09fbb11d40071fb4e8a1684e3c0c0f83fdc342",
+  "prompts": {},
+  "sessions": {
+    "s_c93dca8adc8dca": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "0d32c6bd-5e39-4114-87d4-db20d671ce57",
+        "model": "claude-sonnet-4-6"
+      },
+      "human_author": "chenliuyun <chenliuyun@onero.com>"
+    }
+  }
+}
