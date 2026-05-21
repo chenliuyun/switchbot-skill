@@ -1,9 +1,9 @@
 {
   "mcpServers": {
     "switchbot": {
-      "command": "npx",
-      "args": ["-y", "@cly-org/switchbot-openclaw-skill@latest"],
-      "description": "SwitchBot smart-home MCP server backed by @switchbot/openapi-cli."
+      "command": "node",
+      "args": ["${pluginDir}/src/server.js"],
+      "description": "SwitchBot smart-home MCP server (6 tools, policy-gated, self-contained)"
     }
   }
 }
