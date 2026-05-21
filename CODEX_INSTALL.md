@@ -1,6 +1,16 @@
 # SwitchBot Skill — Codex Install
 
-You are a Codex agent. Read this file completely, then execute every step below.
+> **Recommended install:** Codex app → Plugins → Add from local path → `packages/codex-plugin/`
+> Or via CLI: `codex plugin marketplace add .`
+>
+> The manual steps below are a **Legacy path** for older Codex versions that do not support the plugin system.
+
+---
+
+<details>
+<summary>Legacy: Manual Installation (older Codex without plugin support)</summary>
+
+You are a Codex agent. Read this section completely, then execute every step below.
 Do **not** ask the user for SwitchBot tokens or secrets — those come from the browser login in Step 5.
 
 ---
@@ -101,3 +111,5 @@ Tell the user:
 > "SwitchBot skill installed for Codex.
 > Restart Codex if it is already open, then try:
 > **List my SwitchBot devices and tell me which ones are currently on.**"
+
+</details>
