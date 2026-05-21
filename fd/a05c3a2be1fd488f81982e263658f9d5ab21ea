@@ -1,0 +1,21 @@
+CODEX_INSTALL.md
+  s_f747f12c72fa2c::t_67c3d8384d2f6c 1-103
+README.md
+  s_f747f12c72fa2c::t_edb93ef6bc4709 56,58,61,64-66
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.11",
+  "base_commit_sha": "fda05c3a2be1fd488f81982e263658f9d5ab21ea",
+  "prompts": {},
+  "sessions": {
+    "s_f747f12c72fa2c": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "fdade7b7-d423-40f1-bf71-642ae476520c",
+        "model": "claude-sonnet-4-6"
+      },
+      "human_author": "chenliuyun <chenliuyun@onero.com>"
+    }
+  }
+}
