@@ -1,0 +1,21 @@
+packages/codex-plugin/tests/safety.test.js
+  s_36ef010fc71ff1::t_14e43870a13d08 6,9,13,16,20,23,27,30
+packages/codex-plugin/src/executor.js
+  s_36ef010fc71ff1::t_3103efd0e2a95b 14-18,21,23,25,27,32,34
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.0",
+  "base_commit_sha": "78133304ad5189be984e8e38d6f111b2ba7f37be",
+  "prompts": {},
+  "sessions": {
+    "s_36ef010fc71ff1": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "c24f867d-67cd-43fe-b348-d76828ac4d64",
+        "model": "claude-sonnet-4-6"
+      },
+      "human_author": "chenliuyun <chenliuyun@onero.com>"
+    }
+  }
+}
