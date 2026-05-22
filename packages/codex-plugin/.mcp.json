@@ -1,9 +1,9 @@
 {
   "mcpServers": {
     "switchbot": {
-      "command": "node",
-      "args": ["bin/server.js"],
-      "description": "SwitchBot smart-home MCP server (6 tools, policy-gated, self-contained)"
+      "command": "switchbot",
+      "args": ["mcp", "serve", "--tools", "all"],
+      "description": "SwitchBot smart-home MCP server (24 tools, via CLI)"
     }
   }
 }
