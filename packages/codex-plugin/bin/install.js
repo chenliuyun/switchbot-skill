@@ -38,7 +38,14 @@ export function makeInstall({ checkCli, runInherit, packageRoot }) {
 
     const pluginName = `switchbot@${basename(packageRoot)}`;
     process.stderr.write(`[switchbot-codex] Adding plugin ${pluginName}...\n`);
-    return runInherit('codex', ['plugin', 'add', pluginName]);
+    const pluginCode = await runInherit('codex', ['plugin', 'add', pluginName]);
+    if (pluginCode !== 0) {
+      process.stderr.write(
+        '[switchbot-codex] "codex plugin add" failed — your Codex version may not support it.\n' +
+        '[switchbot-codex] Fallback: follow the legacy install steps in CODEX_INSTALL.md.\n'
+      );
+    }
+    return pluginCode;
   };
 }
 

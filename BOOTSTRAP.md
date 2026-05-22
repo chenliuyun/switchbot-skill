@@ -18,8 +18,17 @@ Please set up the SwitchBot Codex plugin by running these commands in order:
 3. codex plugin marketplace add ~/switchbot-skill
 4. codex plugin add switchbot@switchbot-skill
 
-After all commands succeed, the plugin will automatically open a browser for
-OAuth authorization — just click Allow in the browser.
+If step 4 fails because your Codex version does not support "plugin add",
+use this fallback instead:
+a. Add to ~/.codex/config.toml (create the file if it does not exist):
+     [features]
+     plugin_hooks = true
+b. Read ~/switchbot-skill/SKILL.md, strip the YAML front matter block (the
+   lines from the first --- to the second ---, inclusive), and write the
+   remaining content to ~/.codex/AGENTS.md.
+c. Run: switchbot auth login
+
+After setup, a browser opens for OAuth authorization — just click Allow.
 ```
 
 ---
@@ -33,8 +42,10 @@ Please set up the SwitchBot Codex plugin:
 1. npm install -g @cly-org/switchbot-codex-plugin
 2. switchbot-codex-install
 
-After completion, the plugin will automatically open a browser for OAuth
-authorization — just click Allow in the browser.
+If switchbot-codex-install fails at the "plugin add" step because your Codex
+version does not support it, use Option A's fallback steps (a–c) above instead.
+
+After setup, a browser opens for OAuth authorization — just click Allow.
 ```
 
 ---
