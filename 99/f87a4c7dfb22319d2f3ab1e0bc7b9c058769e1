@@ -1,0 +1,31 @@
+BOOTSTRAP.md
+  s_36ef010fc71ff1::t_63a8ed58a626d5 4-6
+  s_36ef010fc71ff1::t_621ba514305cf6 35
+  s_36ef010fc71ff1::t_3e35f1d97af45d 21
+AGENTS.md
+  s_36ef010fc71ff1::t_ef51c48af89474 38,40-41
+CODEX_INSTALL.md
+  s_36ef010fc71ff1::t_5b9fc372e65384 3-4,6-7
+README.md
+  s_36ef010fc71ff1::t_fd8f087a3d583f 237-239,241-242
+  s_36ef010fc71ff1::t_72a6580221b4ff 9-10,140
+  s_36ef010fc71ff1::t_acaa0d13865afc 138-139,141
+  s_36ef010fc71ff1::t_f80088edfd9e5d 202-204
+  s_36ef010fc71ff1::t_5e4daaf1e36415 56
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.0",
+  "base_commit_sha": "99f87a4c7dfb22319d2f3ab1e0bc7b9c058769e1",
+  "prompts": {},
+  "sessions": {
+    "s_36ef010fc71ff1": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "c24f867d-67cd-43fe-b348-d76828ac4d64",
+        "model": "claude-sonnet-4-6"
+      },
+      "human_author": "chenliuyun <chenliuyun@onero.com>"
+    }
+  }
+}
