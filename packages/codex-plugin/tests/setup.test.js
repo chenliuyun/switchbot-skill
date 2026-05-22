@@ -68,7 +68,7 @@ describe('checkCredentials', () => {
     assert.deepEqual(result, { ok: true, source: 'doctor' });
   });
 
-  it('falls back to keychain describe when doctor fails', async () => {
+  it('returns token-expired error when doctor throws (non-ENOENT)', async () => {
     const fakeExec = async (cmd, args) => {
       if (args.includes('doctor')) throw new Error('doctor failed');
       if (args.includes('describe')) return { stdout: '{}' };
@@ -76,7 +76,9 @@ describe('checkCredentials', () => {
     };
     const check = makeCheckCredentials(fakeExec);
     const result = await check();
-    assert.deepEqual(result, { ok: true, source: 'keychain' });
+    assert.equal(result.ok, false);
+    assert.match(result.message, /token/i);
+    assert.match(result.message, /switchbot auth/);
   });
 
   it('returns ok:false when both doctor and keychain describe fail', async () => {

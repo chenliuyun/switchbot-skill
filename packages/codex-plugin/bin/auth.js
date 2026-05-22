@@ -2,6 +2,7 @@
 import { spawn } from 'node:child_process';
 import { checkCli as defaultCheckCli } from '../setup/check-cli.js';
 import { checkCredentials as defaultCheckCredentials } from '../setup/check-credentials.js';
+import { formatError } from '../lib/error-messages.js';
 
 function defaultRunInherit(cmd, args) {
   return new Promise((resolve) => {
@@ -29,14 +30,14 @@ export function makeRunAuth({ checkCli, checkCredentials, runInherit }) {
     process.stderr.write('[switchbot-codex] Starting browser login...\n');
     const loginCode = await runInherit('switchbot', ['auth', 'login']);
     if (loginCode !== 0) {
-      process.stderr.write('[switchbot-codex] Browser login failed. Retry: switchbot auth login\n');
+      process.stderr.write(`[switchbot-codex] ${formatError('auth-login-failed')}\n`);
       return loginCode;
     }
 
     process.stderr.write('[switchbot-codex] Verifying credentials via doctor...\n');
     const doctorCode = await runInherit('switchbot', ['doctor']);
     if (doctorCode !== 0) {
-      process.stderr.write('[switchbot-codex] Verification failed. Run: switchbot doctor\n');
+      process.stderr.write(`[switchbot-codex] ${formatError('token-expired')}\n`);
       return doctorCode;
     }
 
