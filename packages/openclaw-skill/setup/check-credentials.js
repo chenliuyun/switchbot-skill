@@ -1,21 +1,22 @@
 import { execFile } from 'node:child_process';
 import { promisify } from 'node:util';
+import { formatError } from '../lib/error-messages.js';
 
-const exec = promisify(execFile);
-
-async function tryDoctor() {
+async function tryDoctor(exec) {
   try {
     const { stdout } = await exec('switchbot', ['doctor', '--json'], { timeout: 10000 });
     const parsed = JSON.parse(stdout);
     const data = parsed?.data ?? parsed;
-    return data?.credentials?.configured === true;
+    return data?.credentials?.configured === true
+      ? { ok: true }
+      : { ok: false, reason: 'not-configured' };
   } catch (err) {
     if (err?.code === 'ENOENT') throw err;
-    return false;
+    return { ok: false, reason: 'doctor-failed' };
   }
 }
 
-async function tryKeychainDescribe() {
+async function tryKeychainDescribe(exec) {
   try {
     await exec('switchbot', ['auth', 'keychain', 'describe', '--json'], { timeout: 8000 });
     return true;
@@ -24,17 +25,27 @@ async function tryKeychainDescribe() {
   }
 }
 
-export async function checkCredentials() {
-  try {
-    if (await tryDoctor()) return { ok: true };
-  } catch {
-    // CLI missing
-  }
-  if (await tryKeychainDescribe()) return { ok: true };
-  return {
-    ok: false,
-    message:
-      'SwitchBot 账号尚未配置。请在终端运行以下命令完成配置：\n\n  switchbot auth login\n\n' +
-      '（token 和 secret 可在 SwitchBot App → 个人中心 → 开发者选项 中获取）',
+export function makeCheckCredentials(exec) {
+  return async function checkCredentials() {
+    let doctorResult = null;
+    try {
+      doctorResult = await tryDoctor(exec);
+      if (doctorResult.ok) return { ok: true };
+    } catch {
+      // CLI missing — fall through to keychain
+    }
+
+    // Doctor ran but exited non-zero → likely token expired
+    if (doctorResult?.reason === 'doctor-failed') {
+      return { ok: false, message: formatError('token-expired') };
+    }
+
+    // Doctor says not configured, or CLI missing — try keychain as fallback
+    if (await tryKeychainDescribe(exec)) return { ok: true };
+
+    return { ok: false, message: formatError('auth-not-configured') };
   };
 }
+
+const defaultExec = promisify(execFile);
+export const checkCredentials = makeCheckCredentials(defaultExec);
