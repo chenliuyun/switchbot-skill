@@ -1,6 +1,7 @@
-// setup/check-cli.js — 检查 switchbot CLI 是否已安装；未安装时自动执行 npm install -g
+// setup/check-cli.js — verify switchbot CLI is installed; auto-install via npm if missing
 import { execFile, execFileSync } from 'node:child_process';
 import { promisify } from 'node:util';
+import { formatError } from '../lib/error-messages.js';
 
 const exec = promisify(execFile);
 
@@ -28,11 +29,14 @@ export async function checkCli() {
   if (!npmExists()) {
     return {
       ok: false,
-      message: 'Node.js / npm 未安装。请先安装 Node.js（https://nodejs.org），然后重新打开 SwitchBot channel。',
+      message:
+        'Error: Node.js / npm is not installed.\n' +
+        '  Fix:  Install Node.js from https://nodejs.org, then reopen the SwitchBot channel.\n' +
+        '  Hint: Node 18 or later is required.',
     };
   }
 
-  process.stderr.write('[switchbot-channel] CLI 未找到，正在自动安装 @switchbot/openapi-cli…\n');
+  process.stderr.write('[switchbot-channel] CLI not found — auto-installing @switchbot/openapi-cli…\n');
   try {
     execFileSync('npm', ['install', '-g', '@switchbot/openapi-cli'], {
       stdio: 'inherit',
@@ -41,17 +45,21 @@ export async function checkCli() {
   } catch (err) {
     return {
       ok: false,
-      message: `CLI 安装失败：${err instanceof Error ? err.message : String(err)}。请手动运行：npm install -g @switchbot/openapi-cli`,
+      message:
+        `Error: CLI installation failed: ${err instanceof Error ? err.message : String(err)}\n` +
+        `  Fix:  npm install -g @switchbot/openapi-cli\n` +
+        `  Hint: Check your network connection and npm permissions.`,
     };
   }
 
   if (!(await cliExists())) {
     return {
       ok: false,
-      message: 'CLI 安装完成但 switchbot 命令仍不可用，可能需要重新打开终端或重启 OpenClaw。',
+      message: formatError('cli-not-installed') +
+        '\n  (CLI was installed but `switchbot` is still not on PATH — reopen your terminal.)',
     };
   }
 
-  process.stderr.write('[switchbot-channel] CLI 安装完成。\n');
+  process.stderr.write('[switchbot-channel] CLI installed.\n');
   return { ok: true };
 }
