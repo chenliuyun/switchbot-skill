@@ -8,6 +8,7 @@
 
 import { execFile, spawn } from 'node:child_process';
 import { promisify } from 'node:util';
+import { formatError } from '../lib/error-messages.js';
 
 const exec = promisify(execFile);
 const REQUIRED_CLI = '3.7.1';
@@ -77,8 +78,7 @@ export async function runSetup() {
   if (!(await hasCli())) {
     console.log('[1/3] SwitchBot CLI not found on PATH.');
     console.log('');
-    console.log('Install it with:');
-    console.log('  npm install -g @switchbot/openapi-cli@latest');
+    console.log(formatError('cli-not-installed'));
     const prefix = await npmPrefix();
     if (prefixLikelyNeedsSudo(prefix)) {
       console.log('');
@@ -100,14 +100,13 @@ export async function runSetup() {
   // Step 2: version gate
   if (!version) {
     console.log('');
-    console.log('[2/3] Could not read CLI version. Upgrade to be safe:');
-    console.log('  npm install -g @switchbot/openapi-cli@latest');
+    console.log(formatError('cli-version-too-low'));
     process.exit(1);
   }
   if (!versionAtLeast(version, REQUIRED_CLI)) {
     console.log('');
     console.log(`[2/3] CLI ${version} is below the ${REQUIRED_CLI} minimum required by this plugin.`);
-    console.log('Upgrade with: npm install -g @switchbot/openapi-cli@latest');
+    console.log(formatError('cli-version-too-low'));
     process.exit(1);
   }
   console.log(`[2/3] Version satisfies >= ${REQUIRED_CLI}.`);
@@ -119,11 +118,8 @@ export async function runSetup() {
   const code = await runInherit('switchbot', ['doctor']);
   if (code !== 0) {
     console.log('');
-    console.log('`switchbot doctor` reported failures.');
-    console.log('If the failure is "token not configured" / "no credentials", run:');
-    console.log('  switchbot config set-token');
-    console.log('(Get token + secret from the SwitchBot app: Profile → Preferences → ');
-    console.log(' tap App Version 10× → Developer Options.)');
+    console.log(formatError('token-expired'));
+    console.log('');
     console.log('Then re-run: switchbot-openclaw setup');
     process.exit(1);
   }
