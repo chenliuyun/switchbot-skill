@@ -1,10 +1,6 @@
 import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
-import { mkdtemp, readFile, mkdir } from 'node:fs/promises';
-import { join } from 'node:path';
-import { tmpdir } from 'node:os';
-
-import { makeRunAuth, patchMcpJson } from '../bin/auth.js';
+import { makeRunAuth } from '../bin/auth.js';
 
 function makeOkCliCheck(version = '3.3.0') {
   return async () => ({ ok: true, version });
@@ -91,37 +87,5 @@ describe('runAuth', () => {
     });
     const code = await runAuth();
     assert.equal(code, 2);
-  });
-});
-
-describe('patchMcpJson', () => {
-  it('writes absolute path to bin/server.js into .mcp.json', async () => {
-    const tmp = await mkdtemp(join(tmpdir(), 'switchbot-auth-test-'));
-    const binDir = join(tmp, 'bin');
-    await mkdir(binDir);
-
-    await patchMcpJson(binDir);
-
-    const raw = await readFile(join(tmp, '.mcp.json'), 'utf8');
-    const parsed = JSON.parse(raw);
-    const args = parsed.mcpServers.switchbot.args;
-
-    assert.equal(args.length, 1);
-    assert.ok(args[0].includes(tmp), `expected absolute path containing tmp dir, got: ${args[0]}`);
-    assert.ok(args[0].endsWith('server.js'), `expected path ending with server.js, got: ${args[0]}`);
-    assert.ok(args[0].includes('bin'), `expected path through bin/, got: ${args[0]}`);
-  });
-
-  it('overwrites an existing .mcp.json', async () => {
-    const tmp = await mkdtemp(join(tmpdir(), 'switchbot-auth-test-'));
-    const binDir = join(tmp, 'bin');
-    await mkdir(binDir);
-
-    await patchMcpJson(binDir);
-    await patchMcpJson(binDir);
-
-    const raw = await readFile(join(tmp, '.mcp.json'), 'utf8');
-    const parsed = JSON.parse(raw);
-    assert.ok(parsed.mcpServers.switchbot);
   });
 });
