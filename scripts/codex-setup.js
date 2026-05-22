@@ -14,12 +14,28 @@ const REPO_DIR = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const CODEX_DIR = join(homedir(), '.codex');
 const CONFIG_PATH = join(CODEX_DIR, 'config.toml');
 const AGENTS_PATH = join(CODEX_DIR, 'AGENTS.md');
+const MIN_CLI_VERSION = '3.3.0';
 
 function run(cmd, args) {
   return spawnSync(cmd, args, { stdio: 'inherit', shell: true }).status ?? 1;
 }
 function ok(cmd, args) {
   return spawnSync(cmd, args, { shell: true }).status === 0;
+}
+function versionAtLeast(have, need) {
+  const a = have.split('.').map(n => parseInt(n, 10) || 0);
+  const b = need.split('.').map(n => parseInt(n, 10) || 0);
+  for (let i = 0; i < Math.max(a.length, b.length); i++) {
+    if ((a[i] ?? 0) > (b[i] ?? 0)) return true;
+    if ((a[i] ?? 0) < (b[i] ?? 0)) return false;
+  }
+  return true;
+}
+function getCliVersion() {
+  const r = spawnSync('switchbot', ['--version'], { shell: true });
+  if (r.status !== 0) return null;
+  const m = (r.stdout?.toString() ?? '').trim().match(/\d+\.\d+\.\d+/);
+  return m ? m[0] : null;
 }
 function credentialsConfigured() {
   // Try doctor --json first (most reliable)
@@ -40,15 +56,23 @@ function stripFrontMatter(text) {
   return end === -1 ? text : text.slice(end + 4).trimStart();
 }
 
-// 1. Install CLI if missing
-if (!ok('switchbot', ['--version'])) {
+// 1. Install CLI if missing or version too old
+const currentCliVersion = getCliVersion();
+if (!currentCliVersion) {
   console.log('[setup] Installing @switchbot/openapi-cli...');
   if (run('npm', ['install', '-g', '@switchbot/openapi-cli@latest']) !== 0) {
     console.error('[setup] CLI install failed. Run manually: npm install -g @switchbot/openapi-cli@latest');
     process.exit(1);
   }
+} else if (!versionAtLeast(currentCliVersion, MIN_CLI_VERSION)) {
+  console.log(`[setup] CLI ${currentCliVersion} is below minimum ${MIN_CLI_VERSION} — upgrading...`);
+  if (run('npm', ['install', '-g', '@switchbot/openapi-cli@latest']) !== 0) {
+    console.error('[setup] CLI upgrade failed. Run manually: npm install -g @switchbot/openapi-cli@latest');
+    process.exit(1);
+  }
+} else {
+  console.log(`[setup] CLI ${currentCliVersion} already installed.`);
 }
-console.log('[setup] CLI ready.');
 
 // 2. Marketplace registration (works on all Codex versions)
 run('codex', ['plugin', 'marketplace', 'add', REPO_DIR]);
