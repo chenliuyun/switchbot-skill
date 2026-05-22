@@ -338,7 +338,11 @@ else
   if switchbot doctor 2>&1 | grep -q "0 fail"; then
     ok "switchbot doctor passed."
   else
-    warn "switchbot doctor reported issues — run 'switchbot doctor' for details."
+    echo ""
+    echo "Error: SwitchBot credentials are not configured."
+    echo "  Fix:  switchbot auth login"
+    echo "  Hint: Run the fix command, then restart your MCP client."
+    echo ""
   fi
 
   device_count=$(switchbot devices list --json 2>/dev/null \

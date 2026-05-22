@@ -317,7 +317,11 @@ if ($SkipVerify) {
   if ($doctorOut -match "0 fail") {
     Write-Ok "switchbot doctor passed."
   } else {
-    Write-Warn "switchbot doctor reported issues — run 'switchbot doctor' for details."
+    Write-Host ''
+    Write-Host 'Error: SwitchBot credentials are not configured.'
+    Write-Host '  Fix:  switchbot auth login'
+    Write-Host '  Hint: Run the fix command, then restart your MCP client.'
+    Write-Host ''
   }
 
   try {
