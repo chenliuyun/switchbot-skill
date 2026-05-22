@@ -1,0 +1,19 @@
+docs/superpowers/specs/2026-05-22-codex-bootstrap-prompt-design.md
+  s_36ef010fc71ff1::t_38b950d28a2b50 1-165
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.0",
+  "base_commit_sha": "3ae00534917de5dd12b274412b8915f2a5d94a23",
+  "prompts": {},
+  "sessions": {
+    "s_36ef010fc71ff1": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "c24f867d-67cd-43fe-b348-d76828ac4d64",
+        "model": "claude-sonnet-4-6"
+      },
+      "human_author": "chenliuyun <chenliuyun@onero.com>"
+    }
+  }
+}
