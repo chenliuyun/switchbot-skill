@@ -151,22 +151,43 @@ The user's `policy.yaml` can override this:
 
 ---
 
+## Policy compliance
+
+Before executing any mutation or destructive action, check whether the user
+has a policy file:
+
+1. Call `policy_validate` (with `live: true`) at the start of each session
+   that will involve device control — not on every single command.
+2. If `policy_validate` returns a valid policy, honour these fields:
+   - `quiet_hours` — during the window, ask the user for explicit confirmation
+     before any mutation, even if the tier would normally auto-run.
+   - `confirmations.always_confirm` — treat listed commands as destructive
+     (require explicit user confirmation).
+   - `confirmations.never_confirm` — treat listed commands as pre-approved
+     by the user; skip the confirmation prompt.
+3. If no policy file exists (`ENOENT` or `present: false`), proceed with the
+   default safety tiers — no additional prompt needed.
+
+Never write to policy.yaml without showing the user a diff and getting
+explicit approval first.
+
+---
+
 ## Audit logging
 
-For every action at `mutation` tier or above, pass `--audit-log` at the
-root flag level so the action is recorded:
+When operating through the MCP tools (`send_command`, `run_scene`), the CLI
+does not automatically write an audit log entry. To review past activity use
+the built-in audit tools:
+
+- `audit_query` — filter audit log entries by time range, device, or result.
+- `audit_stats` — summarise counts by command, device, and result.
+
+If the user asks for a full audit trail, advise them to run mutation commands
+directly via the CLI with `--audit-log`:
 
 ```bash
 switchbot --audit-log devices command <id> turnOn
 ```
-
-If the user has `audit.log_path` set in `policy.yaml`, pass that path
-explicitly: `--audit-log /path/to/file`. Without a path, the CLI appends
-to `~/.switchbot/audit.log` by default. The audit log is append-only JSONL
-— one line per action, with timestamp, command, arguments, and result.
-
-You don't have to ask the user whether to log; just log. The log is the
-user's receipt.
 
 ---
 
