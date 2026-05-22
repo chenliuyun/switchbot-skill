@@ -1,0 +1,23 @@
+BOOTSTRAP.md
+  s_36ef010fc71ff1::t_07b8afc5fdf1ea 3-5,14-16,19-24,37-38
+scripts/codex-setup.js
+  s_36ef010fc71ff1::t_67be7899a2d9cc 1-71
+README.md
+  s_36ef010fc71ff1::t_f512c47b8e5e23 43-44,47-49,52-53
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.0",
+  "base_commit_sha": "061c6a09c3c9099534a143c638de863724d759b6",
+  "prompts": {},
+  "sessions": {
+    "s_36ef010fc71ff1": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "c24f867d-67cd-43fe-b348-d76828ac4d64",
+        "model": "claude-sonnet-4-6"
+      },
+      "human_author": "chenliuyun <chenliuyun@onero.com>"
+    }
+  }
+}
