@@ -7,7 +7,20 @@ This project follows [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
-_No changes yet._
+### Verified
+
+- Smoke-tested against CLI **3.7.1** (upgraded from 3.7.0).
+- MCP `list_devices` schema failure (`roomID` type mismatch) confirmed
+  fixed in 3.7.1 — `outputSchema` now declares `anyOf:[string,null]`
+  and all 15 devices return string `roomID` values.
+- `audit.log` false-positive error count (127 errors reported while log
+  file absent) confirmed resolved — `health` now reports
+  `present:false, recentErrors:0`.
+- Dangling `hubDeviceId` references reduced from 4 devices to 2
+  (门窗传感器 A2, 窗帘); remaining two require re-pairing in the app.
+- `cache status` command (renamed from `cache stats`) confirmed working.
+- `webhook query` code-190 response confirmed expected behaviour when no
+  webhook is configured on the account.
 
 ## [0.7.0] - 2026-04-26
 
