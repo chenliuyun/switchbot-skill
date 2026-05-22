@@ -47,13 +47,14 @@ See [`BOOTSTRAP.md`](./BOOTSTRAP.md) for the full copyable snippets.
 **GitHub Clone path** (available now — paste into Codex chat):
 
 ```
-请帮我安装 SwitchBot Codex 插件，按顺序执行以下命令：
+Please set up the SwitchBot Codex plugin by running these commands in order:
 1. npm install -g @switchbot/openapi-cli@latest
 2. git clone https://github.com/chenliuyun/switchbot-skill.git ~/switchbot-skill
 3. codex plugin marketplace add ~/switchbot-skill
 4. codex plugin add switchbot@switchbot-skill
 
-安装完成后，插件会自动打开浏览器进行 OAuth 授权，请在浏览器里点击「允许」即可。
+After all commands succeed, the plugin will automatically open a browser for
+OAuth authorization — just click Allow in the browser.
 ```
 
 ---
