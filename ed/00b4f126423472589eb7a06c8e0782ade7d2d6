@@ -1,0 +1,21 @@
+packages/codex-plugin/package.json
+  s_36ef010fc71ff1::t_cb6ef7536e70c8 3
+manifest.json
+  s_36ef010fc71ff1::t_47e0bdc75a4160 4
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.0",
+  "base_commit_sha": "ed00b4f126423472589eb7a06c8e0782ade7d2d6",
+  "prompts": {},
+  "sessions": {
+    "s_36ef010fc71ff1": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "c24f867d-67cd-43fe-b348-d76828ac4d64",
+        "model": "claude-sonnet-4-6"
+      },
+      "human_author": "chenliuyun <chenliuyun@onero.com>"
+    }
+  }
+}
