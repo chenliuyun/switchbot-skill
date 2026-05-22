@@ -3,31 +3,31 @@ import assert from 'node:assert/strict';
 import { buildCliArgs, runCli, looksLikeAuthError } from '../src/executor.js';
 
 describe('buildCliArgs', () => {
-  it('devices_list → [devices, list, --no-cache, --json]', () => {
+  it('devices_list → [--no-cache, devices, list, --json]', () => {
     assert.deepEqual(
       buildCliArgs('devices_list', {}),
-      ['devices', 'list', '--no-cache', '--json']
+      ['--no-cache', 'devices', 'list', '--json']
     );
   });
 
-  it('devices_status → [devices, status, <id>, --no-cache, --json]', () => {
+  it('devices_status → [--no-cache, devices, status, <id>, --json]', () => {
     assert.deepEqual(
       buildCliArgs('devices_status', { deviceId: 'abc' }),
-      ['devices', 'status', 'abc', '--no-cache', '--json']
+      ['--no-cache', 'devices', 'status', 'abc', '--json']
     );
   });
 
-  it('devices_describe → [devices, describe, <id>, --no-cache, --json]', () => {
+  it('devices_describe → [--no-cache, devices, describe, <id>, --json]', () => {
     assert.deepEqual(
       buildCliArgs('devices_describe', { deviceId: 'abc' }),
-      ['devices', 'describe', 'abc', '--no-cache', '--json']
+      ['--no-cache', 'devices', 'describe', 'abc', '--json']
     );
   });
 
-  it('scenes_list → [scenes, list, --no-cache, --json]', () => {
+  it('scenes_list → [--no-cache, scenes, list, --json]', () => {
     assert.deepEqual(
       buildCliArgs('scenes_list', {}),
-      ['scenes', 'list', '--no-cache', '--json']
+      ['--no-cache', 'scenes', 'list', '--json']
     );
   });
 

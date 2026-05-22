@@ -11,24 +11,27 @@ const READ_TOOLS = new Set([
 ]);
 
 export function buildCliArgs(tool, params = {}, { auditLog = false } = {}) {
-  const flags = READ_TOOLS.has(tool) ? ['--no-cache', '--json'] : ['--json'];
-  const prefix = auditLog ? ['--audit-log'] : [];
+  // --no-cache and --audit-log are global flags — they must precede the subcommand.
+  const globalPrefix = [
+    ...(READ_TOOLS.has(tool) ? ['--no-cache'] : []),
+    ...(auditLog ? ['--audit-log'] : []),
+  ];
   switch (tool) {
     case 'devices_list':
-      return ['devices', 'list', ...flags];
+      return [...globalPrefix, 'devices', 'list', '--json'];
     case 'devices_status':
-      return ['devices', 'status', params.deviceId, ...flags];
+      return [...globalPrefix, 'devices', 'status', params.deviceId, '--json'];
     case 'devices_describe':
-      return ['devices', 'describe', params.deviceId, ...flags];
+      return [...globalPrefix, 'devices', 'describe', params.deviceId, '--json'];
     case 'devices_command': {
-      const args = [...prefix, 'devices', 'command', params.deviceId, params.command, ...flags];
+      const args = [...globalPrefix, 'devices', 'command', params.deviceId, params.command, '--json'];
       if (params.parameter != null) args.push('--params', String(params.parameter));
       return args;
     }
     case 'scenes_list':
-      return ['scenes', 'list', ...flags];
+      return [...globalPrefix, 'scenes', 'list', '--json'];
     case 'scenes_run':
-      return [...prefix, 'scenes', 'run', params.sceneId, ...flags];
+      return [...globalPrefix, 'scenes', 'run', params.sceneId, '--json'];
     default:
       throw new Error(`unknown tool: ${tool}`);
   }
