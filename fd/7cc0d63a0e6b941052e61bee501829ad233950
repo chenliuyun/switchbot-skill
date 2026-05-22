@@ -1,0 +1,19 @@
+CHANGELOG.md
+  s_614cf1491fb46e::t_55f041d4df3c3c 20
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.0",
+  "base_commit_sha": "fd7cc0d63a0e6b941052e61bee501829ad233950",
+  "prompts": {},
+  "sessions": {
+    "s_614cf1491fb46e": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "00e71ca6-4313-48dc-a201-fa04b1d6aa51",
+        "model": "claude-sonnet-4-6"
+      },
+      "human_author": "chenliuyun <chenliuyun@onero.com>"
+    }
+  }
+}
