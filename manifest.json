@@ -66,9 +66,17 @@
     "install": "openclaw plugins install @cly-org/switchbot-openclaw-skill"
   },
   "codexPlugin": {
-    "status": "repo-marketplace",
-    "path": "./packages/codex-plugin",
-    "marketplace": "./.agents/plugins/marketplace.json"
+    "name": "@cly-org/switchbot-codex-plugin",
+    "planned": "npm:@cly-org/switchbot-codex-plugin",
+    "status": "publish-ready",
+    "phase": "3C",
+    "npm": "https://www.npmjs.com/package/@cly-org/switchbot-codex-plugin",
+    "install": "npm install -g @cly-org/switchbot-codex-plugin && switchbot-codex-install",
+    "repoMarketplace": {
+      "status": "available",
+      "path": "./packages/codex-plugin",
+      "marketplace": "./.agents/plugins/marketplace.json"
+    }
   },
   "roadmap": {
     "source": "https://github.com/OpenWonderLabs/switchbot-openapi-cli/blob/main/docs/design/roadmap.md",

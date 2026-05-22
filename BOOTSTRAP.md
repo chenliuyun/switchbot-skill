@@ -17,7 +17,9 @@ Clone the SwitchBot skill repo if needed, then run its setup script:
 ```
 
 The script handles everything: CLI install, plugin registration, legacy
-config fallback, and browser login. After the browser **Allow** click,
+config fallback, and credential verification. If credentials are missing it
+starts the browser login even when Codex plugin hooks are disabled. After the
+browser **Allow** click,
 restart Codex and try:
 
 > List my SwitchBot devices and tell me which ones are currently on.
@@ -34,7 +36,9 @@ Please set up the SwitchBot Codex plugin:
 2. switchbot-codex-install
 ```
 
-The install script handles CLI install, plugin registration, and browser login.
-After the browser **Allow** click, restart Codex and try:
+The install script handles CLI install, plugin registration, and credential
+verification. If credentials are missing it starts the browser login directly,
+so it does not rely on Codex plugin hooks being enabled. After the browser
+**Allow** click, restart Codex and try:
 
 > List my SwitchBot devices and tell me which ones are currently on.

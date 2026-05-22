@@ -55,6 +55,23 @@ function stripFrontMatter(text) {
   const end = text.indexOf('\n---', 3);
   return end === -1 ? text : text.slice(end + 4).trimStart();
 }
+function applyLegacySetup() {
+  console.log('[setup] Applying legacy Codex config...');
+  mkdirSync(CODEX_DIR, { recursive: true });
+
+  let config = existsSync(CONFIG_PATH) ? readFileSync(CONFIG_PATH, 'utf8') : '';
+  if (!config.includes('name = "switchbot"')) {
+    config += '\n[[mcp_servers]]\nname = "switchbot"\ncommand = "switchbot"\nargs = ["mcp", "serve", "--tools", "all"]\n';
+  }
+  writeFileSync(CONFIG_PATH, config);
+
+  const skillPath = join(REPO_DIR, 'SKILL.md');
+  if (existsSync(skillPath)) {
+    writeFileSync(AGENTS_PATH, stripFrontMatter(readFileSync(skillPath, 'utf8')));
+  }
+
+  console.log('[setup] config.toml and AGENTS.md updated.');
+}
 
 // 1. Install CLI if missing or version too old
 const currentCliVersion = getCliVersion();
@@ -74,33 +91,28 @@ if (!currentCliVersion) {
   console.log(`[setup] CLI ${currentCliVersion} already installed.`);
 }
 
-// 2. Marketplace registration (works on all Codex versions)
-run('codex', ['plugin', 'marketplace', 'add', REPO_DIR]);
+// 2. Marketplace registration
+const marketplaceCode = run('codex', ['plugin', 'marketplace', 'add', REPO_DIR]);
+const marketplaceOk = marketplaceCode === 0;
 
 // 3. Plugin add (modern Codex only)
 const pluginName = `switchbot@${basename(REPO_DIR)}`;
-const pluginOk = run('codex', ['plugin', 'add', pluginName]) === 0;
+const pluginOk = marketplaceOk && run('codex', ['plugin', 'add', pluginName]) === 0;
 
-if (!pluginOk) {
-  // Fallback for older Codex: patch config.toml + write AGENTS.md
-  console.log('[setup] "codex plugin add" not supported — applying legacy config...');
-  mkdirSync(CODEX_DIR, { recursive: true });
-
-  let config = existsSync(CONFIG_PATH) ? readFileSync(CONFIG_PATH, 'utf8') : '';
-  if (!config.includes('plugin_hooks')) {
-    config += '\n[features]\nplugin_hooks = true\n';
+if (pluginOk) {
+  if (credentialsConfigured()) {
+    console.log('[setup] Credentials already configured. Skipping login.');
+  } else {
+    console.log('[setup] Plugin installed. Completing browser login...');
+    run('switchbot', ['auth', 'login']);
   }
-  if (!config.includes('name = "switchbot"')) {
-    config += '\n[[mcp_servers]]\nname = "switchbot"\ncommand = "switchbot"\nargs = ["mcp", "serve", "--tools", "all"]\n';
+} else {
+  if (!marketplaceOk) {
+    console.log('[setup] "codex plugin marketplace add" failed — falling back to legacy MCP setup.');
+  } else {
+    console.log('[setup] "codex plugin add" not supported — falling back to legacy MCP setup.');
   }
-  writeFileSync(CONFIG_PATH, config);
-
-  const skillPath = join(REPO_DIR, 'SKILL.md');
-  if (existsSync(skillPath)) {
-    writeFileSync(AGENTS_PATH, stripFrontMatter(readFileSync(skillPath, 'utf8')));
-  }
-
-  console.log('[setup] config.toml and AGENTS.md updated.');
+  applyLegacySetup();
 
   if (credentialsConfigured()) {
     console.log('[setup] Credentials already configured. Skipping login.');

@@ -74,8 +74,11 @@ codex plugin marketplace add D:\workspace\claudecode\switchbot-skill
 codex plugin add switchbot@switchbot-skill
 ```
 
-The onInstall hook checks your CLI version and credentials automatically.
-If credentials are missing it opens a browser login.
+If Codex plugin hooks are enabled, the `onInstall` hook checks your CLI
+version and credentials automatically. If you install via
+`switchbot-codex-install` or `scripts/codex-setup.js`, the installer performs
+the same credential check directly, so first-run auth does not depend on
+hooks being enabled.
 
 **Step 3 — Open any project in Codex**
 
@@ -229,9 +232,9 @@ PowerShell: `./scripts/upgrade.ps1` / `./scripts/uninstall.ps1` with `-Agent <na
 ├── SKILL.md                        # Agent-facing: safety rules and bootstrap
 ├── manifest.json                   # Skill manifest + compatibility metadata
 ├── packages/
-│   ├── codex-plugin/               # Codex plugin v0.8.0 (thin config layer)
+│   ├── codex-plugin/               # Codex plugin v0.8.2 (thin config layer)
 │   │   ├── bin/auth.js             # onInstall: checks CLI + triggers browser login
-│   │   ├── bin/install.js          # switchbot-codex-install bootstrap binary
+│   │   ├── bin/install.js          # switchbot-codex-install bootstrap + auth fallback
 │   │   ├── setup/                  # CLI + credential checks
 │   │   ├── skills/                 # SKILL.md for Codex
 │   │   ├── .mcp.json               # Points Codex at switchbot mcp serve --tools all

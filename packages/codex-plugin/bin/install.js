@@ -3,6 +3,8 @@ import { spawn } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 import { dirname, resolve, basename } from 'node:path';
 import { checkCli as defaultCheckCli } from '../setup/check-cli.js';
+import { checkCredentials as defaultCheckCredentials } from '../setup/check-credentials.js';
+import { makeRunAuth } from './auth.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const defaultPackageRoot = resolve(__dirname, '..');
@@ -15,7 +17,7 @@ function defaultRunInherit(cmd, args) {
   });
 }
 
-export function makeInstall({ checkCli, runInherit, packageRoot }) {
+export function makeInstall({ checkCli, runInherit, packageRoot, runAuth }) {
   return async function install() {
     const cliCheck = await checkCli();
     if (!cliCheck.ok) {
@@ -44,8 +46,17 @@ export function makeInstall({ checkCli, runInherit, packageRoot }) {
         '[switchbot-codex] "codex plugin add" failed — your Codex version may not support it.\n' +
         '[switchbot-codex] Fallback: follow the legacy install steps in CODEX_INSTALL.md.\n'
       );
+      return pluginCode;
     }
-    return pluginCode;
+
+    process.stderr.write('[switchbot-codex] Verifying credentials after install...\n');
+    const authCode = await runAuth();
+    if (authCode !== 0) {
+      process.stderr.write(
+        '[switchbot-codex] Plugin installed, but authentication still needs attention.\n'
+      );
+    }
+    return authCode;
   };
 }
 
@@ -55,6 +66,11 @@ if (isMain) {
     checkCli: defaultCheckCli,
     runInherit: defaultRunInherit,
     packageRoot: defaultPackageRoot,
+    runAuth: makeRunAuth({
+      checkCli: defaultCheckCli,
+      checkCredentials: defaultCheckCredentials,
+      runInherit: defaultRunInherit,
+    }),
   });
   install().then(code => process.exit(code)).catch(err => {
     process.stderr.write(`[switchbot-codex] Fatal: ${err instanceof Error ? err.message : String(err)}\n`);

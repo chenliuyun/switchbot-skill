@@ -1,6 +1,6 @@
 {
   "name": "switchbot",
-  "version": "0.8.0",
+  "version": "0.8.2",
   "description": "Control SwitchBot smart-home devices and scenes from Codex via the SwitchBot CLI and MCP server.",
   "author": {
     "name": "chenliuyun",

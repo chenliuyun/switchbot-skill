@@ -7,6 +7,66 @@ This project follows [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Added
+
+- **`packages/codex-plugin/README.md`** — new package-level install and
+  verification guide for the Codex plugin. Documents the recommended
+  `npm install -g @cly-org/switchbot-codex-plugin && switchbot-codex-install`
+  path, clarifies when `plugin_hooks` matters, and gives a minimal
+  `switchbot doctor` / `switchbot devices list` verification sequence for
+  published-package users.
+
+### Changed
+
+- **Codex plugin install flow is now self-healing even when hooks are off**.
+  `packages/codex-plugin/bin/install.js` no longer assumes Codex
+  `onInstall` hooks will run. After `codex plugin add`, it now executes the
+  same credential check used by the hook and launches `switchbot auth login`
+  when needed, so first-run setup succeeds even on Codex builds where
+  `plugin_hooks` stays disabled by default. `scripts/codex-setup.js` now
+  mirrors this behaviour.
+- **`scripts/codex-setup.js` fallback path is stricter and cleaner**.
+  Marketplace registration failure now short-circuits into the legacy MCP
+  setup instead of attempting a guaranteed-failing `codex plugin add`.
+  The legacy path now writes only the MCP server config plus `AGENTS.md`;
+  it no longer injects `plugin_hooks = true`, because hooks are not part of
+  the non-plugin fallback.
+- **Codex plugin metadata now reflects a publish-ready package target**.
+  Root `manifest.json` `codexPlugin` grew npm-oriented fields
+  (`name`, `planned`, `npm`, `install`, `phase`) and keeps the repo-local
+  marketplace definition under `repoMarketplace`. Status is
+  `publish-ready`, not `published`, so the manifest now distinguishes
+  between a packaged release target and the current repo-local install path.
+- **Codex plugin package metadata aligned to `0.8.2`**. The npm package,
+  `.codex-plugin/plugin.json`, docs, and package lockfile now agree on the
+  same version and minimum CLI requirement (`@switchbot/openapi-cli >=3.7.1`).
+- **`CODEX_INSTALL.md` legacy path was narrowed to actual MCP setup**.
+  The document now states explicitly that `plugin_hooks = true` is not part
+  of the legacy install path and only matters for Codex builds that support
+  packaged plugins.
+- **`publish-npm.yml` now supports Codex plugin publication** through a
+  dedicated `publish-codex` job. The workflow can be manually dispatched for
+  `packages/codex-plugin`, verifies the tag matches `package.json.version`,
+  runs `npm ci`, `npm test`, `npm pack --dry-run`, and then publishes with
+  provenance.
+
+### Fixed
+
+- **Removed stale Codex plugin runtime artifact**. `packages/codex-plugin/bin/server.js`
+  was still being packed even though the plugin now runs
+  `switchbot mcp serve --tools all` directly and the old `src/server.js`
+  implementation no longer exists. The dead entrypoint is gone from the
+  package tarball.
+- **Trimmed `packages/codex-plugin/package-lock.json` to a minimal effective
+  lockfile**. The file no longer carries the historical dependency tree from
+  the deleted custom MCP server. `@switchbot/openapi-cli` is now marked as an
+  optional peer dependency, allowing `npm ci` to succeed without trying to
+  resolve unrelated runtime packages during publish checks.
+- **Expanded Codex installer test coverage**. `packages/codex-plugin/tests/install.test.js`
+  now covers the post-install auth fallback and verifies that marketplace
+  failure, plugin-add failure, and auth failure each produce the correct exit
+  behaviour.
+
 ### Verified
 
 - Smoke-tested against CLI **3.7.1** (upgraded from 3.7.0).
