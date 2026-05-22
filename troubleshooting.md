@@ -354,27 +354,62 @@ gives you the exact reset time.
 
 ---
 
+---
+
 ## Uninstalling
 
-Phase 1 install was manual, so uninstall is too:
+Run the uninstall script for your platform:
 
+**macOS / Linux:**
 ```bash
-# Remove the skill
-rm -rf ~/.claude/skills/switchbot
-
-# (Optional) remove policy + audit log
-rm -rf ~/.config/openclaw/switchbot
-rm -f ~/.switchbot/audit.log
-
-# (Optional) remove the CLI itself
-npm uninstall -g @switchbot/openapi-cli
-
-# (Optional) remove credentials
-rm -rf ~/.switchbot
+bash <(curl -fsSL https://raw.githubusercontent.com/chenliuyun/switchbot-skill/main/scripts/uninstall.sh) \
+  --agent claude-global --remove-cli --remove-policy --remove-credentials
 ```
 
-The Phase 3 plugin will provide `openclaw switchbot uninstall` that
-does this cleanly.
+**Windows (PowerShell):**
+```powershell
+irm https://raw.githubusercontent.com/chenliuyun/switchbot-skill/main/scripts/uninstall.ps1 | iex
+# Then in the same terminal:
+Uninstall-SwitchBotSkill -Agent claude-global -RemoveCli -RemovePolicy -RemoveCredentials
+```
+
+Replace `claude-global` with your agent target if different (see `--help` for the full list).
+
+---
+
+## Verifying a Clean Uninstall
+
+After uninstalling, run these four checks — all should return "not found" or `False`:
+
+**macOS / Linux:**
+```bash
+switchbot --version      # expected: command not found
+ls ~/.switchbot/         # expected: no such file or directory
+ls ~/.config/openclaw/   # expected: no such file or directory
+switchbot doctor         # expected: command not found
+```
+
+**Windows (PowerShell):**
+```powershell
+switchbot --version                              # expected: not recognized
+Test-Path $env:USERPROFILE\.switchbot            # expected: False
+Test-Path $env:APPDATA\openclaw                  # expected: False
+switchbot doctor                                 # expected: not recognized
+```
+
+---
+
+## Re-authenticating (Re-login)
+
+Use this when you see **"credentials are not configured"** or **"token may be expired"**:
+
+```bash
+switchbot auth logout           # clear the existing token
+switchbot auth login            # open browser to re-authenticate
+switchbot doctor                # verify the new credentials are valid
+```
+
+After `switchbot doctor` shows no failures, restart your MCP client (Claude / Copilot / Codex / Cursor).
 
 ---
 
