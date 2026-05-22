@@ -1,0 +1,89 @@
+packages/openclaw-skill/bin/start.js
+  s_36ef010fc71ff1::t_33d1eb8c7f9c9a 7
+scripts/codex-setup.js
+  s_36ef010fc71ff1::t_eda3ab64d9d573 17
+packages/codex-plugin/tests/auth.test.js
+  s_36ef010fc71ff1::t_3c7bdea5eeb0e7 5
+troubleshooting.md
+  s_36ef010fc71ff1::t_765dfc1aa03fc9 10,12,16,23
+  s_36ef010fc71ff1::t_f9716efb76c64b 253
+CODEX_INSTALL.md
+  s_36ef010fc71ff1::t_e39709072d4c7c 35
+packages/codex-plugin/tests/install.test.js
+  s_36ef010fc71ff1::t_c3b66998cbef71 5
+packages/codex-plugin/tests/setup.test.js
+  s_36ef010fc71ff1::t_951750f62af21a 7-8,11,20
+docs/openclaw-status-sync-e2e.md
+  s_36ef010fc71ff1::t_311e1d460e873f 10
+  s_36ef010fc71ff1::t_df03806c6952e1 27
+scripts/bootstrap.sh
+  s_36ef010fc71ff1::t_f9e285a42cb70d 136
+  s_36ef010fc71ff1::t_3525b8d384d2bc 121
+README.md
+  s_36ef010fc71ff1::t_b2d2d875a48be3 29
+  s_36ef010fc71ff1::t_27b98f521eea9e 104
+packages/codex-plugin/setup/check-cli.js
+  s_36ef010fc71ff1::t_a4d84a953a8de0 4
+scripts/bootstrap.ps1
+  s_36ef010fc71ff1::t_2fa79124d7a55d 108
+  s_36ef010fc71ff1::t_af34d33520c5c0 98
+packages/openclaw-skill/README.md
+  s_36ef010fc71ff1::t_847d5900641ac8 24
+packages/openclaw-skill/.claude-plugin/plugin.json
+  s_36ef010fc71ff1::t_b7ca0f49da9951 4
+packages/openclaw-skill/package.json
+  s_36ef010fc71ff1::t_0891189c7ee7cc 40
+  s_36ef010fc71ff1::t_b66ea21a08e1ce 5
+manifest.json
+  s_36ef010fc71ff1::t_97a2cbdae37ca4 4
+  s_36ef010fc71ff1::t_14466da1b026de 24
+packages/codex-plugin/package.json
+  s_36ef010fc71ff1::t_fab9bd7cd518aa 3
+  s_36ef010fc71ff1::t_5fce34d6ce1302 32
+docs/agents/claude-code.md
+  s_36ef010fc71ff1::t_4db97f92cb574a 14
+  s_36ef010fc71ff1::t_6079553b1bd8f8 66
+docs/mcp-clients.md
+  s_36ef010fc71ff1::t_5d1d98261afdca 20
+packages/openclaw-skill/bin/setup-flow.js
+  s_36ef010fc71ff1::t_f98054b87992bb 4
+  s_36ef010fc71ff1::t_d4e7560a3a3366 13
+docs/openclaw-plugin-install.md
+  s_36ef010fc71ff1::t_1d21a6c5339d24 41
+  s_36ef010fc71ff1::t_c5a48ec9830ec3 11-12
+  s_36ef010fc71ff1::t_801223b78dce2f 20
+packages/codex-plugin/skills/switchbot/SKILL.md
+  s_36ef010fc71ff1::t_54a3f6d6cf8138 94
+  s_36ef010fc71ff1::t_a82d08ef675d2f 232
+  s_36ef010fc71ff1::t_7e97e358e571ed 236
+  s_36ef010fc71ff1::t_bc9f4c5c3bfa09 334
+  s_36ef010fc71ff1::t_99298d4ef33688 475
+  s_36ef010fc71ff1::t_3c23486c81a251 518
+  s_36ef010fc71ff1::t_2b2538b12507b9 586-587,589-590,593
+SKILL.md
+  s_36ef010fc71ff1::t_f2831f99c57687 209
+  s_36ef010fc71ff1::t_94f03bfd5a3a8f 552-553,555-556
+  s_36ef010fc71ff1::t_f2ad2ba74f2d8e 559
+  s_36ef010fc71ff1::t_d471cc01101671 319
+  s_36ef010fc71ff1::t_9d1bb6390b5cbc 213
+  s_36ef010fc71ff1::t_5e3e5aa5db87e0 441
+  s_36ef010fc71ff1::t_3a2f0d853eee55 484
+  s_36ef010fc71ff1::t_4dbc29c564b097 92
+  s_36ef010fc71ff1::t_4da1db7ace0e3d 311
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.0",
+  "base_commit_sha": "d9f212c75f69e2a4f3048f8c0ba71dc6efc8a177",
+  "prompts": {},
+  "sessions": {
+    "s_36ef010fc71ff1": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "c24f867d-67cd-43fe-b348-d76828ac4d64",
+        "model": "claude-sonnet-4-6"
+      },
+      "human_author": "chenliuyun <chenliuyun@onero.com>"
+    }
+  }
+}
