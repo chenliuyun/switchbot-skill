@@ -21,6 +21,19 @@ function run(cmd, args) {
 function ok(cmd, args) {
   return spawnSync(cmd, args, { shell: true }).status === 0;
 }
+function credentialsConfigured() {
+  // Try doctor --json first (most reliable)
+  const r = spawnSync('switchbot', ['doctor', '--json'], { shell: true, timeout: 10000 });
+  if (r.status === 0 && r.stdout) {
+    try {
+      const parsed = JSON.parse(r.stdout.toString());
+      const data = parsed?.data ?? parsed;
+      if (data?.credentials?.configured === true) return true;
+    } catch {}
+  }
+  // Fallback: keychain describe exits 0 only when credentials are stored
+  return ok('switchbot', ['auth', 'keychain', 'describe', '--json']);
+}
 function stripFrontMatter(text) {
   if (!text.startsWith('---')) return text;
   const end = text.indexOf('\n---', 3);
@@ -64,8 +77,13 @@ if (!pluginOk) {
   }
 
   console.log('[setup] config.toml and AGENTS.md updated.');
-  console.log('[setup] Starting browser login...');
-  run('switchbot', ['auth', 'login']);
+
+  if (credentialsConfigured()) {
+    console.log('[setup] Credentials already configured. Skipping login.');
+  } else {
+    console.log('[setup] Starting browser login...');
+    run('switchbot', ['auth', 'login']);
+  }
 }
 
 console.log('[setup] Done. Restart Codex, then ask: "List my SwitchBot devices."');
