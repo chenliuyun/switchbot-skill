@@ -40,36 +40,16 @@ Get your token + secret from the SwitchBot mobile app:
 
 ### 0. One-Paste Install
 
-Paste one prompt into Codex — it handles CLI install, plugin registration,
-and will prompt you for `switchbot auth login` when ready.
-See [`BOOTSTRAP.md`](./BOOTSTRAP.md) for the full copyable snippets.
-
-**GitHub Clone path** (available now — paste into Codex chat):
+Paste two lines into Codex — the setup script handles everything automatically.
+The only human step is clicking **Allow** in the browser OAuth screen.
 
 ```
-Please set up the SwitchBot Codex plugin by running these commands in order:
-1. npm install -g @switchbot/openapi-cli@latest
-2. If ~/switchbot-skill already exists run: git -C ~/switchbot-skill pull origin main
-   Otherwise run: git clone https://github.com/chenliuyun/switchbot-skill.git ~/switchbot-skill
-3. codex plugin marketplace add ~/switchbot-skill
-4. codex plugin add switchbot@switchbot-skill
-
-If step 4 fails because your Codex version does not support "plugin add",
-use this fallback instead:
-a. Add to ~/.codex/config.toml (create if missing):
-     [features]
-     plugin_hooks = true
-
-     [[mcp_servers]]
-     name = "switchbot"
-     command = "switchbot"
-     args = ["mcp", "serve", "--tools", "all"]
-b. Read ~/switchbot-skill/SKILL.md, strip the YAML front matter (first --- to
-   second ---), and write the remaining content to ~/.codex/AGENTS.md.
-c. Run: switchbot auth login
-
-After setup, a browser opens for OAuth authorization — just click Allow.
+Clone the SwitchBot skill repo if needed, then run its setup script:
+  git clone https://github.com/chenliuyun/switchbot-skill.git ~/switchbot-skill 2>/dev/null || git -C ~/switchbot-skill pull origin main
+  node ~/switchbot-skill/scripts/codex-setup.js
 ```
+
+See [`BOOTSTRAP.md`](./BOOTSTRAP.md) for alternative install options.
 
 ---
 
