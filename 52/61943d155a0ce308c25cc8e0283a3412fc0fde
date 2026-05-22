@@ -1,0 +1,24 @@
+packages/codex-plugin/bin/install.js
+  s_36ef010fc71ff1::t_19d51141d21f1a 41-48
+BOOTSTRAP.md
+  s_36ef010fc71ff1::t_4cad7ba5aca951 21-31
+  s_36ef010fc71ff1::t_4f71df330188f5 45-48
+README.md
+  s_36ef010fc71ff1::t_18e343c6dcc0c3 56-65
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.0",
+  "base_commit_sha": "5261943d155a0ce308c25cc8e0283a3412fc0fde",
+  "prompts": {},
+  "sessions": {
+    "s_36ef010fc71ff1": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "c24f867d-67cd-43fe-b348-d76828ac4d64",
+        "model": "claude-sonnet-4-6"
+      },
+      "human_author": "chenliuyun <chenliuyun@onero.com>"
+    }
+  }
+}
