@@ -1,0 +1,21 @@
+BOOTSTRAP.md
+  s_36ef010fc71ff1::t_0af052229e509f 15,21-22,32,36-37
+README.md
+  s_36ef010fc71ff1::t_aa73d6539f68b6 50,56-57
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.0",
+  "base_commit_sha": "ab64cad1531396f39a0f83988268611c50a2c474",
+  "prompts": {},
+  "sessions": {
+    "s_36ef010fc71ff1": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "c24f867d-67cd-43fe-b348-d76828ac4d64",
+        "model": "claude-sonnet-4-6"
+      },
+      "human_author": "chenliuyun <chenliuyun@onero.com>"
+    }
+  }
+}
