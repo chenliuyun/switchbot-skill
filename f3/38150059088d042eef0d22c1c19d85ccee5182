@@ -1,0 +1,19 @@
+docs/superpowers/specs/2026-05-22-codex-plugin-simplification-design.md
+  s_36ef010fc71ff1::t_39fdc192ba8c29 1-155
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.0",
+  "base_commit_sha": "f338150059088d042eef0d22c1c19d85ccee5182",
+  "prompts": {},
+  "sessions": {
+    "s_36ef010fc71ff1": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "c24f867d-67cd-43fe-b348-d76828ac4d64",
+        "model": "claude-sonnet-4-6"
+      },
+      "human_author": "chenliuyun <chenliuyun@onero.com>"
+    }
+  }
+}
