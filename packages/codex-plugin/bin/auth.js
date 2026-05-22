@@ -37,7 +37,11 @@ export function makeRunAuth({ checkCli, checkCredentials, runInherit }) {
     process.stderr.write('[switchbot-codex] Verifying credentials via doctor...\n');
     const doctorCode = await runInherit('switchbot', ['doctor']);
     if (doctorCode !== 0) {
-      process.stderr.write(`[switchbot-codex] ${formatError('token-expired')}\n`);
+      const postLoginCheck = await checkCredentials();
+      const errorMessage = postLoginCheck.ok
+        ? formatError('doctor-check-failed')
+        : postLoginCheck.message ?? formatError(postLoginCheck.errorKey ?? 'doctor-check-failed');
+      process.stderr.write(`[switchbot-codex] ${errorMessage}\n`);
       return doctorCode;
     }
 

@@ -37,7 +37,7 @@ Usage:
 Options:
   -RemoveCli          Uninstall @switchbot/openapi-cli globally
   -RemovePolicy       Remove ~/.config/openclaw/switchbot and ~/.switchbot/audit.log
-  -RemoveCredentials  Remove ~/.switchbot credentials directory
+  -RemoveCredentials  Remove ~/.switchbot files (OS keychain login still needs switchbot auth logout)
   -Force              Remove non-Claude agent files even if they do not look script-managed
 "@
 }
@@ -89,6 +89,35 @@ function Remove-ManagedFile {
   Write-Warning "Skipped $Path because it does not look script-managed. Re-run with -Force to remove it anyway."
 }
 
+function Remove-CodexPluginIfPresent {
+  $codex = Get-Command codex -ErrorAction SilentlyContinue
+  if (-not $codex) {
+    Write-Warning 'codex CLI not found, so plugin removal was skipped.'
+    return
+  }
+
+  $removed = $false
+  foreach ($pluginId in @(
+    'switchbot@switchbot-skill',
+    'switchbot@codex-plugin',
+    'switchbot@switchbot-codex-plugin'
+  )) {
+    try {
+      & $codex.Source plugin remove $pluginId *> $null
+      if ($LASTEXITCODE -eq 0) {
+        Write-Host "Removed Codex plugin: $pluginId"
+        $removed = $true
+      }
+    } catch {
+      # Ignore unknown plugin IDs and continue trying the common variants.
+    }
+  }
+
+  if (-not $removed) {
+    Write-Warning 'No known SwitchBot Codex plugin ID was removed. Run `codex plugin list` to verify manually.'
+  }
+}
+
 switch ($Agent) {
   'claude-global' { Remove-PathIfExists -Path (Join-Path $HOME '.claude/skills/switchbot') }
   'claude-project' {
@@ -112,9 +141,13 @@ switch ($Agent) {
     $workspaceRoot = Require-WorkspacePath
     Remove-ManagedFile -Path (Join-Path $workspaceRoot 'GEMINI.md')
   }
-  'codex-global' { Remove-ManagedFile -Path (Join-Path $HOME '.codex/AGENTS.md') }
+  'codex-global' {
+    Remove-CodexPluginIfPresent
+    Remove-ManagedFile -Path (Join-Path $HOME '.codex/AGENTS.md')
+  }
   'codex-project' {
     $workspaceRoot = Require-WorkspacePath
+    Remove-CodexPluginIfPresent
     Remove-ManagedFile -Path (Join-Path $workspaceRoot 'AGENTS.md')
   }
   'openclaw-staging' {
@@ -138,8 +171,19 @@ if ($RemoveCli) {
 
 Write-Host 'Uninstall complete.'
 Write-Host ''
-Write-Host 'Verify the uninstall is clean — all commands below should fail or return empty:'
-Write-Host '  switchbot --version                        # expected: not recognized'
-Write-Host '  Test-Path $env:USERPROFILE\.switchbot      # expected: False'
-Write-Host '  Test-Path $env:APPDATA\openclaw            # expected: False'
-Write-Host '  switchbot doctor                           # expected: not recognized'
+Write-Host 'Verify the parts you asked to remove:'
+if ($Agent -like 'codex-*') {
+  Write-Host '  codex plugin list                                  # expected: no SwitchBot plugin entry'
+}
+if ($RemovePolicy) {
+  Write-Host '  Test-Path $env:USERPROFILE\.config\openclaw\switchbot   # expected: False'
+}
+if ($RemoveCredentials) {
+  Write-Host '  Test-Path $env:USERPROFILE\.switchbot              # expected: False'
+  Write-Host '  switchbot auth keychain describe --json'
+  Write-Host '    # may still succeed until you also run: switchbot auth logout'
+}
+if ($RemoveCli) {
+  Write-Host '  switchbot --version                                # expected: not recognized'
+  Write-Host '  switchbot doctor                                   # expected: not recognized'
+}

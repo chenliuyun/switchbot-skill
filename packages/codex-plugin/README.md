@@ -48,6 +48,7 @@ manually before using the plugin.
 Run:
 
 ```bash
+switchbot --version
 switchbot doctor
 switchbot devices list
 ```
@@ -55,3 +56,100 @@ switchbot devices list
 Then restart Codex and ask:
 
 > List my SwitchBot devices and tell me which ones are currently on.
+
+## If install succeeds but you are not logged in
+
+This usually means the plugin installed, but the browser auth step did not run
+or did not complete.
+
+Run:
+
+```bash
+switchbot-codex-auth
+```
+
+If you prefer the CLI directly:
+
+```bash
+switchbot auth login
+switchbot doctor
+```
+
+Do not paste your token or secret into Codex chat. The login flow stores
+credentials in your OS keychain.
+
+## Re-login
+
+Use this when `switchbot doctor` reports auth failures, the token was rotated,
+or Codex says credentials exist but are rejected.
+
+```bash
+switchbot auth logout
+switchbot auth login
+switchbot doctor
+switchbot devices list
+```
+
+After re-login, restart Codex and retry:
+
+> List my SwitchBot devices and tell me which ones are currently on.
+
+## Verify End-To-End
+
+For a full release-style verification, run:
+
+```bash
+switchbot --version
+switchbot doctor
+switchbot devices list
+```
+
+Expected result:
+
+- `switchbot --version` is `3.7.1` or newer
+- `switchbot doctor` completes without credential failures
+- `switchbot devices list` returns your devices
+- Codex can answer the device prompt without asking for secrets
+
+## Uninstall
+
+Remove the plugin entry you installed. Common Codex plugin IDs are:
+
+```bash
+codex plugin remove switchbot@switchbot-skill
+codex plugin remove switchbot@codex-plugin
+codex plugin remove switchbot@switchbot-codex-plugin
+```
+
+Repo-marketplace installs usually use `switchbot@switchbot-skill`. Package-local
+marketplace installs may use one of the other IDs depending on the registered
+marketplace name.
+
+If you installed the npm package globally and also want to remove the helper
+commands:
+
+```bash
+npm uninstall -g @cly-org/switchbot-codex-plugin
+```
+
+## Full Uninstall
+
+To remove the plugin, local policy files, and stored login state:
+
+```bash
+codex plugin remove switchbot@switchbot-skill
+codex plugin remove switchbot@codex-plugin
+codex plugin remove switchbot@switchbot-codex-plugin
+switchbot auth logout
+```
+
+Optional cleanup:
+
+```bash
+npm uninstall -g @cly-org/switchbot-codex-plugin
+npm uninstall -g @switchbot/openapi-cli
+```
+
+Key detail: deleting local files under `~/.switchbot` does not automatically
+remove credentials from the OS keychain. Use `switchbot auth logout` when you
+want a true logout.

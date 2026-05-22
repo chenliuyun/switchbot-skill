@@ -23,6 +23,23 @@ function makeSpawn(exitCode = 0) {
   return { spawn, calls };
 }
 
+async function captureStderr(fn) {
+  const originalWrite = process.stderr.write;
+  let output = '';
+  process.stderr.write = ((chunk, encoding, callback) => {
+    output += String(chunk);
+    if (typeof encoding === 'function') encoding();
+    if (typeof callback === 'function') callback();
+    return true;
+  });
+
+  try {
+    return { code: await fn(), output };
+  } finally {
+    process.stderr.write = originalWrite;
+  }
+}
+
 describe('runAuth', () => {
   it('exits 0 immediately when credentials already present', async () => {
     const { spawn, calls } = makeSpawn(0);
@@ -87,5 +104,33 @@ describe('runAuth', () => {
     });
     const code = await runAuth();
     assert.equal(code, 2);
+  });
+
+  it('prints the classified follow-up error when doctor fails after login', async () => {
+    let callCount = 0;
+    const spawn = async () => {
+      callCount++;
+      return callCount === 1 ? 0 : 2;
+    };
+    let credentialChecks = 0;
+    const checkCredentials = async () => {
+      credentialChecks++;
+      if (credentialChecks === 1) return { ok: false, message: 'missing creds' };
+      return {
+        ok: false,
+        errorKey: 'doctor-check-failed',
+        message: 'Error: The CLI could not complete the post-login health check.',
+      };
+    };
+    const runAuth = makeRunAuth({
+      checkCli: makeOkCliCheck(),
+      checkCredentials,
+      runInherit: spawn,
+    });
+
+    const result = await captureStderr(() => runAuth());
+    assert.equal(result.code, 2);
+    assert.equal(credentialChecks, 2);
+    assert.match(result.output, /post-login health check/i);
   });
 });

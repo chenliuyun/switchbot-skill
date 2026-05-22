@@ -80,6 +80,22 @@ version and credentials automatically. If you install via
 the same credential check directly, so first-run auth does not depend on
 hooks being enabled.
 
+If install completes but login still is not configured, run:
+
+```bash
+switchbot-codex-auth
+switchbot doctor
+switchbot devices list
+```
+
+For a clean re-login after a failed or expired session:
+
+```bash
+switchbot auth logout
+switchbot auth login
+switchbot doctor
+```
+
 **Step 3 — Open any project in Codex**
 
 The `switchbot` MCP server starts automatically. Try:
@@ -211,6 +227,36 @@ Full safety rules and audit guidance in [SKILL.md](./SKILL.md).
 codex plugin remove switchbot@switchbot-skill
 codex plugin add switchbot@switchbot-skill
 ```
+
+If you installed through the package-local marketplace, also try:
+
+```bash
+codex plugin remove switchbot@codex-plugin
+codex plugin remove switchbot@switchbot-codex-plugin
+```
+
+To verify Codex is fully ready after install or re-login:
+
+```bash
+switchbot --version
+switchbot doctor
+switchbot devices list
+```
+
+Then restart Codex and ask:
+
+> List my SwitchBot devices and tell me which ones are currently on.
+
+For a full uninstall, also clear the stored login and optional global packages:
+
+```bash
+switchbot auth logout
+npm uninstall -g @cly-org/switchbot-codex-plugin
+npm uninstall -g @switchbot/openapi-cli
+```
+
+`switchbot auth logout` matters because removing local files does not clear the
+OS keychain by itself.
 
 **File-based:**
 

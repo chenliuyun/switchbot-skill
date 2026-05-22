@@ -15,6 +15,16 @@ export const ERRORS = {
     fix:    'switchbot auth logout && switchbot auth login',
     hint:   'After re-login, run `switchbot doctor` to verify.',
   },
+  'credentials-invalid': {
+    reason: 'Credentials were found, but SwitchBot rejected them.',
+    fix:    'switchbot auth logout && switchbot auth login',
+    hint:   'Use this when install succeeded but the browser login did not complete cleanly, or the token was rotated.',
+  },
+  'doctor-check-failed': {
+    reason: 'The CLI could not complete the post-login health check.',
+    fix:    'switchbot doctor',
+    hint:   'Inspect the doctor output for network, API, or proxy failures before retrying login.',
+  },
   'cli-not-installed': {
     reason: 'switchbot CLI is not installed or not in PATH.',
     fix:    'npm install -g @switchbot/openapi-cli',

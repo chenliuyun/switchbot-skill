@@ -24,6 +24,13 @@ restart Codex and try:
 
 > List my SwitchBot devices and tell me which ones are currently on.
 
+If install succeeds but login is still missing, run:
+
+```bash
+switchbot-codex-auth
+switchbot doctor
+```
+
 ---
 
 ## Option B — npm (after publishing `@cly-org/switchbot-codex-plugin`)
@@ -42,3 +49,11 @@ so it does not rely on Codex plugin hooks being enabled. After the browser
 **Allow** click, restart Codex and try:
 
 > List my SwitchBot devices and tell me which ones are currently on.
+
+If the login window was closed or the session failed, recover with:
+
+```bash
+switchbot auth logout
+switchbot auth login
+switchbot doctor
+```

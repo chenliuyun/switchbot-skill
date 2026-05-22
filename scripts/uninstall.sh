@@ -20,7 +20,7 @@ Usage:
 Options:
   --remove-cli          Uninstall @switchbot/openapi-cli globally
   --remove-policy       Remove ~/.config/openclaw/switchbot and ~/.switchbot/audit.log
-  --remove-credentials  Remove ~/.switchbot credentials directory
+  --remove-credentials  Remove ~/.switchbot files (OS keychain login still needs switchbot auth logout)
   --force               Remove non-Claude agent files even if they do not look script-managed
 EOF
 }
@@ -111,6 +111,30 @@ remove_managed_file() {
   echo "Skipped $destination because it does not look script-managed. Re-run with --force to remove it anyway." >&2
 }
 
+remove_codex_plugin_if_present() {
+  if ! command -v codex >/dev/null 2>&1; then
+    echo "Note: codex CLI not found, so plugin removal was skipped." >&2
+    return
+  fi
+
+  local removed="false"
+  local plugin_id
+  for plugin_id in \
+    "switchbot@switchbot-skill" \
+    "switchbot@codex-plugin" \
+    "switchbot@switchbot-codex-plugin"
+  do
+    if codex plugin remove "$plugin_id" >/dev/null 2>&1; then
+      echo "Removed Codex plugin: $plugin_id"
+      removed="true"
+    fi
+  done
+
+  if [[ "$removed" != "true" ]]; then
+    echo "Note: no known SwitchBot Codex plugin ID was removed. Run \`codex plugin list\` if you want to verify manually." >&2
+  fi
+}
+
 case "$agent" in
   claude-global)
     remove_path_if_exists "$HOME/.claude/skills/switchbot"
@@ -139,10 +163,12 @@ case "$agent" in
     remove_managed_file "$workspace_path/GEMINI.md"
     ;;
   codex-global)
+    remove_codex_plugin_if_present
     remove_managed_file "$HOME/.codex/AGENTS.md"
     ;;
   codex-project)
     require_workspace_path
+    remove_codex_plugin_if_present
     remove_managed_file "$workspace_path/AGENTS.md"
     ;;
   openclaw-staging)
@@ -166,8 +192,19 @@ fi
 
 echo "Uninstall complete."
 echo ""
-echo "Verify the uninstall is clean — all commands below should fail or return empty:"
-echo "  switchbot --version      # expected: command not found"
-echo "  ls ~/.switchbot/         # expected: no such file or directory"
-echo "  ls ~/.config/openclaw/   # expected: no such file or directory"
-echo "  switchbot doctor         # expected: command not found"
+echo "Verify the parts you asked to remove:"
+if [[ "$agent" == codex-global || "$agent" == codex-project ]]; then
+  echo "  codex plugin list        # expected: no SwitchBot plugin entry"
+fi
+if [[ "$remove_policy" == "true" ]]; then
+  echo "  ls ~/.config/openclaw/switchbot   # expected: no such file or directory"
+fi
+if [[ "$remove_credentials" == "true" ]]; then
+  echo "  ls ~/.switchbot/                 # expected: no such file or directory"
+  echo "  switchbot auth keychain describe --json"
+  echo "    # may still succeed until you also run: switchbot auth logout"
+fi
+if [[ "$remove_cli" == "true" ]]; then
+  echo "  switchbot --version      # expected: command not found"
+  echo "  switchbot doctor         # expected: command not found"
+fi

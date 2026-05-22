@@ -7,6 +7,8 @@ describe('codex-plugin ERRORS registry', () => {
     'auth-not-configured',
     'auth-login-failed',
     'token-expired',
+    'credentials-invalid',
+    'doctor-check-failed',
     'cli-not-installed',
     'cli-version-too-low',
   ];

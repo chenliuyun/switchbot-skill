@@ -176,6 +176,34 @@ asks you for credentials:
 
 ---
 
+## Codex plugin installed but not logged in
+
+Symptom: `codex plugin add` or `switchbot-codex-install` succeeded, but
+`switchbot doctor` still reports missing credentials or Codex cannot list
+devices.
+
+Run:
+
+```bash
+switchbot-codex-auth
+switchbot doctor
+switchbot devices list
+```
+
+If the login session looks stale or SwitchBot rejects stored credentials, do a
+full re-login instead:
+
+```bash
+switchbot auth logout
+switchbot auth login
+switchbot doctor
+```
+
+Do not paste your token or secret into Codex chat. The supported path is the
+browser login flow, which stores credentials in the OS keychain.
+
+---
+
 ## Agent picks the wrong device
 
 Symptom: you said "turn on the bedroom light" and it turned on the
@@ -375,26 +403,47 @@ Uninstall-SwitchBotSkill -Agent claude-global -RemoveCli -RemovePolicy -RemoveCr
 
 Replace `claude-global` with your agent target if different (see `--help` for the full list).
 
+For Codex plugin installs, also remove the plugin itself. Common plugin IDs are:
+
+```bash
+codex plugin remove switchbot@switchbot-skill
+codex plugin remove switchbot@codex-plugin
+codex plugin remove switchbot@switchbot-codex-plugin
+```
+
+If you want a true logout as part of uninstall, run:
+
+```bash
+switchbot auth logout
+```
+
+This is separate from deleting `~/.switchbot`, because the browser login is
+stored in the OS keychain.
+
 ---
 
 ## Verifying a Clean Uninstall
 
-After uninstalling, run these four checks — all should return "not found" or `False`:
+After uninstalling, verify the specific pieces you removed:
 
 **macOS / Linux:**
 ```bash
-switchbot --version      # expected: command not found
-ls ~/.switchbot/         # expected: no such file or directory
-ls ~/.config/openclaw/   # expected: no such file or directory
-switchbot doctor         # expected: command not found
+codex plugin list                  # expected: no SwitchBot plugin entry
+ls ~/.switchbot/                   # expected: no such file or directory (if removed)
+ls ~/.config/openclaw/switchbot/   # expected: no such file or directory (if removed)
+switchbot auth keychain describe --json
+# expected: still works until you run `switchbot auth logout`
+switchbot --version                # expected: command not found only if CLI was removed
 ```
 
 **Windows (PowerShell):**
 ```powershell
-switchbot --version                              # expected: not recognized
-Test-Path $env:USERPROFILE\.switchbot            # expected: False
-Test-Path $env:APPDATA\openclaw                  # expected: False
-switchbot doctor                                 # expected: not recognized
+codex plugin list                                        # expected: no SwitchBot plugin entry
+Test-Path $env:USERPROFILE\.switchbot                    # expected: False (if removed)
+Test-Path $env:USERPROFILE\.config\openclaw\switchbot    # expected: False (if removed)
+switchbot auth keychain describe --json
+# expected: still works until you run `switchbot auth logout`
+switchbot --version                                      # expected: not recognized only if CLI was removed
 ```
 
 ---

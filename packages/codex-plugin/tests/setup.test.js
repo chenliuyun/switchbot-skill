@@ -68,17 +68,40 @@ describe('checkCredentials', () => {
     assert.deepEqual(result, { ok: true, source: 'doctor' });
   });
 
-  it('returns token-expired error when doctor throws (non-ENOENT)', async () => {
+  it('returns credentials-invalid when doctor reports an auth failure and keychain credentials exist', async () => {
     const fakeExec = async (cmd, args) => {
-      if (args.includes('doctor')) throw new Error('doctor failed');
+      if (args.includes('doctor')) {
+        const err = new Error('401 Unauthorized');
+        err.stderr = 'HTTP 401 unauthorized';
+        throw err;
+      }
       if (args.includes('describe')) return { stdout: '{}' };
       throw new Error('unexpected');
     };
     const check = makeCheckCredentials(fakeExec);
     const result = await check();
     assert.equal(result.ok, false);
-    assert.match(result.message, /token/i);
-    assert.match(result.message, /switchbot auth/);
+    assert.equal(result.errorKey, 'credentials-invalid');
+    assert.match(result.message, /rejected/i);
+    assert.match(result.message, /switchbot auth logout/);
+  });
+
+  it('returns doctor-check-failed when doctor errors look like network failures', async () => {
+    const fakeExec = async (cmd, args) => {
+      if (args.includes('doctor')) {
+        const err = new Error('ETIMEDOUT');
+        err.stderr = 'connect ETIMEDOUT api.switch-bot.com';
+        throw err;
+      }
+      if (args.includes('describe')) return { stdout: '{}' };
+      throw new Error('unexpected');
+    };
+    const check = makeCheckCredentials(fakeExec);
+    const result = await check();
+    assert.equal(result.ok, false);
+    assert.equal(result.errorKey, 'doctor-check-failed');
+    assert.match(result.message, /health check/i);
+    assert.match(result.message, /switchbot doctor/);
   });
 
   it('returns ok:false when both doctor and keychain describe fail', async () => {
@@ -86,6 +109,7 @@ describe('checkCredentials', () => {
     const check = makeCheckCredentials(fakeExec);
     const result = await check();
     assert.equal(result.ok, false);
+    assert.equal(result.errorKey, 'auth-not-configured');
     assert.match(result.message, /switchbot auth login/);
   });
 
