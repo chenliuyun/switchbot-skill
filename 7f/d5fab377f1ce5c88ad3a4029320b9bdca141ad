@@ -1,0 +1,20 @@
+packages/codex-plugin/skills/switchbot/SKILL.md
+  s_36ef010fc71ff1::t_b2b9b64102a189 178-180,182-186
+  s_36ef010fc71ff1::t_5fc074d0a3ff2c 154-175,181
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.0",
+  "base_commit_sha": "7fd5fab377f1ce5c88ad3a4029320b9bdca141ad",
+  "prompts": {},
+  "sessions": {
+    "s_36ef010fc71ff1": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "c24f867d-67cd-43fe-b348-d76828ac4d64",
+        "model": "claude-sonnet-4-6"
+      },
+      "human_author": "chenliuyun <chenliuyun@onero.com>"
+    }
+  }
+}
