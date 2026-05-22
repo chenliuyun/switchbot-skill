@@ -137,3 +137,9 @@ if ($RemoveCli) {
 }
 
 Write-Host 'Uninstall complete.'
+Write-Host ''
+Write-Host 'Verify the uninstall is clean — all commands below should fail or return empty:'
+Write-Host '  switchbot --version                        # expected: not recognized'
+Write-Host '  Test-Path $env:USERPROFILE\.switchbot      # expected: False'
+Write-Host '  Test-Path $env:APPDATA\openclaw            # expected: False'
+Write-Host '  switchbot doctor                           # expected: not recognized'

@@ -165,3 +165,9 @@ if [[ "$remove_cli" == "true" ]]; then
 fi
 
 echo "Uninstall complete."
+echo ""
+echo "Verify the uninstall is clean — all commands below should fail or return empty:"
+echo "  switchbot --version      # expected: command not found"
+echo "  ls ~/.switchbot/         # expected: no such file or directory"
+echo "  ls ~/.config/openclaw/   # expected: no such file or directory"
+echo "  switchbot doctor         # expected: command not found"
