@@ -1,0 +1,21 @@
+packages/codex-plugin/bin/install.js
+  s_36ef010fc71ff1::t_5d0ae3f91e126e 1-56
+packages/codex-plugin/tests/install.test.js
+  s_36ef010fc71ff1::t_4505222cebc6c4 1-96
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.0",
+  "base_commit_sha": "4c4d10b3bd0766283636ce7f480101c26434864a",
+  "prompts": {},
+  "sessions": {
+    "s_36ef010fc71ff1": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "c24f867d-67cd-43fe-b348-d76828ac4d64",
+        "model": "claude-sonnet-4-6"
+      },
+      "human_author": "chenliuyun <chenliuyun@onero.com>"
+    }
+  }
+}
