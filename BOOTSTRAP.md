@@ -1,8 +1,9 @@
 # SwitchBot Codex Bootstrap
 
 Paste one of the prompts below into Codex chat. Codex will run the setup
-commands automatically. The only step that requires human interaction is
-`switchbot auth login` — this opens a browser window for OAuth.
+commands automatically. The only human action required is clicking **Authorize**
+in the browser — `switchbot auth login` runs automatically via the plugin's
+install hook.
 
 ---
 
@@ -17,7 +18,7 @@ Copy and paste into Codex:
 3. codex plugin marketplace add ~/switchbot-skill
 4. codex plugin add switchbot@switchbot-skill
 
-全部成功后，提示我在终端运行 `switchbot auth login` 完成浏览器授权。
+安装完成后，插件会自动打开浏览器进行 OAuth 授权，请在浏览器里点击「允许」即可。
 ```
 
 ---
@@ -31,7 +32,7 @@ Copy and paste into Codex:
 1. npm install -g @cly-org/switchbot-codex-plugin
 2. switchbot-codex-install
 
-完成后提示我运行 `switchbot auth login`。
+安装完成后，插件会自动打开浏览器进行 OAuth 授权，请在浏览器里点击「允许」即可。
 ```
 
 ---

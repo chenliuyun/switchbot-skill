@@ -35,11 +35,10 @@ These scripts automate the current file-based install paths for Claude Code,
 Copilot, Cursor, Gemini, and Codex, plus an `openclaw-staging` preview target
 for the future plugin layout.
 
-## Important limit
+## Important note
 
-This repo does not yet ship a published OpenClaw / ClawHub plugin. Current
-installation is a scripted wrapper around today's file-based integration
-mechanisms.
+The Codex plugin is the recommended install path — see `BOOTSTRAP.md` for a
+one-paste prompt that handles everything automatically.
 
 ## Verification baseline
 

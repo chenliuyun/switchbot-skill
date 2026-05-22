@@ -6,8 +6,8 @@ and an audit log of every action.
 
 This repo ships:
 
-- **A Codex plugin** (`packages/codex-plugin/`) — one-command install via
-  the repo-local marketplace, self-contained MCP server, policy-gated safety layer.
+- **A Codex plugin** (`packages/codex-plugin/`) — one-paste install, wires Codex
+  directly to `switchbot mcp serve` (24 tools), with a policy-guided AI safety layer.
 - **An OpenClaw plugin** (`packages/openclaw-skill/`) published as
   [`@cly-org/switchbot-openclaw-skill`][npm] — same 6 MCP tools, one-command install.
 - **A skill** (`SKILL.md`) that teaches any LLM-backed agent how to drive
@@ -53,7 +53,7 @@ See [`BOOTSTRAP.md`](./BOOTSTRAP.md) for the full copyable snippets.
 3. codex plugin marketplace add ~/switchbot-skill
 4. codex plugin add switchbot@switchbot-skill
 
-全部成功后，提示我在终端运行 `switchbot auth login` 完成浏览器授权。
+安装完成后，插件会自动打开浏览器进行 OAuth 授权，请在浏览器里点击「允许」即可。
 ```
 
 ---
@@ -135,7 +135,10 @@ Supported `--agent` targets: `claude-global`, `claude-project`, `copilot`,
 
 ## MCP Tools
 
-All three install paths expose the same 6 tools:
+**Codex** (via `switchbot mcp serve --tools all`) exposes **24 tools** — the full
+CLI tool surface including audit, policy, rules, and device control.
+
+**OpenClaw / file-based** installs expose these 6 tools:
 
 | Tool | Safety tier | Description |
 |---|---|---|
@@ -148,7 +151,6 @@ All three install paths expose the same 6 tools:
 
 `devices_command` with a lock command (`lockOff`) is **destructive** —
 the agent must pass `confirmed: true` after explicit user consent.
-Mutation tools automatically append to `~/.switchbot/audit.log`.
 
 ---
 
@@ -197,10 +199,9 @@ If the agent asks for your token or invents device IDs, see
 | `mutation` | turn on/off, set brightness | Run; append to `audit.log` |
 | `destructive` | lock commands (`lockOff`) | Refuse without `confirmed: true` |
 
-The Codex plugin enforces these tiers in code (not just prompt instructions)
-via a two-layer pipeline: Layer 1 checks `policy.yaml` (quiet hours,
-allowed devices, blocked commands); Layer 2 gates destructive commands behind
-explicit confirmation. Full rules in [SKILL.md](./SKILL.md).
+The Codex plugin uses the CLI's native tier enforcement; policy compliance
+is handled by the AI calling `policy_validate` at session start.
+Full safety rules and audit guidance in [SKILL.md](./SKILL.md).
 
 ---
 
@@ -233,11 +234,12 @@ PowerShell: `./scripts/upgrade.ps1` / `./scripts/uninstall.ps1` with `-Agent <na
 ├── SKILL.md                        # Agent-facing: safety rules and bootstrap
 ├── manifest.json                   # Skill manifest + compatibility metadata
 ├── packages/
-│   ├── codex-plugin/               # Codex plugin v0.8.0 (self-contained MCP)
-│   │   ├── bin/server.js           # MCP server entry point
-│   │   ├── src/                    # server, tools, policy, executor
+│   ├── codex-plugin/               # Codex plugin v0.8.0 (thin config layer)
+│   │   ├── bin/auth.js             # onInstall: checks CLI + triggers browser login
+│   │   ├── bin/install.js          # switchbot-codex-install bootstrap binary
 │   │   ├── setup/                  # CLI + credential checks
-│   │   ├── .mcp.json               # Patched at install time with absolute path
+│   │   ├── skills/                 # SKILL.md for Codex
+│   │   ├── .mcp.json               # Points Codex at switchbot mcp serve --tools all
 │   │   └── .codex-plugin/          # plugin.json + hooks.json
 │   └── openclaw-skill/             # Published @cly-org/switchbot-openclaw-skill
 ├── .agents/plugins/marketplace.json  # Repo-local Codex plugin marketplace

@@ -1,9 +1,10 @@
 # SwitchBot Skill — Codex Install
 
-> **Recommended install:** Codex app → Plugins → Add from local path → `packages/codex-plugin/`
-> Or via CLI: `codex plugin marketplace add .`
+> **Recommended install:** Paste the bootstrap prompt from [`BOOTSTRAP.md`](./BOOTSTRAP.md)
+> into Codex chat — it handles CLI install, plugin registration, and browser auth automatically.
 >
-> The manual steps below are a **Legacy path** for older Codex versions that do not support the plugin system.
+> The manual steps below are a **legacy path** for older Codex versions that do not support
+> the plugin system, or for environments where the bootstrap prompt cannot be used.
 
 ---
 
