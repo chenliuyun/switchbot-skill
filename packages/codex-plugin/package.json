@@ -18,7 +18,8 @@
   "keywords": ["codex", "switchbot", "smart-home", "iot", "mcp"],
   "engines": { "node": ">=18" },
   "bin": {
-    "switchbot-codex-auth": "./bin/auth.js"
+    "switchbot-codex-auth": "./bin/auth.js",
+    "switchbot-codex-install": "./bin/install.js"
   },
   "files": [
     "bin/",
