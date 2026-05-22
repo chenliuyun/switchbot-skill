@@ -1,6 +1,7 @@
 // packages/openclaw-skill/cli.js
 import { execFile } from 'node:child_process';
 import { promisify } from 'node:util';
+import { formatError } from './lib/error-messages.js';
 
 const exec = promisify(execFile);
 
@@ -81,8 +82,7 @@ export async function runCli(args) {
     if (err && err.code === 'ENOENT') {
       return setupRequired(
         'cli-missing',
-        'SwitchBot CLI (`switchbot`) is not installed on PATH. ' +
-        'Install with: npm install -g @switchbot/openapi-cli@latest',
+        formatError('cli-not-installed'),
       );
     }
     const raw = (err && (err.stdout ?? err.stderr ?? err.message)) ?? String(err);
@@ -93,15 +93,13 @@ export async function runCli(args) {
     if (envelopeKind === 'auth' || envelopeKind === 'credentials' || envelopeKind === 'unauthorized') {
       return setupRequired(
         'auth-missing',
-        'SwitchBot CLI is installed but has no credentials. ' +
-        'Configure with: switchbot config set-token',
+        formatError('auth-not-configured'),
       );
     }
     if (!parsed && looksLikeAuthError(raw)) {
       return setupRequired(
         'auth-missing',
-        'SwitchBot CLI rejected the request with an auth error. ' +
-        'Configure credentials: switchbot config set-token',
+        formatError('auth-not-configured'),
       );
     }
     if (parsed) return parsed;
