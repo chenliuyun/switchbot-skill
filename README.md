@@ -38,7 +38,27 @@ Get your token + secret from the SwitchBot mobile app:
 
 ## Install
 
-### A. Codex (recommended)
+### 0. One-Paste Install
+
+Paste one prompt into Codex — it handles CLI install, plugin registration,
+and will prompt you for `switchbot auth login` when ready.
+See [`BOOTSTRAP.md`](./BOOTSTRAP.md) for the full copyable snippets.
+
+**GitHub Clone path** (available now — paste into Codex chat):
+
+```
+请帮我安装 SwitchBot Codex 插件，按顺序执行以下命令：
+1. npm install -g @switchbot/openapi-cli@latest
+2. git clone https://github.com/chenliuyun/switchbot-skill.git ~/switchbot-skill
+3. codex plugin marketplace add ~/switchbot-skill
+4. codex plugin add switchbot@switchbot-skill
+
+全部成功后，提示我在终端运行 `switchbot auth login` 完成浏览器授权。
+```
+
+---
+
+### A. Codex (manual steps)
 
 **Step 1 — Register the marketplace (one-time, per machine)**
 
