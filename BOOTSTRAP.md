@@ -23,6 +23,11 @@ use this fallback instead:
 a. Add to ~/.codex/config.toml (create the file if it does not exist):
      [features]
      plugin_hooks = true
+
+     [[mcp_servers]]
+     name = "switchbot"
+     command = "switchbot"
+     args = ["mcp", "serve", "--tools", "all"]
 b. Read ~/switchbot-skill/SKILL.md, strip the YAML front matter block (the
    lines from the first --- to the second ---, inclusive), and write the
    remaining content to ~/.codex/AGENTS.md.

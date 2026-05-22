@@ -37,22 +37,34 @@ If it prints a lower version, stop and tell the user to check their npm global p
 
 ---
 
-## Step 3: Enable plugin hooks in Codex config
+## Step 3: Enable plugin hooks and register the MCP server
 
 Read `~/.codex/config.toml` (create the file if it does not exist).
 
-Ensure the file contains:
+Ensure the file contains **both** of the following blocks:
 
 ```toml
 [features]
 plugin_hooks = true
+
+[[mcp_servers]]
+name = "switchbot"
+command = "switchbot"
+args = ["mcp", "serve", "--tools", "all"]
 ```
 
-Rules:
-- If the file does not exist → create it with just those two lines.
-- If a `[features]` section exists but `plugin_hooks` is missing → add the key under it.
-- If `plugin_hooks` exists but is not `true` → update it to `true`.
-- Do not touch any other keys in the file.
+Rules for `[features]`:
+- If the section does not exist → add it with `plugin_hooks = true`.
+- If `plugin_hooks` exists but is not `true` → set it to `true`.
+
+Rules for `[[mcp_servers]]`:
+- If no `[[mcp_servers]]` entry with `name = "switchbot"` exists → append the block above.
+- If the entry exists but `command` or `args` differ → update them.
+- Do not touch any other `[[mcp_servers]]` entries.
+
+> **Why:** Without the `[[mcp_servers]]` block, Codex falls back to running
+> `switchbot` CLI commands directly and prompts for shell permission on every call.
+> With it, Codex uses the MCP protocol — read-tier tools run without confirmation.
 
 ---
 
