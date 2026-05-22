@@ -14,7 +14,8 @@ Copy and paste into Codex:
 ```
 Please set up the SwitchBot Codex plugin by running these commands in order:
 1. npm install -g @switchbot/openapi-cli@latest
-2. git clone https://github.com/chenliuyun/switchbot-skill.git ~/switchbot-skill
+2. If ~/switchbot-skill already exists run: git -C ~/switchbot-skill pull origin main
+   Otherwise run: git clone https://github.com/chenliuyun/switchbot-skill.git ~/switchbot-skill
 3. codex plugin marketplace add ~/switchbot-skill
 4. codex plugin add switchbot@switchbot-skill
 
