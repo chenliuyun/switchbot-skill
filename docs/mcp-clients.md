@@ -17,7 +17,7 @@ Install the plugin globally and authenticate the underlying CLI:
 npm install -g @cly-org/switchbot-openclaw-skill
 npm install -g @switchbot/openapi-cli@latest     # if not already installed
 switchbot config set-token                        # paste token + secret
-switchbot --version                               # must be >= 3.3.0
+switchbot --version                               # must be >= 3.7.1
 switchbot doctor                                  # all checks ✓
 ```
 

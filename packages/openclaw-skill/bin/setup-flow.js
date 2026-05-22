@@ -1,7 +1,7 @@
 // packages/openclaw-skill/bin/setup-flow.js
 // Interactive setup for the SwitchBot OpenClaw plugin. Guides the user
 // through installing the underlying @switchbot/openapi-cli, verifying
-// version >= 3.3.0, and confirming credentials via `switchbot doctor`.
+// version >= 3.7.1, and confirming credentials via `switchbot doctor`.
 //
 // This module is invoked only via `switchbot-openclaw setup`. It is
 // never loaded on the MCP-server path, so it is free to write to stdout.
@@ -10,7 +10,7 @@ import { execFile, spawn } from 'node:child_process';
 import { promisify } from 'node:util';
 
 const exec = promisify(execFile);
-const REQUIRED_CLI = '3.3.0';
+const REQUIRED_CLI = '3.7.1';
 
 async function hasCli() {
   try {

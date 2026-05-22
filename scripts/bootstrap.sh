@@ -118,7 +118,7 @@ ok "Node $(node --version), npm $(npm --version)"
 # ─────────────────────────────────────────────
 step "[2/7] Installing SwitchBot CLI..."
 
-REQUIRED_CLI_VERSION="3.3.0"
+REQUIRED_CLI_VERSION="3.7.1"
 
 # Returns 0 if $actual is >= $required (semver-compared via sort -V).
 cli_version_meets() {
@@ -133,7 +133,7 @@ check_cli_version() {
     die "'switchbot --version' produced no version. Reinstall the CLI:\n  npm install -g @switchbot/openapi-cli@latest"
   fi
   if ! cli_version_meets "$actual" "$REQUIRED_CLI_VERSION"; then
-    die "switchbot $actual is below the required floor $REQUIRED_CLI_VERSION.\n  The skill's envelope/cache/idempotency guidance assumes 3.3.0 behavior.\n  Upgrade:\n    npm install -g @switchbot/openapi-cli@latest"
+    die "switchbot $actual is below the required floor $REQUIRED_CLI_VERSION.\n  The skill requires 3.7.1+ behavior.\n  Upgrade:\n    npm install -g @switchbot/openapi-cli@latest"
   fi
   ok "CLI version $actual meets floor $REQUIRED_CLI_VERSION"
 }

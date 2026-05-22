@@ -21,7 +21,7 @@ switchbot-openclaw setup
 ```
 
 `switchbot-openclaw setup` verifies `@switchbot/openapi-cli` is
-installed, at `>=3.3.0`, and authenticated. Safe to re-run.
+installed, at `>=3.7.1`, and authenticated. Safe to re-run.
 
 ## MCP Tools
 

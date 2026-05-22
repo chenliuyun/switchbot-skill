@@ -4,7 +4,7 @@
 // Default entry point for the @cly-org/switchbot-openclaw-skill plugin.
 //
 // Subcommands:
-//   setup       Interactive bootstrap: verify CLI installed + >=3.3.0,
+//   setup       Interactive bootstrap: verify CLI installed + >=3.7.1,
 //               run `switchbot doctor` to confirm auth.
 //   --version   Print the plugin version.
 //   --help      Print this help.

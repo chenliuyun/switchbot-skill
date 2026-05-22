@@ -89,7 +89,7 @@ cat "$USERPROFILE/.config/openclaw/switchbot/policy.yaml" 2>/dev/null
 
 If the file doesn't exist, proceed with defaults from the safety section
 below — but tell the user once that they don't have a policy yet and
-point them at `switchbot policy new` (requires CLI ≥ 3.3.0).
+point them at `switchbot policy new` (requires CLI ≥ 3.7.1).
 
 If the user asks whether their policy file is correct, run:
 
@@ -206,11 +206,11 @@ assuming.
 
 ---
 
-## Declarative automations (CLI ≥ 3.3.0, policy v0.2)
+## Declarative automations (CLI ≥ 3.7.1, policy v0.2)
 
 When the user wants "when X happens, do Y" rather than one-shot commands,
 author a rule in the `automation:` block of `policy.yaml` instead of
-spawning a shell loop. This repo requires `@switchbot/openapi-cli` 3.3.0+
+spawning a shell loop. This repo requires `@switchbot/openapi-cli` 3.7.1+
 and runs the rules engine in the same process that reads the policy.
 
 Before you touch `policy.yaml`, check the schema version:
@@ -308,7 +308,7 @@ Recommend a shell loop when:
 
 ---
 
-## Credentials in the keychain (CLI ≥ 3.3.0)
+## Credentials in the keychain (CLI ≥ 3.7.1)
 
 If the user asks "can I move my token out of the `0600` file?", point
 them at `switchbot auth keychain migrate` — it moves the token + secret
@@ -316,7 +316,7 @@ to the OS keychain (macOS `security(1)`, Windows PowerShell + Win32
 `CredRead`/`CredWrite`, Linux `secret-tool` via libsecret) and deletes
 the file on success.
 
-For first-time setup, `switchbot install` (CLI ≥ 3.3.0) handles the
+For first-time setup, `switchbot install` (CLI ≥ 3.7.1) handles the
 entire bootstrap — credential capture, keychain write, skill symlink,
 and doctor verification — as a single rollback-aware command.
 `switchbot uninstall [--purge]` reverses it.
@@ -438,7 +438,7 @@ a `network` or `internal` error can double-fire without a local gate.
 
 ---
 
-## Semi-autonomous workflow — `plan suggest` + `--require-approval` (CLI ≥ 3.3.0)
+## Semi-autonomous workflow — `plan suggest` + `--require-approval` (CLI ≥ 3.7.1)
 
 When the user wants to review each dangerous step rather than confirm
 each command interactively, use the Plan workflow:
@@ -481,7 +481,7 @@ with `--require-approval` in a TTY session.
 
 ---
 
-## L3 · Proactive rule authoring (CLI ≥ 3.3.0)
+## L3 · Proactive rule authoring (CLI ≥ 3.7.1)
 
 ### When to proactively suggest a rule
 
@@ -549,14 +549,14 @@ Run `switchbot rules replay --since 24h --json` regularly to surface misfires.
 
 ## Version pinning
 
-This skill targets `@switchbot/openapi-cli` **≥ 3.3.0** and has been
-validated against `3.3.x`.
+This skill targets `@switchbot/openapi-cli` **≥ 3.7.1** and has been
+validated against `3.7.x`.
 
-This repo standardizes on CLI 3.3.0+ for all installation, upgrade, and
-support paths. Earlier 3.x versions (3.0.0–3.2.x) silently return the
+This repo standardizes on CLI 3.7.1+ for all installation, upgrade, and
+support paths. Earlier 3.x versions (3.0.0–3.6.x) silently return the
 wrong envelope shape, have a known cache bug on batch/long-lived reads,
 and accept malformed policy files — the four pitfalls §5–§9 below all
-assume 3.3.0 behavior.
+assume 3.7.1 behavior.
 
 If `switchbot --version` prints an older version, tell the user to run:
 

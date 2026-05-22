@@ -7,20 +7,20 @@ issue.
 
 ---
 
-## `switchbot --version` is below 3.3.0
+## `switchbot --version` is below 3.7.1
 
-**Cause:** the skill requires `@switchbot/openapi-cli@>=3.3.0` because
+**Cause:** the skill requires `@switchbot/openapi-cli@>=3.7.1` because
 earlier 3.x versions silently return the wrong envelope shape
 (downstream parsers read `undefined` instead of `.data`), have a known
 cache bug on batch/long-lived reads, and accept malformed policy files.
-The four pitfalls documented in `SKILL.md` §5–§9 all assume 3.3.0
+The four pitfalls documented in `SKILL.md` §5–§9 all assume 3.7.1
 behavior.
 
 **Fix:**
 
 ```bash
 npm install -g @switchbot/openapi-cli@latest
-switchbot --version   # should print 3.3.0 or newer
+switchbot --version   # should print 3.7.1 or newer
 ```
 
 The `scripts/bootstrap.sh` / `scripts/bootstrap.ps1` installers refuse
@@ -250,7 +250,7 @@ ls ~/.config/openclaw/switchbot/policy.yaml   # should exist
 
 ### Valid YAML and valid schema?
 
-With the supported CLI floor (3.3.0+):
+With the supported CLI floor (3.7.1+):
 
 ```bash
 switchbot policy validate

@@ -95,7 +95,7 @@ Write-Ok "Node $(node --version), npm $(npm --version)"
 # ─────────────────────────────────────────────
 Write-Step "[2/7] Installing SwitchBot CLI..."
 
-$RequiredCliVersion = [version]'3.3.0'
+$RequiredCliVersion = [version]'3.7.1'
 
 function Test-CliVersion {
   $versionLine = (& switchbot --version 2>$null) | Select-Object -First 1
@@ -105,7 +105,7 @@ function Test-CliVersion {
   }
   $actual = [version]$match.Value
   if ($actual -lt $RequiredCliVersion) {
-    Write-Fail "switchbot $actual is below the required floor $RequiredCliVersion.`n  The skill's envelope/cache/idempotency guidance assumes 3.3.0 behavior.`n  Upgrade:`n    npm install -g @switchbot/openapi-cli@latest"
+    Write-Fail "switchbot $actual is below the required floor $RequiredCliVersion.`n  The skill requires 3.7.1+ behavior.`n  Upgrade:`n    npm install -g @switchbot/openapi-cli@latest"
   }
   Write-Ok "CLI version $actual meets floor $RequiredCliVersion"
 }

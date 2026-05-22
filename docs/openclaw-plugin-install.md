@@ -8,8 +8,8 @@ Claude-compatible runtime) see `packages/openclaw-skill/README.md`.
 
 - OpenClaw installed and on `PATH` (`openclaw --version`)
 - Node.js **≥ 18**
-- `@switchbot/openapi-cli` **≥ 3.3.0** installed globally and authenticated
-  (`switchbot config set-token`). The plugin will not work below 3.3.0 — see
+- `@switchbot/openapi-cli` **≥ 3.7.1** installed globally and authenticated
+  (`switchbot config set-token`). The plugin will not work below 3.7.1 — see
   `troubleshooting.md` for why.
 
 Verify all three:
@@ -17,7 +17,7 @@ Verify all three:
 ```bash
 openclaw --version          # openclaw gateway available
 node --version              # v18.x or newer
-switchbot --version         # 3.3.0 or newer
+switchbot --version         # 3.7.1 or newer
 switchbot doctor            # credentials + connectivity healthy
 ```
 
@@ -38,7 +38,7 @@ server and exposes its 6 tools to the embedded Pi agent.
 
 `switchbot-openclaw setup` is an interactive bootstrap: it verifies
 the underlying `@switchbot/openapi-cli` is installed, satisfies the
-`>=3.3.0` floor, and is authenticated (via `switchbot doctor`). At each
+`>=3.7.1` floor, and is authenticated (via `switchbot doctor`). At each
 failing step it prints the exact command to run next. Safe to re-run
 at any time — it's idempotent and read-only when everything is already
 working.

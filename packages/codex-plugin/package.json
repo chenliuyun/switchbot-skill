@@ -1,6 +1,6 @@
 {
   "name": "@cly-org/switchbot-codex-plugin",
-  "version": "0.8.1",
+  "version": "0.8.2",
   "type": "module",
   "description": "SwitchBot Codex plugin — wires Codex to the SwitchBot CLI MCP server (24 tools, zero Node.js dependencies)",
   "author": {
@@ -29,7 +29,7 @@
     ".mcp.json"
   ],
   "peerDependencies": {
-    "@switchbot/openapi-cli": ">=3.3.0"
+    "@switchbot/openapi-cli": ">=3.7.1"
   },
   "publishConfig": {
     "access": "public"

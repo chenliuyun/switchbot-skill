@@ -32,7 +32,7 @@ Run:
 npm install -g @switchbot/openapi-cli@latest
 ```
 
-Then confirm: `switchbot --version` must print `3.3.0` or higher.
+Then confirm: `switchbot --version` must print `3.7.1` or higher.
 If it prints a lower version, stop and tell the user to check their npm global prefix.
 
 ---

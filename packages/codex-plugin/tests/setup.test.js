@@ -4,11 +4,11 @@ import assert from 'node:assert/strict';
 import { makeCheckCli } from '../setup/check-cli.js';
 
 describe('checkCli', () => {
-  it('returns ok:true when CLI is >= 3.3.0', async () => {
-    const fakeExec = async () => ({ stdout: '3.3.0\n' });
+  it('returns ok:true when CLI is >= 3.7.1', async () => {
+    const fakeExec = async () => ({ stdout: '3.7.1\n' });
     const checkCli = makeCheckCli(fakeExec);
     const result = await checkCli();
-    assert.deepEqual(result, { ok: true, version: '3.3.0' });
+    assert.deepEqual(result, { ok: true, version: '3.7.1' });
   });
 
   it('returns ok:false when CLI is below minimum', async () => {
@@ -17,7 +17,7 @@ describe('checkCli', () => {
     const result = await checkCli();
     assert.equal(result.ok, false);
     assert.match(result.message, /3\.2\.9/);
-    assert.match(result.message, /3\.3\.0/);
+    assert.match(result.message, /3\.7\.1/);
   });
 
   it('returns ok:false when CLI is missing (ENOENT)', async () => {

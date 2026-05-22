@@ -14,7 +14,7 @@ const REPO_DIR = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const CODEX_DIR = join(homedir(), '.codex');
 const CONFIG_PATH = join(CODEX_DIR, 'config.toml');
 const AGENTS_PATH = join(CODEX_DIR, 'AGENTS.md');
-const MIN_CLI_VERSION = '3.3.0';
+const MIN_CLI_VERSION = '3.7.1';
 
 function run(cmd, args) {
   return spawnSync(cmd, args, { stdio: 'inherit', shell: true }).status ?? 1;

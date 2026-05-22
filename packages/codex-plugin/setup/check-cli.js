@@ -1,7 +1,7 @@
 import { execFile } from 'node:child_process';
 import { promisify } from 'node:util';
 
-const MIN_VERSION = '3.3.0';
+const MIN_VERSION = '3.7.1';
 
 function versionAtLeast(have, need) {
   const a = have.split('.').map(n => parseInt(n, 10) || 0);

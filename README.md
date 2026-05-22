@@ -26,7 +26,7 @@ This repo ships:
 ```bash
 node --version        # >= 18
 npm install -g @switchbot/openapi-cli@latest
-switchbot --version   # must be >= 3.3.0
+switchbot --version   # must be >= 3.7.1
 switchbot auth login  # browser login — stores token in OS keychain
 switchbot doctor      # all checks pass before you touch an agent
 ```
@@ -101,7 +101,7 @@ switchbot-openclaw setup
 
 OpenClaw auto-detects the bundle manifest, launches the stdio MCP server,
 and exposes 6 tools. `switchbot-openclaw setup` verifies the CLI is
-installed, at `>=3.3.0`, and authenticated.
+installed, at `>=3.7.1`, and authenticated.
 
 Per-host config for Claude Desktop, Cursor, Zed, Windsurf, Continue.dev,
 or Cline: [`docs/mcp-clients.md`](./docs/mcp-clients.md).
